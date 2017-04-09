@@ -1,0 +1,324 @@
+﻿@model leavedays.Models.ViewModels.Account.RegisterViewModel
+@{
+    // ViewBag.Title = "Create Employee";
+    //Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = null;
+}
+
+
+
+
+@*<div class="fieldBlock">
+        @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { id = "form" }))
+        {
+            <h1>Register</h1>
+                <br />
+                <p>Select a license:</p>
+                <br />
+                <div id="licenses">
+                    @foreach (var license in Model.licenseList)
+                    {
+                        <div class="license" licensename="@license.Name">
+                            <div class="licenseName">
+                                <p>License: @license.Name</p>
+                            </div>
+                            <br />
+                            @foreach (var module in license.Modules)
+                            {
+                                <div>
+                                    @module.Name
+                                </div>
+                            }
+                            <div class="licensePrice" style="bottom: 10px;">
+                                <p>Price: @license.Price</p>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <br />
+                <h2>Create Company</h2>
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true, "")
+                <div>
+                    @Html.LabelFor(model => model.CompanyName)
+                    @Html.EditorFor(model => model.CompanyName)
+                    @Html.ValidationMessageFor(model => model.CompanyName)
+                </div>
+                <div>
+                    @Html.LabelFor(model => model.CompanyUrl)
+                    @Html.EditorFor(model => model.CompanyUrl)
+                    @Html.ValidationMessageFor(model => model.CompanyUrl)
+                </div>
+                <br />
+                <h5>Company Customer Info</h5>
+                <br />
+                <div>
+                    @Html.LabelFor(model => model.UserName)
+                    @Html.EditorFor(model => model.UserName)
+                    @Html.ValidationMessageFor(model => model.UserName)
+                </div>
+                <br />
+                <div>
+                    @Html.LabelFor(model => model.Password)
+                    @Html.PasswordFor(model => model.Password)
+                    @Html.ValidationMessageFor(model => model.Password)
+                </div>
+                <br />
+                <div>
+                    @Html.LabelFor(model => model.FirstName)
+                    @Html.EditorFor(model => model.FirstName)
+                    @Html.ValidationMessageFor(model => model.FirstName)
+                </div>
+                <br />
+                <div>
+                    @Html.LabelFor(model => model.LastName)
+                    @Html.EditorFor(model => model.LastName)
+                    @Html.ValidationMessageFor(model => model.LastName)
+                </div>
+                <br />
+
+                <div id="checkboxes">
+                    <input type="checkbox" name="customer" value="customer" checked="checked" disabled="disabled" />
+                    <span>Customer</span>
+                    @foreach (var role in Model.Roles)
+                    {
+                        <input type="checkbox" name="@role" value="@role" class="checkbox" />
+                        <span>@role</span>
+                        <br />
+                    }
+                </div>
+                @Html.HiddenFor(model => model.RolesLine, new { @id = "RolesLine" })
+                @Html.HiddenFor(model => model.LicenseName, new { @id = "LicenseName" })
+                <input type="submit" value="Create" id="submit" />
+        }
+    </div>
+
+
+
+
+*@
+
+
+
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Employee</title>
+    <link rel="stylesheet" href="~/Content/registerStyle.css">
+</head>
+<body>
+
+    <div class="main">
+        <div class="head">
+            <header>
+                <div class="logo">
+                    <span class="green">vrije</span>
+                    <span class="gray">dagen</span>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="">Advantages</a></li>
+                        <li><a href="">Solutions</a></li>
+                        <li><a href="">Pricing</a></li>
+                        <li><a href="">References</a></li>
+                        <li><a href="">Support</a></li>
+                        <li>
+                            <form action="">
+                                <input type="submit" value="">
+                            </form>
+                        </li>
+                    </ul>
+                </nav>
+            </header>
+        </div>
+        @using (Html.BeginForm("Register", "Account", FormMethod.Post))
+        {
+            <div class="content">
+                <section class="signin" id="page1">
+                    <header><h2>Sign up today</h2></header>
+
+                    <div class="input-border">
+                        @Html.TextBoxFor(model => model.UserName, new { placeholder = "UserName" })
+                    </div>
+                    <div class="input-border fio">
+                        @Html.TextBoxFor(model => model.FirstName, new { placeholder = "First name" })
+                        @*<input type="text" placeholder="First name">*@
+
+                        @Html.TextBoxFor(model => model.LastName, new { placeholder = "Last name" })
+                        @*<input type="text" placeholder="Last name">*@
+                    </div>
+                    @*<div class="input-border email">
+                            <input type="email" placeholder="Work Email">
+                        </div>*@
+                    <div class="input-border company">
+                        @*<input type="text" placeholder="Company name">*@
+                        @Html.TextBoxFor(model => model.CompanyName, new { placeholder = "Company name" })
+                    </div>
+                    <div class="input-border adress">
+                        @Html.TextBoxFor(model => model.CompanyUrl, new { placeholder = "Leavedays name", id = "leavedays-name", @class = "leavedays-adress" })
+                        @*<input class="leavedays-adress" type="text" placeholder="Leavedays name" id="leavedays-name">*@
+                    </div><label for="leavedays-name">.leavedays.com</label>
+                    <div class="input-border">
+                        @Html.PasswordFor(model => model.Password, new { placeholder = "Password" })
+                    </div>
+                    <input type="button" id="showPage2" value="SIGN UP">
+                    <p>By signing up, you agree to our T & C privacy policy</p>
+
+                </section>
+                <section class="subscription hidden" id="page2">
+                    <header><h2>Select your subscription</h2></header>
+                    <p class="live">Leave registration</p>
+                    <p class="time">Time with leave registration</p>
+                    <div id="licenses" class="block-section">
+                        <div class="row">
+                            @foreach (var license in Model.LicenseList)
+                            {
+                                <div class="block licenseBlock" licensename="@license.Name">
+                                    <div class="license">@license.Name<span class="info">?</span></div>
+                                    <p>&euro;@license.Price per user / month</p>
+                                </div>
+                            }
+                            @*<div class="block">
+                                    <a href="">PROFESSIONAL<span class="info">?</span></a>
+                                    <p>&euro;1,75 per user / month</p>
+                                </div>
+                                <div class="block">
+                                    <a href="">PREMIUM<span class="info">?</span></a>
+                                    <p>On request</p>
+                                </div>*@
+                        </div>
+                        @*<div class="row">
+                                <div class="block blue">
+                                    <a href="">BASIC<span class="info">?</span></a>
+                                    <p>&euro;2,25 per user / month</p>
+                                </div>
+                                <div class="block blue">
+                                    <a href="">PROFESSIONAL<span class="info">?</span></a>
+                                    <p>&euro;2,75 per user / month</p>
+                                </div>
+                                <div class="block blue">
+                                    <a href="">PREMIUM<span class="info">?</span></a>
+                                    <p>On request</p>
+                                </div>
+                            </div>*@
+                    </div>
+                    @Html.HiddenFor(model => model.LicenseName, new { id = "LicenseName" })
+                    <input type="submit" value="SUBMIT">
+                </section>
+                @Html.ValidationSummary()
+                <div class="page-button">
+                    <div id="button1" class="button active">1</div>
+                    <div id="button2" class="button">2</div>
+                    @*<a href="" class="button">3</a>*@
+                </div>
+            </div>
+        }
+    </div>
+    <script>
+        var mass = document.querySelectorAll(".signin input");
+        for (var i = 0; i < mass.length; i++) {
+            mass[i].addEventListener("focus", changeColor);
+            mass[i].addEventListener("blur", defaultColor);
+        }
+
+        function changeColor() {
+            this.style.borderLeftColor = "#8cc63f";
+            var parent = this.parentNode;
+            parent.style.borderColor = "#8cc63f";
+            var className = parent.classList.item(1);
+            switch (className) {
+                case "fio":
+                    parent.classList.remove("fio");
+                    parent.classList.add("fio-active");
+                    break;
+                case "email":
+                    parent.classList.remove("email");
+                    parent.classList.add("email-active");
+                    break;
+                case "company":
+                    parent.classList.remove("company");
+                    parent.classList.add("company-active");
+                    break;
+                case "adress":
+                    parent.classList.remove("adress");
+                    parent.classList.add("adress-active");
+                    break;
+                case "phone":
+                    parent.classList.remove("phone");
+                    parent.classList.add("phone-active");
+                    break;
+            }
+        }
+
+        function defaultColor() {
+            var parent = this.parentNode;
+            this.style.borderLeftColor = "#c6c4c6";
+            parent.style.borderColor = "#c6c4c6";
+            var className = parent.classList.item(1);
+            switch (className) {
+                case "fio-active":
+                    parent.classList.remove("fio-active");
+                    parent.classList.add("fio");
+                    break;
+                case "email-active":
+                    parent.classList.remove("email-active");
+                    parent.classList.add("email");
+                    break;
+                case "company-active":
+                    parent.classList.remove("company-active");
+                    parent.classList.add("company");
+                    break;
+                case "adress-active":
+                    parent.classList.remove("adress-active");
+                    parent.classList.add("adress");
+                    break;
+                case "phone-active":
+                    parent.classList.remove("phone-active");
+                    parent.classList.add("phone");
+                    break;
+            }
+        }
+
+
+    </script>
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var page1 = $('#page1');
+            var page2 = $('#page2');
+
+            var button1 = $("#button1");
+            var button2 = $("#button2");
+
+            var nextBtn = $('#showPage2');
+
+            $(button1).on('click', function () {
+                $(page2).addClass('hidden');
+                $(page1).removeClass('hidden');
+            });
+
+            $(button2).on('click', function () {
+                $(page1).addClass('hidden');
+                $(page2).removeClass('hidden');
+            });
+
+            $(nextBtn).on('click', function () {
+                $(page1).addClass('hidden');
+                $(page2).removeClass('hidden');
+            });
+
+
+            var licenseName = $('#LicenseName');
+            var licenses = $("#licenses");
+            $(licenses).on('click', ".licenseBlock", function () {
+                $(licenseName).val($(this).attr("licensename"));
+                $(licenses).find(".license.selected").removeClass("selected");
+                $(this).addClass("selected");
+            });
+        });
+    </script>
+</body>
+</html>

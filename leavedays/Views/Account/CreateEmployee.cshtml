@@ -1,0 +1,69 @@
+﻿@model leavedays.Models.ViewModels.Account.CreateEmployeeViewModel
+@{
+    ViewBag.Title = "Create Employee";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+
+
+<div class="fieldBlock">
+    @using (Html.BeginForm("CreateEmployee", "Account", FormMethod.Post, new { id = "form" }))
+    {
+        <h2>Create Employee</h2>
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "")
+
+        <div>
+            @Html.LabelFor(model => model.UserName)
+            @Html.EditorFor(model => model.UserName)
+            @Html.ValidationMessageFor(model => model.UserName)
+        </div>
+            <br />
+            <div>
+                @Html.LabelFor(model => model.Password)
+                @Html.PasswordFor(model => model.Password)
+                @Html.ValidationMessageFor(model => model.Password)
+            </div>
+            <br />
+            <div>
+                @Html.LabelFor(model => model.FirstName)
+                @Html.EditorFor(model => model.FirstName)
+                @Html.ValidationMessageFor(model => model.FirstName)
+            </div>
+            <br />
+            <div>
+                @Html.LabelFor(model => model.LastName)
+                @Html.EditorFor(model => model.LastName)
+                @Html.ValidationMessageFor(model => model.LastName)
+            </div>
+            <br />
+            <div id="checkboxes">
+                @foreach (var role in Model.Roles)
+                {
+                    <input type="checkbox" name="@role" value="@role" class="checkbox" />
+                    <span>@role</span>
+                    <br />
+                }
+            </div>
+            @Html.HiddenFor(model => model.RolesLine, new { @id = "RolesLine" })
+            <input type="submit" value="Create" id="submit" />
+    }
+</div>
+<script>
+    var roles = "";
+    $(document).ready(function () {
+        var rolesLine = $('#RolesLine');
+        $($('#checkboxes')).on('click', function () {
+            roles = '';
+            $.each($('.checkbox:checked'), function (index, value) {
+                roles += $(value).val() + ',';
+            });
+            $(rolesLine).val(roles);
+            // alert(roles);
+        });
+
+    });
+
+</script>

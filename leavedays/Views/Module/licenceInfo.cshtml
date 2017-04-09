@@ -1,0 +1,188 @@
+﻿@model leavedays.Models.Module
+
+@{
+    ViewBag.Title = "Licence Info";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h2>licence information</h2>
+
+
+
+    <div class="detail_content">
+
+
+        <div class="toolbar">
+
+
+        </div>
+        <div style="padding: 2px">
+            <div class="c-toolbar">
+                <a href="/License.aspx/SetAliasForAdministration/98!47">rename alias</a>
+
+            </div>
+        </div>
+
+
+        <fieldset>
+
+            <div class="display-label">
+                name
+            </div>
+            <div class="display-field">
+                @if (User.Identity.IsAuthenticated)
+                {
+                    @User.Identity.Name
+                }
+            </div>
+
+            <br />
+
+            <div class="display-label">
+                Alias
+            </div>
+            <div class="display-field">
+
+            </div>
+
+            <br />
+
+            <div class="display-label">
+                license code
+            </div>
+            <div class="display-field">
+                E925C7A543B6A81D4DBC66B0534F12C3
+            </div>
+
+            <br />
+
+            <div class="display-label">
+                coupled hardware
+            </div>
+            <div class="display-field">
+                0
+            </div>
+
+            <br />
+
+            <div class="display-label">
+                expires on:
+            </div>
+            <div class="display-field">
+
+
+                <label id="Expires">
+                    1/1/2100
+                </label>
+            </div>
+
+            <br />
+
+            <div class="display-label">
+                modules
+            </div>
+            <div class="display-field">
+
+
+                <ul>
+
+
+                    <li>
+                        Common
+                    </li>
+
+
+
+                    <li>
+                        Leave
+                    </li>
+
+
+
+                    <li>
+                        Sick
+                    </li>
+
+
+
+                    <li>
+                        LeaveSale
+                    </li>
+
+
+
+                    <li>
+                        Banner
+                    </li>
+
+
+
+                    <li>
+                        CustomCalendar
+                    </li>
+
+
+
+                    <li>
+                        Api
+                    </li>
+
+
+
+                    <li>
+                        AuthorizationPaths
+                    </li>
+
+
+
+                    <li>
+                        NewRequest
+                    </li>
+
+
+
+                    <li>
+                        Import
+                    </li>
+
+
+
+                    <li>
+                        Mobile
+                    </li>
+
+
+
+                    <li>
+                        MobileV2
+                    </li>
+
+
+                </ul>
+
+            </div>
+
+            <br />
+
+            <div class="display-label">
+                number of users
+            </div>
+            <div class="display-field">
+                30
+            </div>
+
+            <br />
+
+            <div class="display-label">
+                used licenses
+            </div>
+            <div class="display-field">
+                21
+            </div>
+
+            <br />
+
+        </fieldset>
+
+
+
+    </div>

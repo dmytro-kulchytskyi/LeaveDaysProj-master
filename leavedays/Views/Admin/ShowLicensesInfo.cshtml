@@ -1,0 +1,27 @@
+﻿@using leavedays.Models.ViewModel;
+@model List<LicenseInfo>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<table class="searchLicense">
+    <tr>
+        <th>LicenseId</th>
+        <th>CompanyName</th>
+        <th>ContactPerson</th>
+        <th>Email</th>
+        <th>Phonenumber</th>
+    </tr>
+@foreach(LicenseInfo a in Model)
+{
+    <tr>
+        <td>@a.LicenseId</td>
+        <td>@a.CompanyName</td>
+        <td>@a.ContactPerson</td>
+        <td>@a.Email</td>
+        <td>@a.PhoneNumber</td>
+    </tr>
+    
+}
+</table>
+

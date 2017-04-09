@@ -1,0 +1,92 @@
+﻿@model leavedays.Models.EditModel.EditRequest
+
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+<div class="fieldBlock">
+    @using (Html.BeginForm("Create", "Module", FormMethod.Post, new { id = "form" }))
+    {
+        @Html.AntiForgeryToken();
+
+        @Html.HiddenFor(model => model.UserId);
+        <input type="hidden" name="returnUrl" value="@Request.Url" />
+        @Html.HiddenFor(model => model.CompanyId);
+        @Html.ValidationSummary(true, "")
+        <table>
+            <tr>
+                <td>
+                    @Html.LabelFor(model => model.Status)
+                <td>
+                    @Html.DisplayFor(model => model.Status, new { @class = "requestDisplay" })
+            </tr>
+            @*<tr>
+                <td>
+                    <label for="forPerson">For another user</label><input type="checkbox" id="forPerson" />
+                </td>
+                <td>
+                    <select id="userList" style="visibility:hidden">
+
+                    </select>
+                </td>
+            </tr>*@
+            <tr>
+                <td>
+                    @Html.LabelFor(model => model.VacationDates)<br />
+                    @Html.ValidationMessageFor(model => model.VacationDates)
+                </td>
+                <td>
+                    <input type="text" id="calendar" name="VacationDates" data-val="true" data-val-required="You must choise a date" style="visibility:hidden; position:absolute" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(model => model.RequestBase)<br />
+                    @Html.ValidationMessageFor(model => model.RequestBase)
+                </td>
+                <td>
+                    @Html.EditorFor(model => model.RequestBase, new { @class = "requestBase" })
+                </td>
+            </tr>
+        </table>
+        <input type="submit" value="Create" />
+    }
+</div>
+<script src="~/Scripts/datepicker.min.js"></script>
+<script>
+    $('#calendar').datepicker({
+        minDate: new Date(),
+        inline: true,
+        multipleDates: 2,
+        multipleDatesSeparator: "-",
+        onSelect: function (formattedDate, date, inst) {
+            var dates = "" + formattedDate;
+            dates = dates.split('-');
+            var result = formattedDate;
+            if (dates.length > 1) {
+                var firstYear = dates[0].split(".")[2];
+                var secondYear = dates[1].split(".")[2];
+                if (+firstYear > +secondYear) {
+                    result = dates[1] + "-" + dates[0];
+                }
+                else {
+                    var firstMonth = dates[0].split(".")[1];
+                    var secondMonth = dates[1].split(".")[1];
+                    if (+firstMonth > +secondMonth) {
+                        result = dates[1] + "-" + dates[0];
+                    }
+                    else {
+                        var firstDay = dates[0].split(".")[0];
+                        var secondDay = dates[1].split(".")[0];
+                        if (+firstDay > +secondDay) {
+                            result = dates[1] + "-" + dates[0];
+                        }
+                    }
+                }
+                document.getElementById("calendar").value = result;
+            }
+        }
+    });
+</script>

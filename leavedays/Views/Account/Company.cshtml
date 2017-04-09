@@ -1,0 +1,13 @@
+﻿@using leavedays.Models
+@model IList<AppUser>
+@{
+    ViewBag.Title = "Company";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Company: @ViewBag.CompanyName</h2>
+@foreach (var user in Model)
+{
+    <span>@user.UserName @user.FirstName @user.LastName</span>
+    <br />
+}

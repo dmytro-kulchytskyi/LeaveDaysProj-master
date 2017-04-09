@@ -1,0 +1,134 @@
+﻿@using leavedays.Models.ViewModel;
+@model IEnumerable<ViewRequest>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Confirmed Request</title>
+    <style>
+        .table_price {
+            border-collapse: collapse;
+            border-left: 3px solid #b7db87;
+            border-right: 3px solid #b7db87;
+            border-bottom: 3px solid #b7db87;
+            font-family: "Lucida Grande", sans-serif;
+        }
+
+            .table_price caption {
+                background: #b7db87;
+                border-top-left-radius: 10px;
+                border-top-right-radius: 10px;
+                padding: 10px;
+                box-shadow: 0 2px 4px 0 rgba(0,0,0,.3);
+                color: white;
+                font-family: "Roboto Slab",serif;
+                font-style: normal;
+                font-size: 26px;
+                text-align: center;
+                margin: 0;
+            }
+
+            .table_price td, .table_price th {
+                padding: 10px;
+            }
+
+            .table_price th {
+                text-align: left;
+                font-size: 18px;
+            }
+
+            .table_price tr:nth-child(2n) {
+                background: #E5E5E5;
+            }
+
+            .table_price td:last-of-type {
+                text-align: center;
+            }
+
+            .table_price .sel {
+                display: inline-block;
+                padding: 5px 10px;
+                background: #b7db87;
+                box-shadow: 2px 2px 0 0 darkgray;
+                position: relative;
+                border: none;
+            }
+
+                .table_price .sel:hover {
+                    box-shadow: none;
+                    top: 2px;
+                    left: 2px;
+                }
+
+        td.hide {
+            border: none;
+            background-color: transparent;
+            width: 0px;
+        }
+    </style>
+</head>
+<body>
+    <table id="requestTable" class="table_price">
+        <caption>Requests</caption>
+        <tr class="head">
+            <th>User</th>
+            <th>Vacation duration</th>
+            <th>Sent date</th>
+            <th>Base</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+        @foreach (ViewRequest request in Model)
+        {
+            <tr>
+                @using (Html.BeginForm(FormMethod.Post))
+                {
+                    <td>@request.UserName</td>
+                    <td>
+                        <input type="hidden" name="returnUrl" value="@Request.Url" />
+                        <input type="hidden" value="@request.Id" name="Id">
+                        @request.VacationInterval
+                    </td>
+                    <td>@request.SigningDate</td>
+                    <td>@request.RequestBase</td>
+                    if (@request.IsAccepted == leavedays.Models.RequestStatus.Accepted)
+                    {
+                        <td>Accepted</td>
+                        <td><input class="sel" type="submit" name="rejectButton" value="Reject" /></td>
+                    }
+                    else if (@request.IsAccepted == leavedays.Models.RequestStatus.NotAccepted)
+                    {
+                        <td>NotAccepted</td>
+                        <td><input class="sel" type="submit" name="acceptButton" value="Accept" /></td>
+                    }
+                    else
+                    {
+                        <td>InProgress</td>
+                        <td>
+                            <input class="sel" type="submit" name="acceptButton" value="Accept" />
+                            <input class="sel" type="submit" name="rejectButton" value="Reject" />
+                        </td>
+                    }
+                }
+            </tr>
+        }
+    </table>
+    <script>
+        window.addEventListener("load", function () {
+            document.getElementById("requestTable").addEventListener("click", function (event) {
+                if (event.target.tagName == "INPUT") {
+                    if (event.target.getAttribute("name") == "acceptButton"){
+                        event.target.form.setAttribute("action", "/Module/Accept")
+                    }
+                    else {
+                        event.target.form.setAttribute("action", "/Module/Reject");
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
