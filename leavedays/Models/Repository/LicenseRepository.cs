@@ -34,16 +34,6 @@ namespace leavedays.Models.Repository
             }
         }
 
-        public License GetByName(string name)
-        {
-            using (var session = sessionFactory.OpenSession())
-            {
-                var result = session.CreateCriteria<License>()
-                    .Add(Restrictions.Eq("Name", name))
-                    .UniqueResult<License>();
-                return result;
-            }
-        }
 
         public int Save(License license)
         {

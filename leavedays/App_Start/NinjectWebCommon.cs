@@ -80,8 +80,10 @@ namespace leavedays.App_Start
             kernel.Bind<IRequestRepository>().To<RequestRepository>();
             kernel.Bind<IRoleRepository>().To<RoleRepository>();
             kernel.Bind<ILicenseRepository>().To<LicenseRepository>();
+            kernel.Bind<IDefaultLicenseRepository>().To<DefaultLicenseRepository>();
+            kernel.Bind<IDefaultModuleRepository>().To<DefaultModuleRepository>();
 
-            //kernel.Bind<UserManager<AppUser, int>>().To<UserManager<AppUser, int>>();
+
             kernel.Bind<UserManager<AppUser, int>>().To<UserManager<AppUser, int>>();
 
 

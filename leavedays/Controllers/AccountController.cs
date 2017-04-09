@@ -29,6 +29,7 @@ namespace leavedays.Controllers
         private readonly ICompanyRepository companyRepository;
         private readonly IUserRepository userRepository;
         private readonly ILicenseRepository licenseRepository;
+        private readonly IDefaultLicenseRepository defaultLicenseRepository;
 
 
         public AccountController(
@@ -37,8 +38,10 @@ namespace leavedays.Controllers
             CompanyService companyService,
             ICompanyRepository companyRepository,
            IUserRepository userRepository,
-           ILicenseRepository licenseRepository)
+           ILicenseRepository licenseRepository,
+           IDefaultLicenseRepository defaultLicenseRepository)
         {
+            this.defaultLicenseRepository = defaultLicenseRepository;
             this.userRepository = userRepository;
             this.companyRepository = companyRepository;
             this.companyService = companyService;
@@ -108,7 +111,7 @@ namespace leavedays.Controllers
         [AllowAnonymous]
         public ActionResult Register()
         {
-            var licenseList = licenseRepository.GetAll();
+            var licenseList = defaultLicenseRepository.GetAll();
             var model = new RegisterViewModel();
             model.LicenseList = licenseList;
             //  model.Roles = CreateUserAllowedRoles;
@@ -121,7 +124,7 @@ namespace leavedays.Controllers
 
             if (!ModelState.IsValid)
             {
-                model.LicenseList = licenseRepository.GetAll();
+                model.LicenseList = defaultLicenseRepository.GetAll();
                 return View(model);
 
             }
@@ -135,7 +138,7 @@ namespace leavedays.Controllers
                 return View(model);
             }
 
-            var license = licenseRepository.GetByName(model.LicenseName);
+            var license = companyService.CreateLicense(defaultLicenseRepository.GetByName(model.LicenseName));
 
 
 
@@ -152,7 +155,8 @@ namespace leavedays.Controllers
             var company = new Company()
             {
                 FullName = model.CompanyName,
-                UrlName = model.CompanyUrl
+                UrlName = model.CompanyUrl,
+                LicenseId = license.Id
             };
             var companyId = companyRepository.Save(company);
 
@@ -163,7 +167,6 @@ namespace leavedays.Controllers
                 UserName = model.UserName,
                 Roles = new HashSet<Role>(userRoles),
                 CompanyId = companyId,
-               // Modules = license.Modules,
                 FirstName = model.FirstName,
                 LastName = model.LastName,
                 Password = model.Password,

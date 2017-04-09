@@ -11,6 +11,5 @@ namespace leavedays.Models.Repository.Interfaces
         IList<License> GetAll();
         int Save(License license);
         License GetById(int id);
-        License GetByName(string name);
     }
 }

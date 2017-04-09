@@ -8,7 +8,7 @@ namespace leavedays.Models
     public class License
     {
         public virtual int Id { get; set; }
-        public virtual string Name { get; set; }
+        public virtual int DefaultLicenseId { get; set; }
         public virtual double Price { get; set; }
 
         private ISet<Module> _Modules = new HashSet<Module>();

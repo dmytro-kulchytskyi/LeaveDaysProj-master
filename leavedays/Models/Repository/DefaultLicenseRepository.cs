@@ -59,6 +59,5 @@ namespace leavedays.Models.Repository
             }
         }
 
-     }
     }
 }

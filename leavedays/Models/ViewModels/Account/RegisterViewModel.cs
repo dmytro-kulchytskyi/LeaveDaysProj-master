@@ -50,7 +50,7 @@ namespace leavedays.Models.ViewModels.Account
        
 
         [ScaffoldColumn(false)]
-        public IList<License> LicenseList { get; set; }
+        public IList<DefaultLicense> LicenseList { get; set; }
 
        
     }

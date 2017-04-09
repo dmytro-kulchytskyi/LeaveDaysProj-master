@@ -16,6 +16,8 @@ namespace leavedays.Services
             this.roleRepository = roleRepository;
             this.userRepository = userRepository;
         }
+        private readonly ILicenseRepository licenseRepository;
+        private readonly IModuleRepository moduleRepository;
         private readonly ICompanyRepository companyRepository;
         private readonly IRoleRepository roleRepository;
         private readonly IUserRepository userRepository;
@@ -30,14 +32,26 @@ namespace leavedays.Services
                 return new string[0];
             else return roles;
         }
-        public string GetRolesLine(IEnumerable<string> roles)
+
+        public License CreateLicense(DefaultLicense defaultLicense)
         {
-            StringBuilder rolesLine = new StringBuilder();
-            foreach (var role in roles)
+            var license = new License()
             {
-                rolesLine.Append("[" + role + "]");
+                DefaultLicenseId = defaultLicense.Id,
+                Price = defaultLicense.Price
+            };
+            foreach (var defaultModule in defaultLicense.Modules)
+            {
+                var module = new Module()
+                {
+                    DefaultModuleId = defaultModule.Id,
+                    Price = defaultModule.Price
+                };
+                moduleRepository.Save(module);
+                license.Modules.Add(module);
             }
-            return rolesLine.ToString();
+            licenseRepository.Save(license);
+            return license;
         }
 
         public IEnumerable<Role> GetRolesList(IEnumerable<string> roles)

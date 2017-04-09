@@ -10,33 +10,40 @@ using leavedays.Models.Repository.Interfaces;
 
 namespace leavedays.Models.Repository
 {
-    public class ModuleRepository : IModuleRepository
+    public class DefaultModuleRepository : IDefaultModuleRepository
     {
         readonly ISessionFactory sessionFactory;
 
-        public ModuleRepository(ISessionFactory sessionFactory)
+        public DefaultModuleRepository(ISessionFactory sessionFactory)
         {
             this.sessionFactory = sessionFactory;
         }
 
-        public IList<Module> GetAll()
+        public IList<DefaultModule> GetAll()
         {
             using (var session = sessionFactory.OpenSession())
             {
-                return session.CreateCriteria<Module>().List<Module>();
+                return session.CreateCriteria<DefaultModule>().List<DefaultModule>();
             }
         }
 
-        public Module GetById(int id)
+        public DefaultModule GetById(int id)
         {
             using (var session = sessionFactory.OpenSession())
             {
-                return session.Get<Module>(id);
+                return session.Get<DefaultModule>(id);
             }
         }
 
-   
-        public int Save(Module module)
+        public DefaultModule GetByName(string name)
+        {
+            using (var session = sessionFactory.OpenSession())
+            {
+                return session.CreateCriteria<DefaultModule>().Add(Restrictions.Eq("Name", name)).UniqueResult<DefaultModule>();
+            }
+        }
+
+        public int Save(DefaultModule module)
         {
             using (var session = sessionFactory.OpenSession())
             {

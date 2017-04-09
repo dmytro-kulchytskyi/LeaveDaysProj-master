@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace leavedays.Models.Repository.Interfaces
 {
-    interface IDefaultLicenseRepository
+    public interface IDefaultLicenseRepository
     {
         IList<DefaultLicense> GetAll();
         int Save(DefaultLicense license);

@@ -7,10 +7,11 @@ using System.Threading.Tasks;
 
 namespace leavedays.Models.Repository.Interfaces
 {
-    public interface IModuleRepository
+    public interface IDefaultModuleRepository
     {
-        int Save(Module user);
-        Module GetById(int id);
-        IList<Module> GetAll();
+        int Save(DefaultModule user);
+        DefaultModule GetById(int id);
+        DefaultModule GetByName(string name);
+        IList<DefaultModule> GetAll();
     }
 }

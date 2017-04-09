@@ -5,7 +5,7 @@
     <id name="Id" column="LicenseId" type="int">
       <generator class="native" />
     </id>
-    <property name="Name" />
+    <property name="DefaultLicenseId" />
     <property name="Price"/>
     <set name="Modules" table="License_Module"  lazy="false">
       <key column="LicenseId"/>
