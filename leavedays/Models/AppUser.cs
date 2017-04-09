@@ -20,10 +20,8 @@ namespace leavedays.Models
         public virtual int AccessFailedCount { get; set; }
         public virtual bool LockoutEnabled { get; set; }
         public virtual DateTimeOffset LockoutEnd { get; set; }
-        public virtual License License { get; set; }
-
+       
         private ISet<Role> _Roles = new HashSet<Role>();
-
         public virtual ISet<Role> Roles
         {
             get

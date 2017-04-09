@@ -24,10 +24,7 @@
       <key column="UserId"/>
       <one-to-many class="Request"/>
     </bag>
-    <set name="Modules" table="User_Module"  lazy="false">
-      <key column="UserId"/>
-      <many-to-many class="Module" column="ModuleId" />
-    </set>
+   
   </class>
 
 </hibernate-mapping>
