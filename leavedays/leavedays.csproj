@@ -217,6 +217,8 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\Company.cs" />
+    <Compile Include="Models\DefaultLicense.cs" />
+    <Compile Include="Models\DefaultModule.cs" />
     <Compile Include="Models\EditModel\EditRequest.cs" />
     <Compile Include="Models\Identity\CustomRoleStore.cs" />
     <Compile Include="Models\Identity\CustomUserManager.cs" />
@@ -225,7 +227,9 @@
     <Compile Include="Models\License.cs" />
     <Compile Include="Models\Module.cs" />
     <Compile Include="Models\Repository\CompanyRepository.cs" />
+    <Compile Include="Models\Repository\DefaultLicenseRepository.cs" />
     <Compile Include="Models\Repository\Interfaces\ICompanyRepository.cs" />
+    <Compile Include="Models\Repository\Interfaces\IDefaultLicenseRepository.cs" />
     <Compile Include="Models\Repository\Interfaces\ILicenseRepository.cs" />
     <Compile Include="Models\Repository\Interfaces\IRequestRepository.cs" />
     <Compile Include="Models\Repository\Interfaces\IRoleRepository.cs" />
