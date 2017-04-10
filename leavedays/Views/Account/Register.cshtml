@@ -209,11 +209,15 @@
             $(button1).on('click', function () {
                 $(page2).addClass('hidden');
                 $(page1).removeClass('hidden');
+                $(button2).toggleClass('active', false);
+                $(this).toggleClass('active', true);
             });
 
             $(button2).on('click', function () {
                 $(page1).addClass('hidden');
                 $(page2).removeClass('hidden');
+                $(button1).toggleClass('active', false);
+                $(this).toggleClass('active', true);
             });
 
             $(nextBtn).on('click', function () {
