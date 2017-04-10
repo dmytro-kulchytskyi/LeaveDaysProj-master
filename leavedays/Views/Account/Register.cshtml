@@ -8,100 +8,6 @@
 
 
 
-@*<div class="fieldBlock">
-        @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { id = "form" }))
-        {
-            <h1>Register</h1>
-                <br />
-                <p>Select a license:</p>
-                <br />
-                <div id="licenses">
-                    @foreach (var license in Model.licenseList)
-                    {
-                        <div class="license" licensename="@license.Name">
-                            <div class="licenseName">
-                                <p>License: @license.Name</p>
-                            </div>
-                            <br />
-                            @foreach (var module in license.Modules)
-                            {
-                                <div>
-                                    @module.Name
-                                </div>
-                            }
-                            <div class="licensePrice" style="bottom: 10px;">
-                                <p>Price: @license.Price</p>
-                            </div>
-                        </div>
-                    }
-                </div>
-                <br />
-                <h2>Create Company</h2>
-                @Html.AntiForgeryToken()
-                @Html.ValidationSummary(true, "")
-                <div>
-                    @Html.LabelFor(model => model.CompanyName)
-                    @Html.EditorFor(model => model.CompanyName)
-                    @Html.ValidationMessageFor(model => model.CompanyName)
-                </div>
-                <div>
-                    @Html.LabelFor(model => model.CompanyUrl)
-                    @Html.EditorFor(model => model.CompanyUrl)
-                    @Html.ValidationMessageFor(model => model.CompanyUrl)
-                </div>
-                <br />
-                <h5>Company Customer Info</h5>
-                <br />
-                <div>
-                    @Html.LabelFor(model => model.UserName)
-                    @Html.EditorFor(model => model.UserName)
-                    @Html.ValidationMessageFor(model => model.UserName)
-                </div>
-                <br />
-                <div>
-                    @Html.LabelFor(model => model.Password)
-                    @Html.PasswordFor(model => model.Password)
-                    @Html.ValidationMessageFor(model => model.Password)
-                </div>
-                <br />
-                <div>
-                    @Html.LabelFor(model => model.FirstName)
-                    @Html.EditorFor(model => model.FirstName)
-                    @Html.ValidationMessageFor(model => model.FirstName)
-                </div>
-                <br />
-                <div>
-                    @Html.LabelFor(model => model.LastName)
-                    @Html.EditorFor(model => model.LastName)
-                    @Html.ValidationMessageFor(model => model.LastName)
-                </div>
-                <br />
-
-                <div id="checkboxes">
-                    <input type="checkbox" name="customer" value="customer" checked="checked" disabled="disabled" />
-                    <span>Customer</span>
-                    @foreach (var role in Model.Roles)
-                    {
-                        <input type="checkbox" name="@role" value="@role" class="checkbox" />
-                        <span>@role</span>
-                        <br />
-                    }
-                </div>
-                @Html.HiddenFor(model => model.RolesLine, new { @id = "RolesLine" })
-                @Html.HiddenFor(model => model.LicenseName, new { @id = "LicenseName" })
-                <input type="submit" value="Create" id="submit" />
-        }
-    </div>
-
-
-
-
-*@
-
-
-
-
-
 
 <!DOCTYPE html>
 <html>
@@ -110,7 +16,6 @@
     <link rel="stylesheet" href="~/Content/registerStyle.css">
 </head>
 <body>
-
     <div class="main">
         <div class="head">
             <header>
@@ -139,20 +44,19 @@
             <div class="content">
                 <section class="signin" id="page1">
                     <header><h2>Sign up today</h2></header>
-
                     <div class="input-border">
                         @Html.TextBoxFor(model => model.UserName, new { placeholder = "UserName" })
                     </div>
                     <div class="input-border fio">
                         @Html.TextBoxFor(model => model.FirstName, new { placeholder = "First name" })
                         @*<input type="text" placeholder="First name">*@
-
                         @Html.TextBoxFor(model => model.LastName, new { placeholder = "Last name" })
                         @*<input type="text" placeholder="Last name">*@
                     </div>
-                    @*<div class="input-border email">
-                            <input type="email" placeholder="Work Email">
-                        </div>*@
+                    <div class="input-border email">
+                        @Html.TextBoxFor(model => model.PhoneNumber, new { placeholder = "Phone Number" })
+                        @*<input type="email" placeholder="Work Email">*@
+                    </div>
                     <div class="input-border company">
                         @*<input type="text" placeholder="Company name">*@
                         @Html.TextBoxFor(model => model.CompanyName, new { placeholder = "Company name" })
@@ -166,7 +70,6 @@
                     </div>
                     <input type="button" id="showPage2" value="SIGN UP">
                     <p>By signing up, you agree to our T & C privacy policy</p>
-
                 </section>
                 <section class="subscription hidden" id="page2">
                     <header><h2>Select your subscription</h2></header>
@@ -174,13 +77,21 @@
                     <p class="time">Time with leave registration</p>
                     <div id="licenses" class="block-section">
                         <div class="row">
-                            @foreach (var license in Model.LicenseList)
+                            @if (Model.LicenseList == null || Model.LicenseList.Count == 0)
                             {
-                                <div class="block licenseBlock" licensename="@license.Name">
-                                    <div class="license">@license.Name<span class="info">?</span></div>
-                                    <p>&euro;@license.Price per user / month</p>
-                                </div>
+                                <div>No Licenses</div>
                             }
+                            else
+                            {
+                                foreach (var license in Model.LicenseList)
+                                {
+                                    <div class="block licenseBlock" licensename="@license.Name">
+                                        <div class="license">@license.Name<span class="info">?</span></div>
+                                        <p>&euro;@license.Price per user / month</p>
+                                    </div>
+                                }
+                            }
+
                             @*<div class="block">
                                     <a href="">PROFESSIONAL<span class="info">?</span></a>
                                     <p>&euro;1,75 per user / month</p>
@@ -315,7 +226,7 @@
             var licenses = $("#licenses");
             $(licenses).on('click', ".licenseBlock", function () {
                 $(licenseName).val($(this).attr("licensename"));
-                $(licenses).find(".license.selected").removeClass("selected");
+                $(licenses).find(".licenseBlock.selected").removeClass("selected");
                 $(this).addClass("selected");
             });
         });

@@ -13,10 +13,9 @@ namespace leavedays.Models.ViewModels.Account
 
         [ScaffoldColumn(false)]
         public string RolesLine { get; set; }
-
-        [ScaffoldColumn(false)]
-        public IList<Module> AllModules { get; set; }
-
+        [Required]
+        [RegularExpression(@"\d+", ErrorMessage = "Bad phone number")]
+        public string PhoneNumber { get; set; }
 
         [Required]
         [StringLength(250)]
@@ -37,8 +36,6 @@ namespace leavedays.Models.ViewModels.Account
         [StringLength(250, MinimumLength = 6)]
         public string Password { get; set; }
 
-        //public int CompanyId { get; set; }
-
         [Required]
         [StringLength(250)]
         public string FirstName { get; set; }
@@ -47,11 +44,9 @@ namespace leavedays.Models.ViewModels.Account
         [StringLength(250)]
         public string LastName { get; set; }
 
-       
-
         [ScaffoldColumn(false)]
         public IList<DefaultLicense> LicenseList { get; set; }
 
-       
+
     }
 }

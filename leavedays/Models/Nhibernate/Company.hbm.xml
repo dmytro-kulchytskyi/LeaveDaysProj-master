@@ -9,4 +9,5 @@
     <property name="UrlName" />
     <property name="LicenseId" />
   </class>
+  
 </hibernate-mapping>

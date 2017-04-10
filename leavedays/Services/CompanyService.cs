@@ -10,8 +10,14 @@ namespace leavedays.Services
 {
     public class CompanyService
     {
-        public CompanyService(IUserRepository userRepository, IRoleRepository roleRepository, ICompanyRepository companyRepository)
+        public CompanyService(IUserRepository userRepository, 
+            IRoleRepository roleRepository, 
+            ICompanyRepository companyRepository, 
+            ILicenseRepository licenseRepository, 
+            IModuleRepository moduleRepository)
         {
+            this.moduleRepository = moduleRepository;
+            this.licenseRepository = licenseRepository;
             this.companyRepository = companyRepository;
             this.roleRepository = roleRepository;
             this.userRepository = userRepository;
@@ -22,7 +28,7 @@ namespace leavedays.Services
         private readonly IRoleRepository roleRepository;
         private readonly IUserRepository userRepository;
 
-        public string[] GetRolesFromLine(string line)
+        public string[] SplitLine(string line)
         {
             if (string.IsNullOrWhiteSpace(line))
                 return new string[0];
@@ -38,19 +44,23 @@ namespace leavedays.Services
             var license = new License()
             {
                 DefaultLicenseId = defaultLicense.Id,
-                Price = defaultLicense.Price
+                Price = defaultLicense.Price,
+                LicenseCode = new Guid().ToString()                
             };
-            foreach (var defaultModule in defaultLicense.Modules)
+
+            licenseRepository.Save(license);
+            foreach (var defaultModule in defaultLicense.DefaultModules)
             {
                 var module = new Module()
                 {
                     DefaultModuleId = defaultModule.Id,
-                    Price = defaultModule.Price
+                    Price = defaultModule.Price,
+                    IsActive = true,
+                    LicenseId = license.Id
                 };
                 moduleRepository.Save(module);
-                license.Modules.Add(module);
             }
-            licenseRepository.Save(license);
+         
             return license;
         }
 

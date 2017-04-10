@@ -32,6 +32,7 @@ namespace leavedays.Controllers
         }
 
 
+
         public ActionResult Index()
         {
             return View();
@@ -48,7 +49,7 @@ namespace leavedays.Controllers
                 CompanyName = companys.Where(n => n.Id == m.CompanyId).Select(n => n.FullName).First(),
                 ContactPerson = m.FirstName + " " + m.LastName,
                 Email = m.UserName,
-                PhoneNumber = "+38093412343",
+                PhoneNumber = m.PhoneNumber,
                 LicenseId = 1
             }).ToList();
             return View(result);

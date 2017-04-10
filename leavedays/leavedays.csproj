@@ -194,7 +194,7 @@
     <EmbeddedResource Include="Models\Nhibernate\Company.hbm.xml" />
     <EmbeddedResource Include="Models\Nhibernate\Role.hbm.xml" />
     <EmbeddedResource Include="Models\Nhibernate\Request.hbm.xml" />
-    <Content Include="Models\Nhibernate\DefaultLicense.hbm.xml" />
+    <EmbeddedResource Include="Models\Nhibernate\DefaultLicense.hbm.xml" />
     <EmbeddedResource Include="Models\Nhibernate\DefaultModule.hbm.xml" />
     <Content Include="Scripts\datepicker.min.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />

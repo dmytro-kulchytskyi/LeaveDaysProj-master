@@ -75,17 +75,20 @@ namespace leavedays.App_Start
         {
             kernel.Bind<CompanyService>().To<CompanyService>();
             kernel.Bind<RequestService>().To<RequestService>();
+
             kernel.Bind<IUserRepository>().To<UserRepository>();
             kernel.Bind<ICompanyRepository>().To<CompanyRepository>();
+
             kernel.Bind<IRequestRepository>().To<RequestRepository>();
             kernel.Bind<IRoleRepository>().To<RoleRepository>();
+
             kernel.Bind<ILicenseRepository>().To<LicenseRepository>();
+            kernel.Bind<IModuleRepository>().To<ModuleRepository>();
+
             kernel.Bind<IDefaultLicenseRepository>().To<DefaultLicenseRepository>();
             kernel.Bind<IDefaultModuleRepository>().To<DefaultModuleRepository>();
 
-
             kernel.Bind<UserManager<AppUser, int>>().To<UserManager<AppUser, int>>();
-
 
             kernel.Bind<SignInManager<AppUser, int>>().To<SignInManager<AppUser, int>>();
             kernel.Bind<RoleManager<Role, int>>().To<RoleManager<Role, int>>();
@@ -94,7 +97,6 @@ namespace leavedays.App_Start
             kernel.Bind<IUserStore<AppUser, int>>().To<CustomUserStore>();
 
             kernel.Bind<IAuthenticationManager>().ToMethod(_ => HttpContext.Current.GetOwinContext().Authentication);
-
 
             kernel.Bind<ISessionFactory>().ToMethod(context =>
             {
@@ -107,9 +109,6 @@ namespace leavedays.App_Start
 
                 return sessionFactory;
             }).InSingletonScope();
-
-
-
         }
     }
 }

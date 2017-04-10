@@ -7,10 +7,7 @@
     </id>
     <property name="DefaultLicenseId" />
     <property name="Price"/>
-    <set name="Modules" table="License_Module"  lazy="false">
-      <key column="LicenseId"/>
-      <many-to-many class="Module" column="ModuleId" />
-    </set>
+    <property name="LicenseCode" />
   </class>
 
 </hibernate-mapping>
