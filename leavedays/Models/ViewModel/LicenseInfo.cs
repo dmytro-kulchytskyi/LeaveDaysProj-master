@@ -8,9 +8,13 @@ namespace leavedays.Models.ViewModel
     public class LicenseInfo
     {
         public int LicenseId { get; set; }
+        public string LicenceCode { get; set; }
+        public DateTime ExpirationDate { get; set; }
         public string CompanyName { get; set; }
         public string ContactPerson { get; set; }
         public string Email { get; set; }
         public string PhoneNumber { get; set; }
+        public string[] AvilableModules { get; set; }
+        public int UsersNum { get; set; }
+        public int UsedLicenses { get; set; }
     }
-}
