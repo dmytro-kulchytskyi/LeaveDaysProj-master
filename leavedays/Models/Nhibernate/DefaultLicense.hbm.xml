@@ -7,7 +7,7 @@
     </id>
     <property name="Name" />
     <property name="Price"/>
-    <set name="Modules" table="DefLicense_DefModule"  lazy="false">
+    <set name="DefaultModules" table="DefLicense_DefModule"  lazy="false">
       <key column="DefaultLicenseId"/>
       <many-to-many class="DefaultModule" column="DefaultModuleId" />
     </set>

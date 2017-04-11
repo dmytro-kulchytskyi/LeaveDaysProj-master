@@ -11,16 +11,16 @@ namespace leavedays.Models
         public virtual string Name { get; set; }
         public virtual double Price { get; set; }
 
-        private ISet<DefaultModule> _Modules = new HashSet<DefaultModule>();
-        public virtual ISet<DefaultModule> Modules
+        private ISet<DefaultModule> _DefaultModules = new HashSet<DefaultModule>();
+        public virtual ISet<DefaultModule> DefaultModules
         {
             get
             {
-                return _Modules;
+                return _DefaultModules;
             }
             set
             {
-                _Modules = value;
+                _DefaultModules = value;
             }
         }
     }

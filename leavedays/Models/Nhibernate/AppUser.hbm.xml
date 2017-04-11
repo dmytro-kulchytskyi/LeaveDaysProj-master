@@ -14,7 +14,7 @@
     <property name="AccessFailedCount" />
     <property name="LockoutEnabled" />
     <property name="LockoutEnd" />
-
+    <property name="PhoneNumber" />
     <set name="Roles" table="User_Role"  lazy="false">
       <key column="UserId"/>
       <many-to-many class="Role" column="RoleId" />

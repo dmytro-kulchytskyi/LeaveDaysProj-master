@@ -34,7 +34,6 @@ namespace leavedays.Models.Repository
             }
         }
 
-
         public int Save(License license)
         {
             using (var session = sessionFactory.OpenSession())
@@ -45,7 +44,6 @@ namespace leavedays.Models.Repository
                     t.Commit();
                     return license.Id;
                 }
-
             }
         }
     }

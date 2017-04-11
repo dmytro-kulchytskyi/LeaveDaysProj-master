@@ -10,18 +10,8 @@ namespace leavedays.Models
         public virtual int Id { get; set; }
         public virtual int DefaultLicenseId { get; set; }
         public virtual double Price { get; set; }
+        public virtual string LicenseCode { get; set; }
 
-        private ISet<Module> _Modules = new HashSet<Module>();
-        public virtual ISet<Module> Modules
-        {
-            get
-            {
-                return _Modules;
-            }
-            set
-            {
-                _Modules = value;
-            }
-        }
+      
     }
 }

@@ -35,7 +35,17 @@ namespace leavedays.Models.Repository
             }
         }
 
-   
+        public IList<Module> GetByLicenseId(int licensId)
+        {
+            using (var session = sessionFactory.OpenSession())
+            {
+                var result = session.CreateCriteria<Module>()
+                    .Add(Restrictions.Eq("LicenseId", licensId))
+                    .List<Module>();
+                return result;
+            }
+        }
+
         public int Save(Module module)
         {
             using (var session = sessionFactory.OpenSession())

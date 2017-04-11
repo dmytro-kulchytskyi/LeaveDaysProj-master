@@ -119,8 +119,11 @@ namespace leavedays.Controllers
             return View();
         }
 
-        public ActionResult licenceInfo()
+        [Authorize]
+        public async Task<ActionResult> licenceInfo()
         {
+            var currentUser = await userManager.FindByIdAsync(User.Identity.GetUserId<int>());
+            if (currentUser == null) return RedirectToAction("Index", "Home");
             return View();
         }
     }

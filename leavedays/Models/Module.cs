@@ -9,6 +9,7 @@ namespace leavedays.Models
     {
         public virtual int Id { get; set; }
         public virtual int DefaultModuleId { get; set; }
+        public virtual int LicenseId { get; set; }
         public virtual double Price { get; set; }
         public virtual bool IsActive { get; set; }
     }
