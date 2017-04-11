@@ -194,8 +194,9 @@
     <EmbeddedResource Include="Models\Nhibernate\Company.hbm.xml" />
     <EmbeddedResource Include="Models\Nhibernate\Role.hbm.xml" />
     <EmbeddedResource Include="Models\Nhibernate\Request.hbm.xml" />
-    <Content Include="Models\Nhibernate\DefaultLicense.hbm.xml" />
+    <EmbeddedResource Include="Models\Nhibernate\DefaultLicense.hbm.xml" />
     <EmbeddedResource Include="Models\Nhibernate\DefaultModule.hbm.xml" />
+    <EmbeddedResource Include="Models\Nhibernate\Invoice.hbm.xml" />
     <Content Include="Scripts\datepicker.min.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
     <Content Include="Scripts\analytics.js" />
@@ -226,6 +227,7 @@
     <Compile Include="Models\Identity\CustomUserManager.cs" />
     <Compile Include="Models\Identity\CustomUserStore.cs" />
     <Compile Include="Models\Identity\Principal.cs" />
+    <Compile Include="Models\Invoice.cs" />
     <Compile Include="Models\License.cs" />
     <Compile Include="Models\Module.cs" />
     <Compile Include="Models\Repository\CompanyRepository.cs" />
@@ -233,11 +235,13 @@
     <Compile Include="Models\Repository\Interfaces\ICompanyRepository.cs" />
     <Compile Include="Models\Repository\Interfaces\IDefaultLicenseRepository.cs" />
     <Compile Include="Models\Repository\Interfaces\IDefaultModuleRepository.cs" />
+    <Compile Include="Models\Repository\Interfaces\IInvoiceRepository.cs" />
     <Compile Include="Models\Repository\Interfaces\ILicenseRepository.cs" />
     <Compile Include="Models\Repository\Interfaces\IRequestRepository.cs" />
     <Compile Include="Models\Repository\Interfaces\IRoleRepository.cs" />
     <Compile Include="Models\Repository\Interfaces\IModuleRepository.cs" />
     <Compile Include="Models\Repository\Interfaces\IUserRepository.cs" />
+    <Compile Include="Models\Repository\InvoiceRepository.cs" />
     <Compile Include="Models\Repository\LicenseRepository.cs" />
     <Compile Include="Models\Repository\DefaultModuleRepository.cs" />
     <Compile Include="Models\Repository\RequestRepository.cs" />
@@ -251,10 +255,13 @@
     <Compile Include="Models\ViewModels\Account\CreateEmployeeViewModel.cs" />
     <Compile Include="Models\ViewModels\Account\LoginViewModel.cs" />
     <Compile Include="Models\ViewModels\Account\RegisterViewModel.cs" />
+    <Compile Include="Models\ViewModels\License\InvoiceForDownload.cs" />
+    <Compile Include="Models\ViewModels\License\InvoiceView.cs" />
     <Compile Include="Models\ViewModel\LicenseInfo.cs" />
     <Compile Include="Models\ViewModel\ViewRequest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\CompanyService.cs" />
+    <Compile Include="Services\InvoiceService.cs" />
     <Compile Include="Services\RequestService.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -283,6 +290,7 @@
     <Content Include="Views\Account\Register.cshtml" />
     <Content Include="Views\Module\licenceInfo.cshtml" />
     <Content Include="Views\Admin\ShowLicensesInfo.cshtml" />
+    <Content Include="Views\Admin\Invoices.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

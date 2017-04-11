@@ -13,7 +13,7 @@ namespace leavedays.Models
         public virtual DateTime LastPay { get; set; }
         public virtual double Debt { get; set; }
         public virtual bool IsPaid { get; set; }
-
+        public virtual IList<Invoice> Invoices { get; set; }
         public virtual int LicenseId { get; set; }
 
     }

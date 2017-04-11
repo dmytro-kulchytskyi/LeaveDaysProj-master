@@ -5,6 +5,106 @@ to use a different color start by replacing all instances of
 #5c87b2 with your new color.
 ----------------------------------------------------------*/
 
+
+  ul,   li {
+    margin: 0;
+    padding: 0;
+}
+
+.drop-menu-main input,
+.drop-down,
+.drop-menu-main-sub .title {
+    text-decoration: none;
+    color: #555555;
+    padding: 0 10px 0 0;
+}
+
+  .drop-menu-main {
+    padding: 4px;
+    height: 20px;
+    position: relative;
+}
+
+      .drop-menu-main li {
+        float: left;
+        margin-right: 40px;
+    }
+
+  .drop-menu-main-sub {
+    display: none;
+    position: absolute;
+    background: #FFFFFF;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+    z-index: 100;
+    width: 130px;
+    padding: 5px 0 5px;
+    margin: -29px 0 0 -15px;
+}
+
+    .drop-menu-main-sub input {
+        color: #555555;
+        display: block;
+        font-size: 11px;
+        padding: 6px 15px;
+        cursor: pointer;
+        text-decoration: none;
+        background-color:transparent;
+        border:none;
+        width:100%;
+    }
+
+        .drop-menu-main-sub input:hover {
+            background: rgb(140, 200, 60);
+            color: #FFFFFF;
+            text-decoration: none;
+        }
+
+      .drop-menu-main-sub .title {
+        display: block;
+        padding: 6px 15px;
+        cursor: pointer;
+        border-bottom: 1px solid #DEDEDE;
+    }
+
+  li {
+    list-style: none;
+    display: block;
+}
+
+  .drop-down {
+    cursor: pointer;
+}
+
+  span.arrow {
+    font-size: 8px;
+}
+
+
+table#invoiceTable {
+    background-color: white;
+    font-family: Arial;
+    font-size: 11px;
+}
+
+    table#invoiceTable thead {
+        background-color: white;
+        color: gray;
+        font-size: 14px;
+        font-weight: normal;
+        letter-spacing: -1px;
+        border: none;
+        border-bottom: 1px solid rgb(140, 200, 60);
+    }
+
+    table#invoiceTable tfoot {
+        border-top: 1px solid rgb(140, 200, 60);
+    }
+
+    table#invoiceTable tr td {
+        padding: 10px 0px;
+    }
+
 table.searchLicense{
     border-collapse:collapse;
     border:2px solid #ddd;

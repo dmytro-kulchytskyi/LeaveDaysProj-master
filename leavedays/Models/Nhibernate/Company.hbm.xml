@@ -8,5 +8,10 @@
     <property name="FullName" />
     <property name="UrlName" />
     <property name="LicenseId" />
+    <bag name="Invoices" inverse="true">
+      <key column="CompanyId"/>
+      <one-to-many class="Invoice"/>
+    </bag>
+
   </class>
 </hibernate-mapping>

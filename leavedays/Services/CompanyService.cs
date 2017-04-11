@@ -10,11 +10,13 @@ namespace leavedays.Services
 {
     public class CompanyService
     {
-        public CompanyService(IUserRepository userRepository, IRoleRepository roleRepository, ICompanyRepository companyRepository)
+        public CompanyService(IUserRepository userRepository, IRoleRepository roleRepository, ICompanyRepository companyRepository, IModuleRepository moduleRepository, ILicenseRepository licenseRepository)
         {
             this.companyRepository = companyRepository;
             this.roleRepository = roleRepository;
             this.userRepository = userRepository;
+            this.moduleRepository = moduleRepository;
+            this.licenseRepository = licenseRepository;
         }
         private readonly ILicenseRepository licenseRepository;
         private readonly IModuleRepository moduleRepository;

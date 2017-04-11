@@ -73,6 +73,7 @@ namespace leavedays.App_Start
         /// <param name="kernel">The kernel.</param>
         private static void RegisterServices(IKernel kernel)
         {
+            kernel.Bind<InvoiceService>().To<InvoiceService>();
             kernel.Bind<CompanyService>().To<CompanyService>();
             kernel.Bind<RequestService>().To<RequestService>();
             kernel.Bind<IUserRepository>().To<UserRepository>();
@@ -82,7 +83,8 @@ namespace leavedays.App_Start
             kernel.Bind<ILicenseRepository>().To<LicenseRepository>();
             kernel.Bind<IDefaultLicenseRepository>().To<DefaultLicenseRepository>();
             kernel.Bind<IDefaultModuleRepository>().To<DefaultModuleRepository>();
-
+            kernel.Bind<IModuleRepository>().To<ModuleRepository>();
+            kernel.Bind<IInvoiceRepository>().To<InvoiceRepository>();
 
             kernel.Bind<UserManager<AppUser, int>>().To<UserManager<AppUser, int>>();
 
