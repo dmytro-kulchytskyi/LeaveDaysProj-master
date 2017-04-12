@@ -170,6 +170,7 @@ namespace leavedays.Controllers
                 FirstName = model.FirstName,
                 LastName = model.LastName,
                 Password = model.Password,
+                PhoneNumber = model.PhoneNumber
             };
 
             var result = await userManager.CreateAsync(user, model.Password);

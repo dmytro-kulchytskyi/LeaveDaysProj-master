@@ -63,18 +63,17 @@ namespace leavedays.Services
             invoiceText += "Contact Person;" + invoiceForDownload.Owner.FirstName + " " + invoiceForDownload.Owner.LastName + Environment.NewLine;
             invoiceText += "LicenseId;" + invoiceForDownload.License.Id.ToString() + Environment.NewLine;
             invoiceText += "Modules";
-            foreach (var module in invoiceForDownload.License.Modules)
+            var modules = moduleRepository.GetByLicenseId(invoiceForDownload.License.Id);
+            foreach (var module in modules)
             {
-                var mod = moduleRepository.GetById(module.Id);
-                invoiceText += ";" + mod.Id.ToString();
+                invoiceText += ";" + module.Id.ToString();
 
             }
             invoiceText += Environment.NewLine;
             invoiceText += "ModulesPrice";
-            foreach (var module in invoiceForDownload.License.Modules)
+            foreach (var module in modules)
             {
-                var mod = moduleRepository.GetById(module.Id);
-                invoiceText += ";" + mod.Price.ToString();
+                invoiceText += ";" + module.Price.ToString();
             }
             invoiceText += Environment.NewLine;
             invoiceText += Environment.NewLine;

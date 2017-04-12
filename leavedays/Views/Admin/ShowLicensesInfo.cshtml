@@ -4,7 +4,11 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<table class="searchLicense">
+<input type="text" value="" id="searchField" placeholder="Input your text"/>
+<button id="searchButton">Search</button>
+
+<table class="searchLicense" id="licensesTable">
+    <thead>
     <tr>
         <th>LicenseId</th>
         <th>CompanyName</th>
@@ -12,10 +16,11 @@
         <th>Email</th>
         <th>Phonenumber</th>
     </tr>
+        </thead>
 @foreach(LicenseInfo a in Model)
 {
     <tr>
-        <td>@a.LicenseId</td>
+        <td>@a.LicenceCode</td>
         <td>@a.CompanyName</td>
         <td>@a.ContactPerson</td>
         <td>@a.Email</td>
@@ -24,4 +29,34 @@
     
 }
 </table>
-
+<script>
+    $(window).load(function () {
+        var searchField = $("#searchField");
+        $("#searchButton").click(function () {
+            var searchText = searchField.val();
+            $.ajax({
+                url: "/Admin/GetSearchInvoice",
+                method: "GET",
+                async: true,
+                data: { search: searchText },
+                success: function (data) {
+                    //$("#licensesTable").fadeOut(100);
+                    $("#licensesTable tbody").html("");
+                    $(data).each(function (index, element) {
+                        var str = "<tr>";
+                        str += "<td>" + element.LicenceCode + "</td>";
+                        str += "<td>" + element.CompanyName + "</td>";
+                        str += "<td>" + element.ContactPerson + "</td>";
+                        str += "<td>" + element.Email + "</td>";
+                        str += "<td>" + element.PhoneNumber + "</td>";
+                        $("#licensesTable tbody").append(str);
+                    });
+                    //$("#licensesTable").fadeIn(100);
+                },
+                error: function () {
+                    alert("eror");
+                }
+            });
+        });
+    });
+</script>

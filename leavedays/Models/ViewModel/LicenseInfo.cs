@@ -18,3 +18,4 @@ namespace leavedays.Models.ViewModel
         public int UsersNum { get; set; }
         public int UsedLicenses { get; set; }
     }
+}

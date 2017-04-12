@@ -45,7 +45,7 @@ namespace leavedays.Services
             {
                 DefaultLicenseId = defaultLicense.Id,
                 Price = defaultLicense.Price,
-                LicenseCode = new Guid().ToString()                
+                LicenseCode = Guid.NewGuid().ToString()                
             };
 
             licenseRepository.Save(license);

@@ -5,6 +5,27 @@ to use a different color start by replacing all instances of
 #5c87b2 with your new color.
 ----------------------------------------------------------*/
 
+#searchField{
+    width:83%;
+    height:20px;
+    padding:5px 10px;
+    border:2px solid lightgray;
+    border-radius:20px;
+    margin-bottom:15px;
+}
+#searchButton{
+    margin-left:10px;
+    width:76px;
+    height:35px;
+    padding:5px;
+    background:linear-gradient(to bottom, white, lightgray);
+    border:1px solid gray;
+    border-radius:1px;
+}
+
+#searchButton :hover{
+    cursor:pointer;
+}
 
   ul,   li {
     margin: 0;
@@ -110,11 +131,12 @@ table.searchLicense{
     border:2px solid #ddd;
 }
 
-table.searchLicense tr th {
+table.searchLicense thead>tr>th {
     color: #5fc0c3;
     font-family:Arial;
     font-size:14px;
     padding:10px;
+    background-color:white;
 }
 table.searchLicense tr:nth-child(2n){
     background-color:#f0f0f0;
