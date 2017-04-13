@@ -4,31 +4,35 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<input type="text" value="" id="searchField" placeholder="Input your text"/>
+<input type="text" value="" id="searchField" placeholder="Input your text" />
 <button id="searchButton">Search</button>
 
 <table class="searchLicense" id="licensesTable">
     <thead>
-    <tr>
-        <th>LicenseId</th>
-        <th>CompanyName</th>
-        <th>ContactPerson</th>
-        <th>Email</th>
-        <th>Phonenumber</th>
-    </tr>
-        </thead>
-@foreach(LicenseInfo a in Model)
-{
-    <tr>
-        <td>@a.LicenceCode</td>
-        <td>@a.CompanyName</td>
-        <td>@a.ContactPerson</td>
-        <td>@a.Email</td>
-        <td>@a.PhoneNumber</td>
-    </tr>
-    
-}
+        <tr>
+            <th>LicenseId</th>
+            <th>CompanyName</th>
+            <th>ContactPerson</th>
+            <th>Email</th>
+            <th>Phonenumber</th>
+        </tr>
+    </thead>
+    @foreach (LicenseInfo a in Model)
+    {
+        <tr>
+            <td>@a.LicenceCode</td>
+            <td>@a.CompanyName</td>
+            <td>@a.ContactPerson</td>
+            <td>@a.Email</td>
+            <td>@a.PhoneNumber</td>
+        </tr>
+
+    }
 </table>
+<div id="loadingImage">
+    <img src="~/Content/img/loading.gif" />
+</div>
+<div id="error" class="warningMessage"></div>
 <script>
     $(window).load(function () {
         var searchField = $("#searchField");
@@ -39,22 +43,39 @@
                 method: "GET",
                 async: true,
                 data: { search: searchText },
-                success: function (data) {
-                    //$("#licensesTable").fadeOut(100);
-                    $("#licensesTable tbody").html("");
-                    $(data).each(function (index, element) {
-                        var str = "<tr>";
-                        str += "<td>" + element.LicenceCode + "</td>";
-                        str += "<td>" + element.CompanyName + "</td>";
-                        str += "<td>" + element.ContactPerson + "</td>";
-                        str += "<td>" + element.Email + "</td>";
-                        str += "<td>" + element.PhoneNumber + "</td>";
-                        $("#licensesTable tbody").append(str);
+                beforeSend: function () {
+                    $("#error").fadeOut(0);
+                    $("#licensesTable").fadeOut(0, function () {
+                        $("#licensesTable tbody").html("");
+                        $("#loadingImage").fadeIn(0);
                     });
-                    //$("#licensesTable").fadeIn(100);
                 },
-                error: function () {
-                    alert("eror");
+                success: function (data) {
+                    if (data[0] == null) {
+                        $("#loadingImage").fadeOut(0);
+                        var errorField = $("#error");
+                        errorField.text("Тo matches found!");
+                        if (errorField.hasClass("errorMessage")) {
+                            errorField.toggleClass("errorMessage");
+                        }
+                        errorField.addClass("warningMessage");
+                        errorField.fadeIn(0);
+                    }
+                    else {
+                        $("#loadingImage").fadeOut(0, function () {
+                            $(data).each(function (index, element) {
+                                var str = "<tr>";
+                                str += "<td>" + element.LicenceCode + "</td>";
+                                str += "<td>" + element.CompanyName + "</td>";
+                                str += "<td>" + element.ContactPerson + "</td>";
+                                str += "<td>" + element.Email + "</td>";
+                                str += "<td>" + element.PhoneNumber + "</td>";
+                                str += "</tr>";
+                                $("#licensesTable tbody").append(str);
+                            });
+                            $("#licensesTable").fadeIn(0);
+                        });
+                    }
                 }
             });
         });

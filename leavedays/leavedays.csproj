@@ -180,6 +180,7 @@
     <Content Include="Content\img\calendar.png" />
     <Content Include="Content\img\focused-picture.png" />
     <Content Include="Content\img\helpicon_gray.gif" />
+    <Content Include="Content\img\loading.gif" />
     <Content Include="Content\img\logo-leavedays-small.png" />
     <Content Include="Content\img\Logo.png" />
     <Content Include="Content\img\ok.png" />
@@ -262,6 +263,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\CompanyService.cs" />
     <Compile Include="Services\InvoiceService.cs" />
+    <Compile Include="Services\LicenseService.cs" />
     <Compile Include="Services\RequestService.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>

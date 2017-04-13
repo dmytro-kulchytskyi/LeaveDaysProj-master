@@ -5,6 +5,33 @@ to use a different color start by replacing all instances of
 #5c87b2 with your new color.
 ----------------------------------------------------------*/
 
+#loadingImage{
+    padding-left:40%;
+    display:none;
+}
+
+#error{
+    margin:20px 0px;
+    width:100%;
+    height:50px;
+    border-radius:10px;
+    text-align:center;
+    line-height:50px;
+    font-family:Arial;
+    font-size:20px;
+    letter-spacing:1px;
+    font-weight:bold;
+    color:white;
+    display:none;
+}
+
+.errorMessage {
+    background-color: #FF7373;
+}
+.warningMessage {
+    background-color: #FFCA73;
+}
+
 #searchField{
     width:83%;
     height:20px;
