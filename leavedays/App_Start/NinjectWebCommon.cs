@@ -76,6 +76,7 @@ namespace leavedays.App_Start
             kernel.Bind<InvoiceService>().To<InvoiceService>();
             kernel.Bind<CompanyService>().To<CompanyService>();
             kernel.Bind<RequestService>().To<RequestService>();
+            kernel.Bind<LicenseService>().To<LicenseService>();
 
             kernel.Bind<IUserRepository>().To<UserRepository>();
             kernel.Bind<ICompanyRepository>().To<CompanyRepository>();

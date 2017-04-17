@@ -24,6 +24,7 @@ namespace leavedays.Controllers
         private readonly ICompanyRepository companyRepository;
         private readonly IInvoiceRepository invoiceRepository;
         private readonly IModuleRepository moduleRepository;
+        private readonly LicenseService licenseService;
         private readonly IDefaultModuleRepository defaultModuleRepository;
         private readonly IDefaultLicenseRepository defaultLicenseRepository;
 
@@ -31,6 +32,7 @@ namespace leavedays.Controllers
         public AdminController(
            CompanyService companyService,
            IUserRepository userRepository,
+           LicenseService licenseService,
            ILicenseRepository licenseRepository,
            ICompanyRepository companyRepository,
            IInvoiceRepository invoiceRepository,
@@ -39,6 +41,7 @@ namespace leavedays.Controllers
            IDefaultModuleRepository defaultModuleRepository,
            IDefaultLicenseRepository defaultLicenseRepository)
         {
+            this.licenseService = licenseService;
             this.userRepository = userRepository;
             this.companyService = companyService;
             this.licenseRepository = licenseRepository;
@@ -141,23 +144,7 @@ namespace leavedays.Controllers
         [HttpGet]
         public ActionResult ShowLicensesInfo()
         {
-            IList<Company> companys = companyRepository.GetAll();
-            List<int> companyIds = companys.Select(m => m.Id).ToList();
-            IList<AppUser> owners = userRepository.GetOwnersByCompanyIds(companyIds);
-            IList<License> licenses = licenseRepository.GetAll();
-            var result = owners.Select(m => new LicenseInfo
-            {
-                CompanyName = companys.Where(n => n.Id == m.CompanyId).Select(n => n.FullName).First(),
-                ContactPerson = m.FirstName + " " + m.LastName,
-                Email = m.UserName,
-                PhoneNumber = m.PhoneNumber,
-                LicenseId = companys.Where(n => n.Id == m.CompanyId).Select(n => n.LicenseId).First(),
-                LicenceCode = licenses.
-                    Where(n => n.Id == companys.Where(l => l.Id == m.CompanyId).
-                    Select(l => l.LicenseId).First()).
-                    Select(n => n.LicenseCode).First()
-            }).ToList();
-            return View(result);
+            return View(licenseService.GetLicenseInfoList());
         }
 
         [Authorize(Roles = "customer")]
@@ -263,22 +250,7 @@ namespace leavedays.Controllers
         [HttpGet]
         public ActionResult GetSearchInvoice(string search = "")
         {
-            IList<Company> companys = companyRepository.GetAll();
-            List<int> companyIds = companys.Select(m => m.Id).ToList();
-            IList<AppUser> owners = userRepository.GetOwnersByCompanyIds(companyIds);
-            IList<License> licenses = licenseRepository.GetAll();
-            var result = owners.Select(m => new LicenseInfo
-            {
-                CompanyName = companys.Where(n => n.Id == m.CompanyId).Select(n => n.FullName).First(),
-                ContactPerson = m.FirstName + " " + m.LastName,
-                Email = m.UserName,
-                PhoneNumber = m.PhoneNumber,
-                LicenseId = companys.Where(n => n.Id == m.CompanyId).Select(n => n.LicenseId).First(),
-                LicenceCode = licenses.
-                    Where(n => n.Id == companys.Where(l => l.Id == m.CompanyId).
-                    Select(l => l.LicenseId).First()).
-                    Select(n => n.LicenseCode).First()
-            }).ToList();
+            var result = licenseService.GetLicenseInfoList();
             if (!string.IsNullOrEmpty(search))
             {
                 result = result.Where(m => m.CompanyName.Contains(search) ||
