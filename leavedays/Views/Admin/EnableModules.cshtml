@@ -1,0 +1,70 @@
+﻿@using leavedays.Models.ViewModels.License;
+@using leavedays.Models;
+@model EditLicenseModules
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div id="message" class="message hidden">
+</div>
+<h2>Add Modules</h2>
+<br />
+<table>
+    <tr>
+        <td>Name</td>
+        <td>@Model.LicenseName</td>
+
+    </tr>
+    <tr>
+        <td>License Code</td>
+        <td>@Model.LicenseCode</td>
+    </tr>
+    <tr>
+        <td>Available for purchase modules</td>
+        <td>
+            <table id="moduleTable">
+                @if (Model.Modules.Count == 0)
+                {
+                    <text>No available for purchase modules</text>
+                }
+                else
+                {
+                    foreach (var module in Model.Modules)
+                    {
+                        <tr>
+                            <td>@Html.CheckBox(module.Name)</td>
+                            <td>@module.Name</td>
+                            <td>@module.Price per person per month.</td>
+                        </tr>
+                    }
+                }
+            </table>
+         
+        </td>
+    </tr>
+</table>
+<input type="button" value="Submit" id="submit" />
+
+<script>
+    $(document).ready(function () {
+        var table = $('#moduleTable');
+        var submit = $('#submit');
+        var message = $('#message');
+        var checked;
+        $(submit).on('click', function () {
+            checked = $(table).find('td').find('input[type="checkbox"]:checked');
+            var line = '';
+            $(checked).each(function (index, data) {
+                line += $(this).attr('name') + ',';
+                $(this).parent().parent().fadeOut(500);
+            });
+
+            $.ajax({
+                url: "@Url.Action("EnableModules", "Admin")",
+                type: "POST",
+                data: {
+                    modulesLine: line
+                }
+            });
+        });
+    });
+</script>

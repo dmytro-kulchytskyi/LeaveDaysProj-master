@@ -255,8 +255,10 @@
     <Compile Include="Models\ViewModels\Account\CreateEmployeeViewModel.cs" />
     <Compile Include="Models\ViewModels\Account\LoginViewModel.cs" />
     <Compile Include="Models\ViewModels\Account\RegisterViewModel.cs" />
+    <Compile Include="Models\ViewModels\License\EditLicenseModules.cs" />
     <Compile Include="Models\ViewModels\License\InvoiceForDownload.cs" />
     <Compile Include="Models\ViewModels\License\InvoiceView.cs" />
+    <Compile Include="Models\ViewModels\License\ModuleInfo.cs" />
     <Compile Include="Models\ViewModel\LicenseInfo.cs" />
     <Compile Include="Models\ViewModel\ViewRequest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -291,6 +293,8 @@
     <Content Include="Views\Module\licenceInfo.cshtml" />
     <Content Include="Views\Admin\ShowLicensesInfo.cshtml" />
     <Content Include="Views\Admin\Invoices.cshtml" />
+    <Content Include="Views\Admin\EnableModules.cshtml" />
+    <Content Include="Views\Admin\DisableModules.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

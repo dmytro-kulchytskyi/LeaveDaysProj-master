@@ -1,5 +1,6 @@
 ﻿using leavedays.Models;
 using leavedays.Models.EditModel;
+using leavedays.Models.ViewModel;
 using leavedays.Services;
 using Microsoft.AspNet.Identity;
 using System;
@@ -124,6 +125,7 @@ namespace leavedays.Controllers
         {
             var currentUser = await userManager.FindByIdAsync(User.Identity.GetUserId<int>());
             if (currentUser == null) return RedirectToAction("Index", "Home");
+            
             return View();
         }
     }

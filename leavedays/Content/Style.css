@@ -5,29 +5,57 @@ to use a different color start by replacing all instances of
 #5c87b2 with your new color.
 ----------------------------------------------------------*/
 
-#searchField{
-    width:83%;
-    height:20px;
-    padding:5px 10px;
-    border:2px solid lightgray;
-    border-radius:20px;
-    margin-bottom:15px;
-}
-#searchButton{
-    margin-left:10px;
-    width:76px;
-    height:35px;
-    padding:5px;
-    background:linear-gradient(to bottom, white, lightgray);
-    border:1px solid gray;
-    border-radius:1px;
+.message {
+    height: 100px;
+    width: 90%;
+    text-align: center;
+    margin-left: 5%;
+    margin-right: 5%;
+    margin-bottom: 15px;
+    margin-top: 15px;
+    border: 2px solid black;
+    border-radius: 10px;
+    text
 }
 
-#searchButton :hover{
-    cursor:pointer;
+.success {
+    border-color: green !important;
+    background-color: chartreuse;
 }
 
-  ul,   li {
+.failed {
+    border-color: red !important;
+    background-color: orangered;
+}
+
+.hidden {
+    display: none;
+}
+
+#searchField {
+    width: 83%;
+    height: 20px;
+    padding: 5px 10px;
+    border: 2px solid lightgray;
+    border-radius: 20px;
+    margin-bottom: 15px;
+}
+
+#searchButton {
+    margin-left: 10px;
+    width: 76px;
+    height: 35px;
+    padding: 5px;
+    background: linear-gradient(to bottom, white, lightgray);
+    border: 1px solid gray;
+    border-radius: 1px;
+}
+
+    #searchButton :hover {
+        cursor: pointer;
+    }
+
+ul, li {
     margin: 0;
     padding: 0;
 }
@@ -40,18 +68,18 @@ to use a different color start by replacing all instances of
     padding: 0 10px 0 0;
 }
 
-  .drop-menu-main {
+.drop-menu-main {
     padding: 4px;
     height: 20px;
     position: relative;
 }
 
-      .drop-menu-main li {
+    .drop-menu-main li {
         float: left;
         margin-right: 40px;
     }
 
-  .drop-menu-main-sub {
+.drop-menu-main-sub {
     display: none;
     position: absolute;
     background: #FFFFFF;
@@ -70,9 +98,9 @@ to use a different color start by replacing all instances of
         padding: 6px 15px;
         cursor: pointer;
         text-decoration: none;
-        background-color:transparent;
-        border:none;
-        width:100%;
+        background-color: transparent;
+        border: none;
+        width: 100%;
     }
 
         .drop-menu-main-sub input:hover {
@@ -81,23 +109,23 @@ to use a different color start by replacing all instances of
             text-decoration: none;
         }
 
-      .drop-menu-main-sub .title {
+    .drop-menu-main-sub .title {
         display: block;
         padding: 6px 15px;
         cursor: pointer;
         border-bottom: 1px solid #DEDEDE;
     }
 
-  li {
+li {
     list-style: none;
     display: block;
 }
 
-  .drop-down {
+.drop-down {
     cursor: pointer;
 }
 
-  span.arrow {
+span.arrow {
     font-size: 8px;
 }
 
@@ -126,32 +154,33 @@ table#invoiceTable {
         padding: 10px 0px;
     }
 
-table.searchLicense{
-    border-collapse:collapse;
-    border:2px solid #ddd;
+table.searchLicense {
+    border-collapse: collapse;
+    border: 2px solid #ddd;
 }
 
-table.searchLicense thead>tr>th {
-    color: #5fc0c3;
-    font-family:Arial;
-    font-size:14px;
-    padding:10px;
-    background-color:white;
-}
-table.searchLicense tr:nth-child(2n){
-    background-color:#f0f0f0;
-}
+    table.searchLicense thead > tr > th {
+        color: #5fc0c3;
+        font-family: Arial;
+        font-size: 14px;
+        padding: 10px;
+        background-color: white;
+    }
 
-table.searchLicense tr{
-    border-bottom:1px solid #ddd;
-}
+    table.searchLicense tr:nth-child(2n) {
+        background-color: #f0f0f0;
+    }
 
-table.searchLicense tr td{
-    color: black;
-    font-family:Arial;
-    font-size:16px;
-    padding:10px;
-}
+    table.searchLicense tr {
+        border-bottom: 1px solid #ddd;
+    }
+
+        table.searchLicense tr td {
+            color: black;
+            font-family: Arial;
+            font-size: 16px;
+            padding: 10px;
+        }
 
 body {
     background-color: #f2f2f2;
@@ -7659,21 +7688,21 @@ body .ui-tooltip {
 
     .fieldBlock form textarea {
         width: 247px;
-        max-width:247px;
+        max-width: 247px;
         border-color: lightgray;
     }
 
-    .fieldBlock form input[type="submit"]{
-        margin:10px 0px;
-        padding:5px 10px;
-        background:white;
-        border:1px solid lightgray;
+    .fieldBlock form input[type="submit"] {
+        margin: 10px 0px;
+        padding: 5px 10px;
+        background: white;
+        border: 1px solid lightgray;
     }
 
-    .fieldBlock form input[type="submit"]:hover {
-        cursor:pointer;
-        background-color:darkgray;
-    }
+        .fieldBlock form input[type="submit"]:hover {
+            cursor: pointer;
+            background-color: darkgray;
+        }
 
     .fieldBlock table td {
         padding: 15px;

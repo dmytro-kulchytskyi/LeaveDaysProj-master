@@ -59,7 +59,7 @@ namespace leavedays.Controllers
         }
 
 
-
+      
         [HttpGet]
         [AllowAnonymous]
         public ActionResult Login()
@@ -103,7 +103,7 @@ namespace leavedays.Controllers
 
         public string Info()
         {
-            return User.IsInRole("customer").ToString();
+            return "Is Customer: " + User.IsInRole("customer") + "<br /> Is Auth: " + User.Identity.IsAuthenticated;
         }
 
 
@@ -199,7 +199,6 @@ namespace leavedays.Controllers
         [Authorize(Roles = "customer")]
         public async Task<ActionResult> CreateEmployee(CreateEmployeeViewModel model)
         {
-            // if (!userManager.IsInRole(User.Identity.GetUserId<int>(), "customer")) return HttpNotFound();
             model.Roles = model.Roles = CreateUserAllowedRoles;
             if (!ModelState.IsValid)
             {
@@ -241,7 +240,6 @@ namespace leavedays.Controllers
         [Authorize(Roles = "financeadmin")]
         public ActionResult CreateCompany()
         {
-            // if (!userManager.IsInRole(User.Identity.GetUserId<int>(), "financeadmin")) return HttpNotFound();
             var model = new CreateCompanyViewModel();
             model.Roles = CreateUserAllowedRoles;
             return View(model);
@@ -269,7 +267,9 @@ namespace leavedays.Controllers
             if (string.IsNullOrEmpty(model.RolesLine))
                 rolesList.Add(CreateUserAllowedRoles[0]);
 
-            rolesList = companyService.SplitLine(model.RolesLine).Select(r => r.ToLower()).Intersect(CreateUserAllowedRoles).ToList();
+            rolesList = companyService.SplitLine(model.RolesLine)
+                .Select(r => r.ToLower())
+                .Intersect(CreateUserAllowedRoles).ToList();
 
             if (rolesList.Count == 0 || !rolesList.Contains("customer"))
                 rolesList.Add("customer");
@@ -299,7 +299,6 @@ namespace leavedays.Controllers
                 ModelState.AddModelError("", "Error while creating new customer");
                 return View(model);
             }
-
             return RedirectToAction("Index", "Home");
         }
 

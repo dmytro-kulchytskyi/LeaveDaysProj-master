@@ -35,14 +35,17 @@ namespace leavedays.Models.Repository
             }
         }
 
-        public IList<Module> GetByLicenseId(int licensId)
+        public IList<Module> GetByLicenseId(int licensId, bool? isActive = null)
         {
             using (var session = sessionFactory.OpenSession())
             {
                 var result = session.CreateCriteria<Module>()
-                    .Add(Restrictions.Eq("LicenseId", licensId))
-                    .List<Module>();
-                return result;
+                    .Add(Restrictions.Eq("LicenseId", licensId));
+                if (isActive.HasValue)
+                {
+                   result.Add(Restrictions.Eq("IsActive", isActive));
+                }
+                return result.List<Module>();
             }
         }
 
@@ -52,7 +55,7 @@ namespace leavedays.Models.Repository
             {
                 using (var t = session.BeginTransaction())
                 {
-                    session.Save(module);
+                    session.SaveOrUpdate(module);
                     t.Commit();
                     return module.Id;
                 }

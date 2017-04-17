@@ -24,6 +24,8 @@ namespace leavedays.Controllers
         private readonly ICompanyRepository companyRepository;
         private readonly IInvoiceRepository invoiceRepository;
         private readonly IModuleRepository moduleRepository;
+        private readonly IDefaultModuleRepository defaultModuleRepository;
+        private readonly IDefaultLicenseRepository defaultLicenseRepository;
 
 
         public AdminController(
@@ -33,7 +35,9 @@ namespace leavedays.Controllers
            ICompanyRepository companyRepository,
            IInvoiceRepository invoiceRepository,
            IModuleRepository moduleRepository,
-           InvoiceService invoiceService)
+           InvoiceService invoiceService,
+           IDefaultModuleRepository defaultModuleRepository,
+           IDefaultLicenseRepository defaultLicenseRepository)
         {
             this.userRepository = userRepository;
             this.companyService = companyService;
@@ -42,6 +46,8 @@ namespace leavedays.Controllers
             this.invoiceRepository = invoiceRepository;
             this.moduleRepository = moduleRepository;
             this.invoiceService = invoiceService;
+            this.defaultModuleRepository = defaultModuleRepository;
+            this.defaultLicenseRepository = defaultLicenseRepository;
         }
 
 
@@ -153,7 +159,105 @@ namespace leavedays.Controllers
             }).ToList();
             return View(result);
         }
-        
+
+        [Authorize(Roles = "customer")]
+        [HttpGet]
+        public ActionResult EnableModules()
+        {
+            var user = userRepository.GetById(User.Identity.GetUserId<int>());
+            var companyId = user.CompanyId;
+            var company = companyRepository.GetById(companyId);
+            var licenseId = company.LicenseId;
+            var license = licenseRepository.GetById(licenseId);
+            var disabledModules = moduleRepository.GetByLicenseId(licenseId, false);
+            var defaultModules = disabledModules.Select(module => defaultModuleRepository.GetById(module.Id)).ToList();
+
+            var model = new EditLicenseModules()
+            {
+                LicenseName = defaultLicenseRepository.GetById(license.DefaultLicenseId).Name,
+                LicenseCode = license.LicenseCode,
+                Modules = defaultModules
+            };
+
+
+            return View(model);
+        }
+
+        [Authorize(Roles = "customer")]
+        [HttpPost]
+        public JsonResult EnableModules(string modulesLine = "")
+        {
+            if (string.IsNullOrEmpty(modulesLine)) return Json("error");
+
+            var moduleNames = companyService.SplitLine(modulesLine);
+
+            if (moduleNames.Length == 0) return Json("error");
+
+            var user = userRepository.GetById(User.Identity.GetUserId<int>());
+            var companyId = user.CompanyId;
+            var company = companyRepository.GetById(companyId);
+            var licenseId = company.LicenseId;
+            var modules = moduleRepository.GetByLicenseId(licenseId);
+
+            modules = modules.Where(module => moduleNames.Contains(defaultModuleRepository.GetById(module.DefaultModuleId).Name)).ToList();
+            foreach (var m in modules)
+            {
+                m.IsActive = true;
+                moduleRepository.Save(m);
+            }
+            return Json("success");
+        }
+
+
+        [Authorize(Roles = "customer")]
+        [HttpGet]
+        public ActionResult DisableModules()
+        {
+            var user = userRepository.GetById(User.Identity.GetUserId<int>());
+            var companyId = user.CompanyId;
+            var company = companyRepository.GetById(companyId);
+            var licenseId = company.LicenseId;
+            var license = licenseRepository.GetById(licenseId);
+            var disabledModules = moduleRepository.GetByLicenseId(licenseId, true);
+            var defaultModules = disabledModules.Select(module => defaultModuleRepository.GetById(module.Id)).ToList();
+            var model = new EditLicenseModules()
+            {
+                LicenseName = defaultLicenseRepository.GetById(license.DefaultLicenseId).Name,
+                LicenseCode = license.LicenseCode,
+                Modules = defaultModules
+            };
+
+
+            return View(model);
+        }
+
+
+        [Authorize(Roles = "customer")]
+        [HttpPost]
+        public JsonResult DisableModules(string modulesLine = "")
+        {
+            if (string.IsNullOrEmpty(modulesLine)) return Json("error");
+
+            var moduleNames = companyService.SplitLine(modulesLine);
+
+            if (moduleNames.Length == 0) return Json("error");
+
+            var user = userRepository.GetById(User.Identity.GetUserId<int>());
+            var companyId = user.CompanyId;
+            var company = companyRepository.GetById(companyId);
+            var licenseId = company.LicenseId;
+            var modules = moduleRepository.GetByLicenseId(licenseId);
+
+            modules = modules.Where(module => moduleNames.Contains(defaultModuleRepository.GetById(module.DefaultModuleId).Name)).ToList();
+            foreach (var m in modules)
+            {
+                m.IsActive = false;
+                moduleRepository.Save(m);
+            }
+            return Json("success");
+        }
+
+
 
         [Authorize]
         [HttpGet]
@@ -177,7 +281,11 @@ namespace leavedays.Controllers
             }).ToList();
             if (!string.IsNullOrEmpty(search))
             {
-                result = result.Where(m => m.CompanyName.Contains(search) || m.ContactPerson.Contains(search) || m.Email.Contains(search) || m.LicenceCode.Contains(search) || m.PhoneNumber.Contains(search)).ToList();
+                result = result.Where(m => m.CompanyName.Contains(search) ||
+                m.ContactPerson.Contains(search) ||
+                m.Email.Contains(search) ||
+                m.LicenceCode.Contains(search) ||
+                m.PhoneNumber.Contains(search)).ToList();
             }
             return Json(result, JsonRequestBehavior.AllowGet);
         }

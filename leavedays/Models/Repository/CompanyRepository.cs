@@ -30,7 +30,8 @@ namespace leavedays.Models.Repository
         {
             using (var session = sessionFactory.OpenSession())
             {
-                return session.Get<Company>(id);
+                var company = session.Get<Company>(id);
+                return company;
             }
         }
 
