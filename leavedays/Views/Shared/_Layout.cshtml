@@ -67,134 +67,88 @@
                                     <li>
                                         Main
                                         <ul>
-                                            <li>
-                                                @if (User.Identity.IsAuthenticated)
-                                                {
+                                            @if (User.Identity.IsAuthenticated)
+                                            {
+                                                <li>
                                                     @Html.ActionLink("Request", "Create", "Module")
-                                                }
-                                            </li>
-                                            <li>
-                                                @if (User.Identity.IsAuthenticated)
-                                                {
-                                                    @Html.ActionLink("for consideration", "ConfirmNew", "Module")
-                                                }
-                                            </li>
-                                            <li>
-                                                @if (User.IsInRole("financeadmin"))
-                                            {
-                                                @Html.ActionLink("Create Company", "CreateCompany", "Account")
+                                                </li>
                                             }
-                                            @if (User.IsInRole("customer"))
-                                            {
-                                                @Html.ActionLink("Create Emplyee", "CreateEmployee", "Account")
-                                            }
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    Other 1
-                                    <ul>
-                                        <li>@Html.ActionLink("confirmed request", "ShowConfirmed", "Module")</li>
-                                        <li>@Html.ActionLink("my request", "ShowSended", "Module")</li>
-                                        <li>@Html.ActionLink("License info", "licenceInfo", "Module")</li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    Other 2
-                                    <ul>
-                                        <li>@Html.ActionLink("Employee Owerview", "eOwerview", "Module")</li>
-                                        <li>@Html.ActionLink("Calendar Owerview", "cOwerview", "Module")</li>
-                                        <li>@Html.ActionLink("Pending requests", "Pending", "Module")</li>
-                                        <li>@Html.ActionLink("Request", "Create", "Module")</li>
-                                        <li>@Html.ActionLink("for consideration", "ConfirmNew", "Module")</li>
-                                    </ul>
-                                </li>
-                            </ul>
+                                            
+                                             @if (User.Identity.IsAuthenticated)
+                                             {
+                                                 <li>
+                                                 @Html.ActionLink("for consideration", "ConfirmNew", "Module")
+                                                  </li>
+                                              }
+                                              @if (User.IsInRole("financeadmin"))
+                                              {
+                                                   <li>
+                                                   @Html.ActionLink("Create Company", "CreateCompany", "Account")
+                                                   </li>
+                                              }
+                                              @if (User.IsInRole("customer"))
+                                              {
+                                                  <li>
+                                                  @Html.ActionLink("Create Emplyee", "CreateEmployee", "Account")
+                                                  </li>
+                                              }
+                                                                                                       
+                                        </ul>
+
+                                    </li>
+                                    <li>
+                                        Other 1
+                                        <ul>
+                                            <li>@Html.ActionLink("confirmed request", "ShowConfirmed", "Module")</li>
+                                            <li>@Html.ActionLink("my request", "ShowSended", "Module")</li>
+                                            <li>@Html.ActionLink("License info", "licenceInfo", "Module")</li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        Other 2
+                                        <ul>
+                                            <li>@Html.ActionLink("Employee Owerview", "eOwerview", "Module")</li>
+                                            <li>@Html.ActionLink("Calendar Owerview", "cOwerview", "Module")</li>
+                                            <li>@Html.ActionLink("Pending requests", "Pending", "Module")</li>
+                                            <li>@Html.ActionLink("Request", "Create", "Module")</li>
+                                            <li>@Html.ActionLink("for consideration", "ConfirmNew", "Module")</li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <!--<span class="submenu">
-                            <div class="menutitle">
-                                <i class="menu-icon menu-icon-leave pull-left"></i>
-                                <label class="pull-left">отпуск</label>
-                            </div>
-                            @if (User.Identity.IsAuthenticated)
-                            {
-
-                                <span class="submenu" style="display: inline;">
-                                    @Html.ActionLink("Request", "Create", "Module")
-                                </span>
-                                <div class="menutitle">
-                                    <i class="menu-icon menu-icon-requests pull-left"></i>
-                                    <label class="pull-left">Requests for consideration</label>
-                                </div>
-                                <span class="submenu" style="display: inline;">
-                                    @Html.ActionLink("for consideration", "ConfirmNew", "Module")
-                                    @if (User.IsInRole("financeadmin"))
-                                    {
-                                        <p>@Html.ActionLink("Create Company", "CreateCompany", "Account") </p>
-                                    }
-                                    @if (User.IsInRole("customer"))
-                                    {
-                                        <p> @Html.ActionLink("Create Emplyee", "CreateEmployee", "Account")</p>
-                                    }
-                                </span>
-                                @Html.ActionLink("Employee Owerview", "eOwerview", "Module")
-                                @Html.ActionLink("Calendar Owerview", "cOwerview", "Module")
-                                @Html.ActionLink("Pending requests", "Pending", "Module")
-                                @Html.ActionLink("Request", "Create", "Module")
-                                @Html.ActionLink("for consideration", "ConfirmNew", "Module")
-                                @Html.ActionLink("confirmed request", "ShowConfirmed", "Module")
-                                @Html.ActionLink("my request", "ShowSended", "Module")
-                                @Html.ActionLink("License info", "licenceInfo", "Module")
-                            }
-                            @RenderSection("modules", false)
-
-
-                        </span>
-                    </div>
-
-                </div> -->
-
-                <div id= "content-div" style= "display: block;">
-
-                <div id="content-div" style="display: block;">
-
-                    <div id="error"></div>
-        <div id="error-div" class="ui-state-error padded c-hide">
-             </div>
-            <div
-        </div>
-        <div id="departmentCapacity"></div>
-        <div>
-                @RenderBody()
             </div>
-            <br>
-            <b
         </div>
-                    <br>
+
+                    <div id="content-div" style="display: block;">
+                        <div id="error-div" class="ui-state-error padded c-hide">
+                        </div>
+                        <div id="departmentCapacity"></div>
+                        <div>
+                            @RenderBody();
+                        </div>
+                        <br>
+                        <br>
+                    </div>
                     <br>
                 </div>
                 <br>
-            </div>
-            <br>
-            <div id="footer_div">
-                <br>
-            </div>
-            <br>
-            Number of licenses </span>
-            <span id="rightFooter">Some numbers</span>
-        </div>
-        @*<script type="text/javascript" src="~/Scripts/asset(1).js"></script>
+                <div id="footer_div">
+
+                    <span id="leftFooter"> Number of licenses</span>
+                    <span id="rightFooter">Some numbers(2017.73.6283.20254)</span>
+                    @*<script type="text/javascript" src="~/Scripts/asset(1).js"></script>
             <script src="~/Scripts/analytics.js"></script>
             <script src="~/Scripts/nr-1026.min.js"></script>*@
-        <script>
-	$('#nav ul li')
-    .css({cursor: "pointer"})
-    .on('click', function(){
-    $(this).find('ul').toggle();
-})
-        </script>
+                    <script>
+                        $('#nav ul li')
+                        .css({ cursor: "pointer" })
+                        .on('click', function () {
+                            $(this).find('ul').toggle();
+                        })
+                    </script>
 </body>
 </html>
 

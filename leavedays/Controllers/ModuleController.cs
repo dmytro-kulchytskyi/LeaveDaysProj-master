@@ -9,12 +9,50 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using leavedays.Models.Repository.Interfaces;
+using leavedays.Models.ViewModels.License;
+using Microsoft.Win32;
+using System.Text;
 
 namespace leavedays.Controllers
 {
     public class ModuleController : Controller
     {
-        readonly CompanyService companyService;
+        private readonly CompanyService companyService;
+        private readonly InvoiceService invoiceService;
+        private readonly IUserRepository userRepository;
+        private readonly ILicenseRepository licenseRepository;
+        private readonly ICompanyRepository companyRepository;
+        private readonly IInvoiceRepository invoiceRepository;
+        private readonly IModuleRepository moduleRepository;
+        private readonly LicenseService licenseService;
+        private readonly IDefaultModuleRepository defaultModuleRepository;
+        private readonly IDefaultLicenseRepository defaultLicenseRepository;
+
+
+        public ModuleController(
+           CompanyService companyService,
+           IUserRepository userRepository,
+           LicenseService licenseService,
+           ILicenseRepository licenseRepository,
+           ICompanyRepository companyRepository,
+           IInvoiceRepository invoiceRepository,
+           IModuleRepository moduleRepository,
+           InvoiceService invoiceService,
+           IDefaultModuleRepository defaultModuleRepository,
+           IDefaultLicenseRepository defaultLicenseRepository)
+        {
+            this.licenseService = licenseService;
+            this.userRepository = userRepository;
+            this.licenseRepository = licenseRepository;
+            this.companyRepository = companyRepository;
+            this.invoiceRepository = invoiceRepository;
+            this.moduleRepository = moduleRepository;
+            this.invoiceService = invoiceService;
+            this.defaultModuleRepository = defaultModuleRepository;
+            this.defaultLicenseRepository = defaultLicenseRepository;
+        }
+
         readonly RequestService requestService;
         private readonly UserManager<AppUser, int> userManager;
 
@@ -120,13 +158,29 @@ namespace leavedays.Controllers
             return View();
         }
 
-        [Authorize]
+        [Authorize(Roles = "customer")]
+        [HttpGet]
         public async Task<ActionResult> licenceInfo()
         {
-            var currentUser = await userManager.FindByIdAsync(User.Identity.GetUserId<int>());
-            if (currentUser == null) return RedirectToAction("Index", "Home");
-            
-            return View();
+            var user = userRepository.GetById(User.Identity.GetUserId<int>());
+            if (user == null) return RedirectToAction("Index", "Home");
+
+            var companyId = user.CompanyId;
+            var company = companyRepository.GetById(companyId);
+            var licenseId = company.LicenseId;
+            var license = licenseRepository.GetById(licenseId);
+            var disabledModules = moduleRepository.GetByLicenseId(licenseId, false);
+            var defaultModules = disabledModules.Select(module => defaultModuleRepository.GetById(module.Id)).ToList();
+
+            var model = new EditLicenseModules()
+            {
+                LicenseName = defaultLicenseRepository.GetById(license.DefaultLicenseId).Name,
+                LicenseCode = license.LicenseCode,
+                Modules = defaultModules
+            };
+
+
+            return View(model);
         }
     }
 }
