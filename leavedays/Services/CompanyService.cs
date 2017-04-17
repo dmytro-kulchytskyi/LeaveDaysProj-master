@@ -80,6 +80,11 @@ namespace leavedays.Services
             return false;
         }
 
+        public Company GetById(int id)
+        {
+            return companyRepository.GetById(id);
+        }
+
         public AppUser GetUserByName(string name)
         {
             return userRepository.GetByUserName(name);

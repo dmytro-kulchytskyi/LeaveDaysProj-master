@@ -60,15 +60,15 @@ namespace leavedays.Controllers
             return View();
         }
 
-        [Authorize]
+        [Authorize(Roles = "financeadmin")]
         [HttpGet]
         public ActionResult Invoices()
         {
-            var invoices = invoiceRepository.GetByDeleteStatus(false);
+            var invoices = invoiceService.GetByDeleteStatus(false);
             var result = invoices.Select(m => new InvoiceView
             {
                 Id = m.Id,
-                CompanyName = companyRepository.GetById(m.Company.Id).FullName,
+                CompanyName = companyService.GetById(m.Company.Id).FullName,
                 RecieveDate = m.RecieveDate
             });
             return View(result);
@@ -140,11 +140,11 @@ namespace leavedays.Controllers
             return Content(invoice.Id.ToString());
         }
 
-        [Authorize]
+        [Authorize(Roles = "financeadmin")]
         [HttpGet]
-        public ActionResult ShowLicensesInfo()
+        public ActionResult LicensesInfo()
         {
-            return View(licenseService.GetLicenseInfoList());
+            return View("ShowLicensesInfo", licenseService.GetLicenseInfoList());
         }
 
         [Authorize(Roles = "customer")]
@@ -246,19 +246,19 @@ namespace leavedays.Controllers
 
 
 
-        [Authorize]
+        [Authorize(Roles = "financeadmin")]
         [HttpGet]
-        public ActionResult GetSearchInvoice(string search = "")
+        public JsonResult GetSearchInvoice(string search = "")
         {
-            var result = licenseService.GetLicenseInfoList();
-            if (!string.IsNullOrEmpty(search))
-            {
-                result = result.Where(m => m.CompanyName.Contains(search) ||
-                m.ContactPerson.Contains(search) ||
-                m.Email.Contains(search) ||
-                m.LicenceCode.Contains(search) ||
-                m.PhoneNumber.Contains(search)).ToList();
-            }
+            var result = licenseService.GetSearchedLicenseInfo(search);
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        [Authorize(Roles = "financeadmin")]
+        [HttpGet]
+        public JsonResult GetAdwenchedSearchInvoice(Models.ViewModel.SearchOption option)
+        {
+            var result = licenseService.GetAdwenchedSearchLicenseInfo(option);
             return Json(result, JsonRequestBehavior.AllowGet);
         }
     }

@@ -1,4 +1,5 @@
-﻿using leavedays.Models.Repository.Interfaces;
+﻿using leavedays.Models;
+using leavedays.Models.Repository.Interfaces;
 using leavedays.Models.ViewModels.License;
 using System;
 using System.Collections.Generic;
@@ -27,6 +28,38 @@ namespace leavedays.Services
             this.companyRepository = companyRepository;
             this.invoiceRepository = invoiceRepository;
             this.moduleRepository = moduleRepository;
+        }
+        public List<Invoice> GetByDeleteStatus(bool status)
+        {
+            return invoiceRepository.GetByDeleteStatus(status).ToList();
+        }
+
+        public Invoice GetById(int id)
+        {
+            return invoiceRepository.GetById(id);
+        }
+
+        public List<Invoice> GetByIds(int[] ids)
+        {
+            return invoiceRepository.GetByIds(ids).ToList();
+        }
+
+        public void DeleteInvoices(List<Invoice> invoices)
+        {
+            for (int i = 0; i < invoices.Count; i++)
+            {
+                invoices[i].isDeleted = true;
+            }
+            invoiceRepository.Save(invoices);
+        }
+
+        public void Save(Invoice invoice)
+        {
+            invoiceRepository.Save(invoice);
+        }
+        public void Save(List<Invoice> invoices)
+        {
+            invoiceRepository.Save(invoices);
         }
 
         public InvoiceForDownload CreateInvoiceForDownload(int id)
