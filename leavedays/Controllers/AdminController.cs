@@ -11,6 +11,9 @@ using Microsoft.AspNet.Identity;
 using leavedays.Models.ViewModels.License;
 using Microsoft.Win32;
 using System.Text;
+using System.IO;
+using CsvHelper;
+using CsvHelper.Configuration;
 
 namespace leavedays.Controllers
 {
@@ -107,9 +110,38 @@ namespace leavedays.Controllers
         [HttpPost]
         public FileResult DownloadInvoice(int id)
         {
+            //using (Stream stream = new MemoryStream())
+            //{
+
+            //    using (TextWriter textWriter = new StreamWriter(stream))
+            //    {
+
+            //        using (var csvWriter = new CsvWriter(textWriter))
+            //        {
+
+            //            var invoice = invoiceService.CreateInvoiceForDownload(id);
+            //            csvWriter.WriteRecord(invoice);
+            //        }
+            //        textWriter.Flush();
+            //    }
+            //    stream.Seek(0, SeekOrigin.Begin);
+            //    return File(stream, "text/csv", "Invoice" + id.ToString() + ".csv");
+            //}
+            Stream stream = new MemoryStream();
+            TextWriter textWriter = new StreamWriter(stream);
+
+            CsvConfiguration csvConfiguration = new CsvConfiguration();
+            csvConfiguration.Delimiter = ";";
+            var map = csvConfiguration.AutoMap<InvoiceForDownload>();
+            csvConfiguration.RegisterClassMap(map);
+
+            var csvWriter = new CsvWriter(textWriter, csvConfiguration);
             var invoice = invoiceService.CreateInvoiceForDownload(id);
-            byte[] invoiceBytes = invoiceService.GetInvoiceBytes(invoice);
-            return File(invoiceBytes, "text/csv", "Invoice" + invoice.Id.ToString() + ".csv");
+            csvWriter.WriteHeader(invoice.GetType());
+            csvWriter.WriteRecord(invoice);
+            textWriter.Flush();
+            stream.Seek(0, SeekOrigin.Begin);
+            return File(stream, "text/csv", "Invoice" + id.ToString() + ".csv");
         }
 
         [Authorize]
@@ -123,9 +155,20 @@ namespace leavedays.Controllers
                 idIntMass[i] = int.Parse(idStringMass[i]);
             }
             var invoices = invoiceService.CreateInvoicesForDownload(idIntMass);
-            byte[] invoicesBytes = invoiceService.GetInvoicesBytes(invoices);
-            return File(invoicesBytes, "text/csv", "Invoices.csv");
+            Stream stream = new MemoryStream();
+            TextWriter textWriter = new StreamWriter(stream);
 
+            CsvConfiguration csvConfiguration = new CsvConfiguration();
+            csvConfiguration.Delimiter = ";";
+            var map = csvConfiguration.AutoMap<InvoiceForDownload>();
+            csvConfiguration.RegisterClassMap(map);
+
+            var csvWriter = new CsvWriter(textWriter, csvConfiguration);
+            csvWriter.WriteHeader<InvoiceForDownload>();
+            csvWriter.WriteRecords(invoices);
+            textWriter.Flush();
+            stream.Seek(0, SeekOrigin.Begin);
+            return File(stream, "text/csv", "Invoices.csv");
         }
 
         public ActionResult CreateTestInvoice()

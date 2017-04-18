@@ -68,13 +68,14 @@ namespace leavedays.Services
             var company = companyRepository.GetById(invoice.Company.Id);
             var owner = userRepository.GetOwnerByCompanyId(company.Id);
             var license = licenseRepository.GetById(company.LicenseId);
+            var modules = moduleRepository.GetByLicenseId(license.Id);
             var invoiceForDownload = new InvoiceForDownload
             {
                 Id = invoice.Id,
-                RecieveDate = invoice.RecieveDate,
-                License = license,
-                Company = company,
-                Owner = owner
+                LicenceCode = license.LicenseCode,
+                CompanyName = company.FullName,
+                ContactPerson = owner.LastName + " " + owner.FirstName,
+                Modules = modules.ToList()
             };
             return invoiceForDownload;
         }
@@ -88,39 +89,39 @@ namespace leavedays.Services
             return invoices;
 
         }
-        public byte[] GetInvoiceBytes(InvoiceForDownload invoiceForDownload)
-        {
-            string invoiceText = "";
-            invoiceText += "InvoiceId;" + invoiceForDownload.Id.ToString() + Environment.NewLine;
-            invoiceText += "CompanyName;" + invoiceForDownload.Company.FullName + Environment.NewLine;
-            invoiceText += "Contact Person;" + invoiceForDownload.Owner.FirstName + " " + invoiceForDownload.Owner.LastName + Environment.NewLine;
-            invoiceText += "LicenseId;" + invoiceForDownload.License.Id.ToString() + Environment.NewLine;
-            invoiceText += "Modules";
-            var modules = moduleRepository.GetByLicenseId(invoiceForDownload.License.Id);
-            foreach (var module in modules)
-            {
-                invoiceText += ";" + module.Id.ToString();
+        //public byte[] GetInvoiceBytes(InvoiceForDownload invoiceForDownload)
+        //{
+        //    string invoiceText = "";
+        //    invoiceText += "InvoiceId;" + invoiceForDownload.Id.ToString() + Environment.NewLine;
+        //    invoiceText += "CompanyName;" + invoiceForDownload.Company.FullName + Environment.NewLine;
+        //    invoiceText += "Contact Person;" + invoiceForDownload.Owner.FirstName + " " + invoiceForDownload.Owner.LastName + Environment.NewLine;
+        //    invoiceText += "LicenseId;" + invoiceForDownload.License.Id.ToString() + Environment.NewLine;
+        //    invoiceText += "Modules";
+        //    var modules = moduleRepository.GetByLicenseId(invoiceForDownload.License.Id);
+        //    foreach (var module in modules)
+        //    {
+        //        invoiceText += ";" + module.Id.ToString();
 
-            }
-            invoiceText += Environment.NewLine;
-            invoiceText += "ModulesPrice";
-            foreach (var module in modules)
-            {
-                invoiceText += ";" + module.Price.ToString();
-            }
-            invoiceText += Environment.NewLine;
-            invoiceText += Environment.NewLine;
-            byte[] result = Encoding.Default.GetBytes(invoiceText);
-            return result;
-        }
-        public byte[] GetInvoicesBytes(List<InvoiceForDownload> invoices)
-        {
-            List<byte> invoicesBytes = new List<byte>();
-            foreach(var invoice in invoices)
-            {
-                invoicesBytes.AddRange(GetInvoiceBytes(invoice).ToList());
-            }
-            return invoicesBytes.ToArray();
-        }
+        //    }
+        //    invoiceText += Environment.NewLine;
+        //    invoiceText += "ModulesPrice";
+        //    foreach (var module in modules)
+        //    {
+        //        invoiceText += ";" + module.Price.ToString();
+        //    }
+        //    invoiceText += Environment.NewLine;
+        //    invoiceText += Environment.NewLine;
+        //    byte[] result = Encoding.Default.GetBytes(invoiceText);
+        //    return result;
+        //}
+        //public byte[] GetInvoicesBytes(List<InvoiceForDownload> invoices)
+        //{
+        //    List<byte> invoicesBytes = new List<byte>();
+        //    foreach(var invoice in invoices)
+        //    {
+        //        invoicesBytes.AddRange(GetInvoiceBytes(invoice).ToList());
+        //    }
+        //    return invoicesBytes.ToArray();
+        //}
     }
 }
