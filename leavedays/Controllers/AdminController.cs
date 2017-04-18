@@ -16,44 +16,31 @@ namespace leavedays.Controllers
 {
     public class AdminController : Controller
     {
-        // GET: Admin
         private readonly CompanyService companyService;
         private readonly InvoiceService invoiceService;
         private readonly IUserRepository userRepository;
-        private readonly ILicenseRepository licenseRepository;
-        private readonly ICompanyRepository companyRepository;
         private readonly IInvoiceRepository invoiceRepository;
         private readonly IModuleRepository moduleRepository;
         private readonly LicenseService licenseService;
-        private readonly IDefaultModuleRepository defaultModuleRepository;
-        private readonly IDefaultLicenseRepository defaultLicenseRepository;
-
+        private readonly ICompanyRepository companyRepository;
 
         public AdminController(
            CompanyService companyService,
            IUserRepository userRepository,
            LicenseService licenseService,
-           ILicenseRepository licenseRepository,
-           ICompanyRepository companyRepository,
            IInvoiceRepository invoiceRepository,
            IModuleRepository moduleRepository,
            InvoiceService invoiceService,
-           IDefaultModuleRepository defaultModuleRepository,
-           IDefaultLicenseRepository defaultLicenseRepository)
+           ICompanyRepository companyRepository)
         {
             this.licenseService = licenseService;
             this.userRepository = userRepository;
             this.companyService = companyService;
-            this.licenseRepository = licenseRepository;
-            this.companyRepository = companyRepository;
             this.invoiceRepository = invoiceRepository;
             this.moduleRepository = moduleRepository;
             this.invoiceService = invoiceService;
-            this.defaultModuleRepository = defaultModuleRepository;
-            this.defaultLicenseRepository = defaultLicenseRepository;
+            this.companyRepository = companyRepository;
         }
-
-
 
         public ActionResult Index()
         {
@@ -151,22 +138,7 @@ namespace leavedays.Controllers
         [HttpGet]
         public ActionResult EnableModules()
         {
-            var user = userRepository.GetById(User.Identity.GetUserId<int>());
-            var companyId = user.CompanyId;
-            var company = companyRepository.GetById(companyId);
-            var licenseId = company.LicenseId;
-            var license = licenseRepository.GetById(licenseId);
-            var disabledModules = moduleRepository.GetByLicenseId(licenseId, false);
-            var defaultModules = disabledModules.Select(module => defaultModuleRepository.GetById(module.Id)).ToList();
-
-            var model = new EditLicenseModules()
-            {
-                LicenseName = defaultLicenseRepository.GetById(license.DefaultLicenseId).Name,
-                LicenseCode = license.LicenseCode,
-                Modules = defaultModules
-            };
-
-
+            var model = licenseService.GetModules(User.Identity.GetUserId<int>(), false);
             return View(model);
         }
 
@@ -174,25 +146,12 @@ namespace leavedays.Controllers
         [HttpPost]
         public JsonResult EnableModules(string modulesLine = "")
         {
-            if (string.IsNullOrEmpty(modulesLine)) return Json("error");
+            if (string.IsNullOrEmpty(modulesLine)) return Json(0);
 
-            var moduleNames = companyService.SplitLine(modulesLine);
+            var moduleNames = modulesLine.SplitByComma();
 
-            if (moduleNames.Length == 0) return Json("error");
-
-            var user = userRepository.GetById(User.Identity.GetUserId<int>());
-            var companyId = user.CompanyId;
-            var company = companyRepository.GetById(companyId);
-            var licenseId = company.LicenseId;
-            var modules = moduleRepository.GetByLicenseId(licenseId);
-
-            modules = modules.Where(module => moduleNames.Contains(defaultModuleRepository.GetById(module.DefaultModuleId).Name)).ToList();
-            foreach (var m in modules)
-            {
-                m.IsActive = true;
-                moduleRepository.Save(m);
-            }
-            return Json("success");
+            licenseService.EditModules(User.Identity.GetUserId<int>(), moduleNames, true);
+            return Json(1);
         }
 
 
@@ -200,21 +159,7 @@ namespace leavedays.Controllers
         [HttpGet]
         public ActionResult DisableModules()
         {
-            var user = userRepository.GetById(User.Identity.GetUserId<int>());
-            var companyId = user.CompanyId;
-            var company = companyRepository.GetById(companyId);
-            var licenseId = company.LicenseId;
-            var license = licenseRepository.GetById(licenseId);
-            var disabledModules = moduleRepository.GetByLicenseId(licenseId, true);
-            var defaultModules = disabledModules.Select(module => defaultModuleRepository.GetById(module.Id)).ToList();
-            var model = new EditLicenseModules()
-            {
-                LicenseName = defaultLicenseRepository.GetById(license.DefaultLicenseId).Name,
-                LicenseCode = license.LicenseCode,
-                Modules = defaultModules
-            };
-
-
+            var model = licenseService.GetModules(User.Identity.GetUserId<int>(), true);
             return View(model);
         }
 
@@ -223,25 +168,12 @@ namespace leavedays.Controllers
         [HttpPost]
         public JsonResult DisableModules(string modulesLine = "")
         {
-            if (string.IsNullOrEmpty(modulesLine)) return Json("error");
+            if (string.IsNullOrEmpty(modulesLine)) return Json(0);
 
-            var moduleNames = companyService.SplitLine(modulesLine);
+            var moduleNames = modulesLine.SplitByComma();
 
-            if (moduleNames.Length == 0) return Json("error");
-
-            var user = userRepository.GetById(User.Identity.GetUserId<int>());
-            var companyId = user.CompanyId;
-            var company = companyRepository.GetById(companyId);
-            var licenseId = company.LicenseId;
-            var modules = moduleRepository.GetByLicenseId(licenseId);
-
-            modules = modules.Where(module => moduleNames.Contains(defaultModuleRepository.GetById(module.DefaultModuleId).Name)).ToList();
-            foreach (var m in modules)
-            {
-                m.IsActive = false;
-                moduleRepository.Save(m);
-            }
-            return Json("success");
+            licenseService.EditModules(User.Identity.GetUserId<int>(), moduleNames, false);
+            return Json(1);
         }
 
 

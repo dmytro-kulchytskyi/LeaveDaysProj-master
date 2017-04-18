@@ -268,6 +268,7 @@
     <Compile Include="Services\LicenseService.cs" />
     <Compile Include="Services\RequestService.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="StringHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\web.config" />

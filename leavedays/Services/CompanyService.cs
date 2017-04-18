@@ -28,16 +28,7 @@ namespace leavedays.Services
         private readonly IRoleRepository roleRepository;
         private readonly IUserRepository userRepository;
 
-        public string[] SplitLine(string line)
-        {
-            if (string.IsNullOrWhiteSpace(line))
-                return new string[0];
-            line = line.Trim(',');
-            var roles = line.Split(',');
-            if (roles.Length == 0)
-                return new string[0];
-            else return roles;
-        }
+       
 
         public License CreateLicense(DefaultLicense defaultLicense)
         {

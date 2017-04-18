@@ -61,5 +61,23 @@ namespace leavedays.Models.Repository
                 }
             }
         }
+
+        public IEnumerable<int> Save(IEnumerable<Module> modules)
+        {
+            using (var session = sessionFactory.OpenSession())
+            {
+                using (var t = session.BeginTransaction())
+                {
+                    var ids = new HashSet<int>();
+                    foreach (var m in modules)
+                    {
+                        session.SaveOrUpdate(m);
+                        ids.Add(m.Id);
+                    }
+                    t.Commit();
+                    return ids;
+                }
+            }
+        }
     }
 }

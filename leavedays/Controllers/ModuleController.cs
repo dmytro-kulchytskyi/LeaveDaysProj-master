@@ -125,7 +125,6 @@ namespace leavedays.Controllers
         {
             var currentUser = await userManager.FindByIdAsync(User.Identity.GetUserId<int>());
             if (currentUser == null) return RedirectToAction("Index", "Home");
-            
             return View();
         }
     }

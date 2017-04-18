@@ -211,7 +211,7 @@ namespace leavedays.Controllers
             if (string.IsNullOrEmpty(model.RolesLine))
                 rolesList.Add(CreateUserAllowedRoles[0]);
 
-            rolesList = companyService.SplitLine(model.RolesLine).Select(r => r.ToLower()).Intersect(CreateUserAllowedRoles).ToList();
+            rolesList = model.RolesLine.SplitByComma().Select(r => r.ToLower()).Intersect(CreateUserAllowedRoles).ToList();
             if (rolesList.Count == 0)
                 rolesList.Add(CreateUserAllowedRoles[0]);
 
@@ -267,7 +267,7 @@ namespace leavedays.Controllers
             if (string.IsNullOrEmpty(model.RolesLine))
                 rolesList.Add(CreateUserAllowedRoles[0]);
 
-            rolesList = companyService.SplitLine(model.RolesLine)
+            rolesList = model.RolesLine.SplitByComma()
                 .Select(r => r.ToLower())
                 .Intersect(CreateUserAllowedRoles).ToList();
 

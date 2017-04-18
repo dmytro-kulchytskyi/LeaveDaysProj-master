@@ -26,16 +26,15 @@
             }
             else
             {
-                foreach (var module in Model.Modules)
-                {
-                    <table id="moduleTable">
+                <table id="moduleTable">
+                    @foreach (var module in Model.Modules)
+                    {
                         <tr>
                             <td>@Html.CheckBox(module.Name)</td>
                             <td>@module.Name</td>
                         </tr>
-                    </table>
-
-                }
+                    }
+                </table>
             }
         </td>
     </tr>
