@@ -31,22 +31,19 @@ namespace leavedays.Services
 
         public List<LicenseInfo> GetLicenseInfoList()
         {
-            IList<Company> companys = companyRepository.GetAll();
-            List<int> companyIds = companys.Select(m => m.Id).ToList();
-            IList<AppUser> owners = userRepository.GetOwnersByCompanyIds(companyIds);
-            IList<License> licenses = licenseRepository.GetAll();
-            var result = owners.Select(m => new LicenseInfo
-            {
-                CompanyName = companys.Where(n => n.Id == m.CompanyId).Select(n => n.FullName).First(),
-                ContactPerson = m.FirstName + " " + m.LastName,
-                Email = m.UserName,
-                PhoneNumber = m.PhoneNumber,
-                LicenseId = companys.Where(n => n.Id == m.CompanyId).Select(n => n.LicenseId).First(),
-                LicenceCode = licenses.
-                    Where(n => n.Id == companys.Where(l => l.Id == m.CompanyId).
-                    Select(l => l.LicenseId).First()).
-                    Select(n => n.LicenseCode).First()
-            }).ToList();
+            var result = licenseRepository.GetLicenseInformation().ToList();
+            return result;
+        }
+
+        public List<LicenseInfo> GetSearchedLicenseInfo(string searchLine)
+        {
+            var result = licenseRepository.GetSearchedInformation(searchLine).ToList();
+            return result;
+        }
+
+        public List<LicenseInfo> GetAdwenchedSearchLicenseInfo(SearchOption option)
+        {
+            var result = licenseRepository.GetAdwenchedSearchedInformation(option).ToList();
             return result;
         }
     }

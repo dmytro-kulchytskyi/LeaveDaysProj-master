@@ -11,6 +11,9 @@ using Microsoft.AspNet.Identity;
 using leavedays.Models.ViewModels.License;
 using Microsoft.Win32;
 using System.Text;
+using System.IO;
+using CsvHelper;
+using CsvHelper.Configuration;
 
 namespace leavedays.Controllers
 {
@@ -60,15 +63,15 @@ namespace leavedays.Controllers
             return View();
         }
 
-        [Authorize]
+        [Authorize(Roles = "financeadmin")]
         [HttpGet]
         public ActionResult Invoices()
         {
-            var invoices = invoiceRepository.GetByDeleteStatus(false);
+            var invoices = invoiceService.GetByDeleteStatus(false);
             var result = invoices.Select(m => new InvoiceView
             {
                 Id = m.Id,
-                CompanyName = companyRepository.GetById(m.Company.Id).FullName,
+                CompanyName = companyService.GetById(m.Company.Id).FullName,
                 RecieveDate = m.RecieveDate
             });
             return View(result);
@@ -107,9 +110,38 @@ namespace leavedays.Controllers
         [HttpPost]
         public FileResult DownloadInvoice(int id)
         {
+            //using (Stream stream = new MemoryStream())
+            //{
+
+            //    using (TextWriter textWriter = new StreamWriter(stream))
+            //    {
+
+            //        using (var csvWriter = new CsvWriter(textWriter))
+            //        {
+
+            //            var invoice = invoiceService.CreateInvoiceForDownload(id);
+            //            csvWriter.WriteRecord(invoice);
+            //        }
+            //        textWriter.Flush();
+            //    }
+            //    stream.Seek(0, SeekOrigin.Begin);
+            //    return File(stream, "text/csv", "Invoice" + id.ToString() + ".csv");
+            //}
+            Stream stream = new MemoryStream();
+            TextWriter textWriter = new StreamWriter(stream);
+
+            CsvConfiguration csvConfiguration = new CsvConfiguration();
+            csvConfiguration.Delimiter = ";";
+            var map = csvConfiguration.AutoMap<InvoiceForDownload>();
+            csvConfiguration.RegisterClassMap(map);
+
+            var csvWriter = new CsvWriter(textWriter, csvConfiguration);
             var invoice = invoiceService.CreateInvoiceForDownload(id);
-            byte[] invoiceBytes = invoiceService.GetInvoiceBytes(invoice);
-            return File(invoiceBytes, "text/csv", "Invoice" + invoice.Id.ToString() + ".csv");
+            csvWriter.WriteHeader(invoice.GetType());
+            csvWriter.WriteRecord(invoice);
+            textWriter.Flush();
+            stream.Seek(0, SeekOrigin.Begin);
+            return File(stream, "text/csv", "Invoice" + id.ToString() + ".csv");
         }
 
         [Authorize]
@@ -123,9 +155,20 @@ namespace leavedays.Controllers
                 idIntMass[i] = int.Parse(idStringMass[i]);
             }
             var invoices = invoiceService.CreateInvoicesForDownload(idIntMass);
-            byte[] invoicesBytes = invoiceService.GetInvoicesBytes(invoices);
-            return File(invoicesBytes, "text/csv", "Invoices.csv");
+            Stream stream = new MemoryStream();
+            TextWriter textWriter = new StreamWriter(stream);
 
+            CsvConfiguration csvConfiguration = new CsvConfiguration();
+            csvConfiguration.Delimiter = ";";
+            var map = csvConfiguration.AutoMap<InvoiceForDownload>();
+            csvConfiguration.RegisterClassMap(map);
+
+            var csvWriter = new CsvWriter(textWriter, csvConfiguration);
+            csvWriter.WriteHeader<InvoiceForDownload>();
+            csvWriter.WriteRecords(invoices);
+            textWriter.Flush();
+            stream.Seek(0, SeekOrigin.Begin);
+            return File(stream, "text/csv", "Invoices.csv");
         }
 
         public ActionResult CreateTestInvoice()
@@ -140,11 +183,11 @@ namespace leavedays.Controllers
             return Content(invoice.Id.ToString());
         }
 
-        [Authorize]
+        [Authorize(Roles = "financeadmin")]
         [HttpGet]
-        public ActionResult ShowLicensesInfo()
+        public ActionResult LicensesInfo()
         {
-            return View(licenseService.GetLicenseInfoList());
+            return View("ShowLicensesInfo", licenseService.GetLicenseInfoList());
         }
 
         [Authorize(Roles = "customer")]
@@ -246,19 +289,19 @@ namespace leavedays.Controllers
 
 
 
-        [Authorize]
+        [Authorize(Roles = "financeadmin")]
         [HttpGet]
-        public ActionResult GetSearchInvoice(string search = "")
+        public JsonResult GetSearchInvoice(string search = "")
         {
-            var result = licenseService.GetLicenseInfoList();
-            if (!string.IsNullOrEmpty(search))
-            {
-                result = result.Where(m => m.CompanyName.Contains(search) ||
-                m.ContactPerson.Contains(search) ||
-                m.Email.Contains(search) ||
-                m.LicenceCode.Contains(search) ||
-                m.PhoneNumber.Contains(search)).ToList();
-            }
+            var result = licenseService.GetSearchedLicenseInfo(search);
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        [Authorize(Roles = "financeadmin")]
+        [HttpGet]
+        public JsonResult GetAdwenchedSearchInvoice(Models.ViewModel.SearchOption option)
+        {
+            var result = licenseService.GetAdwenchedSearchLicenseInfo(option);
             return Json(result, JsonRequestBehavior.AllowGet);
         }
     }

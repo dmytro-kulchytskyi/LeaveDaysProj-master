@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CsvHelper.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -13,4 +14,13 @@ namespace leavedays.Models
         public virtual double Price { get; set; }
         public virtual bool IsActive { get; set; }
     }
+
+    //public sealed class ModuleCsvMap:CsvClassMap<Module>
+    //{
+    //    public ModuleCsvMap()
+    //    {
+    //        Map(m => m.Id);
+    //        Map(m => m.Price);
+    //    }
+    //}
 }

@@ -18,4 +18,13 @@ namespace leavedays.Models.ViewModel
         public int UsersNum { get; set; }
         public int UsedLicenses { get; set; }
     }
+
+    public class SearchOption
+    {
+        public string LicenceCode { get; set; }
+        public string CompanyName { get; set; }
+        public string ContactPerson { get; set; }
+        public string PhoneNumber { get; set; }
+        public string Email { get; set; }
+    }
 }

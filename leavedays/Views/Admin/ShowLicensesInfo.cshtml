@@ -4,8 +4,33 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<input type="text" value="" id="searchField" placeholder="Input your text" />
-<button id="searchButton">Search</button>
+<div id="adwenchedSearchTable" class="hide">
+    <table>
+        <tr>
+            <td><label for="aLicenseId">LicenseId</label></td>
+            <td><input type="text" id="aLicenseId" /></td>
+            <td><label for="Email">Email</label></td>
+            <td><input type="text" id="aEmail" /></td>
+        </tr>
+        <tr>
+            <td><label for="aCompanyName">Company name</label></td>
+            <td><input type="text" id="aCompanyName" /></td>
+            <td><label for="aPhoneNumber">Phonenumber</label></td>
+            <td><input type="text" id="aPhoneNumber" /></td>
+        </tr>
+        <tr>
+            <td><label for="aContactPerson">Contact person</label></td>
+            <td><input type="text" id="aContactPerson" /></td>
+            <td></td>
+        </tr>
+    </table>
+    <button id="aSearchButton" class="sButton">SEARCH</button>
+</div>
+<div id="standartSearch">
+    <input type="text" value="" id="searchField" placeholder="Input your text" />
+    <button id="searchButton" class="sButton">Search</button>
+</div>
+<button id="adwenchedSearch">Adwenched search</button>
 
 <table class="searchLicense" id="licensesTable">
     <thead>
@@ -20,7 +45,18 @@
     @foreach (LicenseInfo a in Model)
     {
         <tr>
-            <td>@a.LicenceCode</td>
+            @if (@a.LicenceCode.Length > 15)
+            {
+                <td>
+                    @(@a.LicenceCode.Substring(0, 15) + "...")
+                </td>
+            }
+            else
+            {
+                <td>
+                    @a.LicenceCode
+                </td>
+            }
             <td>@a.CompanyName</td>
             <td>@a.ContactPerson</td>
             <td>@a.Email</td>
@@ -35,6 +71,57 @@
 <div id="error" class="warningMessage"></div>
 <script>
     $(window).load(function () {
+        $("#aSearchButton").on("click", function () {
+            var LicenseCode = $("#aLicenseId").val();
+            var CompanyName = $("#aCompanyName").val();
+            var ContactPerson = $("#aContactPerson").val();
+            var Email = $("#aEmail").val();
+            var PhoneNumber = $("#aPhoneNumber").val();
+            $.ajax({
+                url: "/Admin/GetAdwenchedSearchInvoice",
+                method: "GET",
+                async: true,
+                data: { LicenceCode: LicenseCode, CompanyName: CompanyName, ContactPerson: ContactPerson, Email: Email, PhoneNumber: PhoneNumber },
+                beforeSend: function () {
+                    $("#error").fadeOut(0);
+                    $("#licensesTable").fadeOut(0, function () {
+                        $("#licensesTable tbody").html("");
+                        $("#loadingImage").fadeIn(0);
+                    });
+                },
+                success: function (data) {
+                    if (data[0] == null) {
+                        $("#loadingImage").fadeOut(0);
+                        var errorField = $("#error");
+                        errorField.text("No matches found!");
+                        if (errorField.hasClass("errorMessage")) {
+                            errorField.toggleClass("errorMessage");
+                        }
+                        errorField.addClass("warningMessage");
+                        errorField.fadeIn(0);
+                    }
+                    else {
+                        $("#loadingImage").fadeOut(0, function () {
+                            $(data).each(function (index, element) {
+                                var str = "<tr>";
+                                str += "<td>" + element.LicenceCode.slice(0, 15) + "..." + "</td>";
+                                str += "<td>" + element.CompanyName + "</td>";
+                                str += "<td>" + element.ContactPerson + "</td>";
+                                str += "<td>" + element.Email + "</td>";
+                                str += "<td>" + element.PhoneNumber + "</td>";
+                                str += "</tr>";
+                                $("#licensesTable tbody").append(str);
+                            });
+                            $("#licensesTable").fadeIn(0);
+                        });
+                    }
+                }
+            });
+        });
+        $("#adwenchedSearch").on("click", function () {
+            $("#standartSearch").toggleClass("hide");
+            $("#adwenchedSearchTable").toggleClass("hide");
+        });
         var searchField = $("#searchField");
         $("#searchButton").click(function () {
             var searchText = searchField.val();
@@ -54,7 +141,7 @@
                     if (data[0] == null) {
                         $("#loadingImage").fadeOut(0);
                         var errorField = $("#error");
-                        errorField.text("Тo matches found!");
+                        errorField.text("No matches found!");
                         if (errorField.hasClass("errorMessage")) {
                             errorField.toggleClass("errorMessage");
                         }
@@ -65,7 +152,7 @@
                         $("#loadingImage").fadeOut(0, function () {
                             $(data).each(function (index, element) {
                                 var str = "<tr>";
-                                str += "<td>" + element.LicenceCode + "</td>";
+                                str += "<td>" + element.LicenceCode.slice(0, 15) + "..." + "</td>";
                                 str += "<td>" + element.CompanyName + "</td>";
                                 str += "<td>" + element.ContactPerson + "</td>";
                                 str += "<td>" + element.Email + "</td>";
