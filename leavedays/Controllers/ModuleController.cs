@@ -28,9 +28,12 @@ namespace leavedays.Controllers
         private readonly LicenseService licenseService;
         private readonly IDefaultModuleRepository defaultModuleRepository;
         private readonly IDefaultLicenseRepository defaultLicenseRepository;
+        private readonly RequestService requestService;
+        private readonly UserManager<AppUser, int> userManager;
 
 
-        public ModuleController(
+        public ModuleController(RequestService requestService,
+            UserManager<AppUser, int> userManager,
            CompanyService companyService,
            IUserRepository userRepository,
            LicenseService licenseService,
@@ -51,19 +54,11 @@ namespace leavedays.Controllers
             this.invoiceService = invoiceService;
             this.defaultModuleRepository = defaultModuleRepository;
             this.defaultLicenseRepository = defaultLicenseRepository;
-        }
-
-        readonly RequestService requestService;
-        private readonly UserManager<AppUser, int> userManager;
-
-        public ModuleController(RequestService requestService,
-            UserManager<AppUser, int> userManager,
-            CompanyService companyService)
-        {
             this.requestService = requestService;
             this.userManager = userManager;
             this.companyService = companyService;
         }
+
 
         public ActionResult Index()
         {
