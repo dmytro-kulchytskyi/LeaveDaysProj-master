@@ -1,62 +1,106 @@
 ﻿@using leavedays.Models.ViewModels.License;
 @using leavedays.Models;
-@model EditLicenseModules
+@model LicenseInformation
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<div id="message" class="message hidden">
+<div class="bordered">
+    <h2>Remove Modules</h2>
+    <br />
+    <table>
+        <tr>
+            <td>Name</td>
+            <td>@Model.LicenseName</td>
+        </tr>
+        <tr>
+            <td>License Code</td>
+            <td>@Model.LicenseCode</td>
+        </tr>
+        <tr>
+            <td>Available for disable modules</td>
+            <td>
+                @if (Model.DefaultModules.Count == 0)
+                {
+                    <text>No available modules</text>
+                }
+                else
+                {
+                    <table id="moduleTable">
+                        @foreach (var module in Model.DefaultModules)
+                        {
+                            <tr price="@module.Price">
+                                <td>@Html.CheckBox(module.Name)</td>
+                                <td>@module.Name</td>
+                            </tr>
+                        }
+                    </table>
+                }
+            </td>
+        </tr>
+    </table>
+    <div id="info" style="display: none; margin: 25px 0 0  20%;">
+        <span>
+            You save: $<span id="extraCosts"></span> per user per month.
+        </span>
+        <br />
+        <span>
+            You have <span>30</span> licenses of which <span>21</span> active.
+        </span>
+        <br />
+        <span>
+            This will result in <span>42</span> save per month.
+        </span>
+        <br />
+        <span>
+            Please confirm by clicking "Save" below.
+        </span>
+    </div>
 </div>
-<h2>Remove Modules</h2>
-<br />
-<table>
-    <tr>
-        <td>Name</td>
-        <td>@Model.LicenseName</td>
-    </tr>
-    <tr>
-        <td>License Code</td>
-        <td>@Model.LicenseCode</td>
-    </tr>
-    <tr>
-        <td>Available for disable modules</td>
-        <td>
-            @if (Model.Modules.Count == 0)
-            {
-                <text>No available modules</text>
-            }
-            else
-            {
-                <table id="moduleTable">
-                    @foreach (var module in Model.Modules)
-                    {
-                        <tr>
-                            <td>@Html.CheckBox(module.Name)</td>
-                            <td>@module.Name</td>
-                        </tr>
-                    }
-                </table>
-            }
-        </td>
-    </tr>
-</table>
-<input type="button" value="Submit" id="submit" />
+
+<div style="margin-left: 10px;">
+    <input type="button" value="Submit" id="submit" />
+</div>
 
 <script>
     $(document).ready(function () {
         var table = $('#moduleTable');
         var submit = $('#submit');
         var message = $('#message');
+        var extraCosts = $('#extraCosts');
+        var infoBlock = $('#info');
+        var checked;
+
+        $(table).on('click', 'input[type="checkbox"]', function ()
+        {
+            console.log(1);
+            var extraCostsNum = 0;
+            checked = $(table).find('td').find('input[type="checkbox"]:checked:not(.invisible)');
+            $(checked).each(function (index, data) {
+                var tr = $(this).parent().parent();
+                extraCostsNum += parseFloat($(tr).attr('price'));
+            });
+            if (extraCostsNum > 0) {
+                $(extraCosts).html(extraCostsNum);
+                $(infoBlock).show();
+            }
+            else
+            {
+                $(infoBlock).fadeOut(200);
+            }
+        });
 
         $(submit).on('click', function () {
-           var checked = $(table).find('td').find('input[type=checkbox]:checked');
             var line = '';
             $(checked).each(function (index, data) {
-                line += $(data).attr('name') + ',';
-                $(data).parent().parent().fadeOut(500);
+                line += $(this).attr('name') + ',';
+                var tr = $(this).parent().parent();
+                $(infoBlock).hide();
+                $(this).toggleClass('invisible', true);
+                $(tr).fadeOut(500);
             });
 
             $.ajax({
-                url: "@Url.Action("DisableModules", "Admin")",
+                url: location.origin + '/Admin/DisableModules',
                 type: "POST",
                 data: {
                     modulesLine: line

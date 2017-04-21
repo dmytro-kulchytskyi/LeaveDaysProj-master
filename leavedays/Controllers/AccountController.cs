@@ -59,11 +59,12 @@ namespace leavedays.Controllers
         }
 
 
-      
+
         [HttpGet]
         [AllowAnonymous]
         public ActionResult Login()
         {
+            if (User.Identity.IsAuthenticated) return RedirectToAction("Index", "Home");
             return View();
         }
 
@@ -111,10 +112,9 @@ namespace leavedays.Controllers
         [AllowAnonymous]
         public ActionResult Register()
         {
-            var licenseList = defaultLicenseRepository.GetAll();
             var model = new RegisterViewModel();
+            var licenseList = defaultLicenseRepository.GetAll();
             model.LicenseList = licenseList;
-            //  model.Roles = CreateUserAllowedRoles;
             return View(model);
         }
 
@@ -135,6 +135,7 @@ namespace leavedays.Controllers
             if (!isUniq)
             {
                 ModelState.AddModelError("", "A company with this URL already exists");
+                model.LicenseList = defaultLicenseRepository.GetAll();
                 return View(model);
             }
 
@@ -142,9 +143,9 @@ namespace leavedays.Controllers
 
 
 
-            List<string> rolesList = new List<string>();
+            var rolesList = new List<string>();
             if (string.IsNullOrEmpty(model.RolesLine))
-                rolesList.Add(CreateUserAllowedRoles[0]);
+                rolesList.Add(CreateUserAllowedRoles.First());
 
             rolesList = CreateUserAllowedRoles.ToList();
 
@@ -176,7 +177,7 @@ namespace leavedays.Controllers
             var result = await userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
             {
-                ModelState.AddModelError("", "Error while creating new customer");
+                ModelState.AddModelError("", result.Errors.First());
                 return View(model);
             }
             await signInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);

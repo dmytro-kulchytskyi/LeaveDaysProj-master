@@ -138,7 +138,8 @@ namespace leavedays.Controllers
         [HttpGet]
         public ActionResult EnableModules()
         {
-            var model = licenseService.GetModules(User.Identity.GetUserId<int>(), false);
+            var model = licenseService.GetLicenseInfo(User.Identity.GetUserId<int>());
+            model.DefaultModules = licenseService.GetDefaultModules(model.License, false);
             return View(model);
         }
 
@@ -159,7 +160,8 @@ namespace leavedays.Controllers
         [HttpGet]
         public ActionResult DisableModules()
         {
-            var model = licenseService.GetModules(User.Identity.GetUserId<int>(), true);
+            var model = licenseService.GetLicenseInfo(User.Identity.GetUserId<int>());
+            model.DefaultModules = licenseService.GetDefaultModules(model.License, true);
             return View(model);
         }
 
@@ -193,5 +195,42 @@ namespace leavedays.Controllers
             }
             return Json(result, JsonRequestBehavior.AllowGet);
         }
+
+        [Authorize(Roles = "customer")]
+        [HttpGet]
+        public ActionResult AddLicenseSeats()
+        {
+            var model = licenseService.GetLicenseInfo(User.Identity.GetUserId<int>());
+            return View(model);
+        }
+
+        [Authorize(Roles = "customer")]
+        [HttpPost]
+        public JsonResult AddLicenseSeats(int count = 0)
+        {
+            if (count <= 0) return Json(0);
+            var result = licenseService.EditLicenseSeats(User.Identity.GetUserId<int>(), count);
+            return Json(result);
+        }
+
+        [Authorize(Roles = "customer")]
+        [HttpGet]
+        public ActionResult RemoveLicenseSeats()
+        {
+            var model = licenseService.GetLicenseInfo(User.Identity.GetUserId<int>());
+            return View(model);
+        }
+
+        [Authorize(Roles = "customer")]
+        [HttpPost]
+        public JsonResult RemoveLicenseSeats(int count = 0)
+        {
+            if (count <= 0) return Json(0);
+            var result = licenseService.EditLicenseSeats(User.Identity.GetUserId<int>(), -count);
+            return Json(result);
+        }
+
+
+
     }
 }

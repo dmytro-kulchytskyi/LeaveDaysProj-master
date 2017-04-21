@@ -61,7 +61,7 @@ namespace leavedays.Models.Repository
                 var owners = session.CreateCriteria<AppUser>().
                     CreateAlias("Roles", "roles").
                     Add(Restrictions.Eq("roles.Name", "customer")).
-                    Add(Restrictions.In("CompanyId", companyId.ToArray<int>())).
+                    Add(Restrictions.In("CompanyId", companyId.ToArray())).
                     List<AppUser>();
                 return owners;
             }
@@ -90,5 +90,6 @@ namespace leavedays.Models.Repository
                 }
             }
         }
+        
     }
 }

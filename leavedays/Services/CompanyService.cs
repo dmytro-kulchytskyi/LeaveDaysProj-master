@@ -36,22 +36,20 @@ namespace leavedays.Services
             {
                 DefaultLicenseId = defaultLicense.Id,
                 Price = defaultLicense.Price,
-                LicenseCode = Guid.NewGuid().ToString()                
+                LicenseCode = Guid.NewGuid().ToString(),
+                Seats = 1
             };
-
             licenseRepository.Save(license);
-            foreach (var defaultModule in defaultLicense.DefaultModules)
+
+            var modules = defaultLicense.DefaultModules.Select(defaultModule => new Module()
             {
-                var module = new Module()
-                {
-                    DefaultModuleId = defaultModule.Id,
-                    Price = defaultModule.Price,
-                    IsActive = true,
-                    LicenseId = license.Id
-                };
-                moduleRepository.Save(module);
-            }
-         
+                DefaultModuleId = defaultModule.Id,
+                Price = defaultModule.Price,
+                IsActive = true,
+                LicenseId = license.Id
+            });
+            moduleRepository.Save(modules);
+
             return license;
         }
 

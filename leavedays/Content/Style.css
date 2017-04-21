@@ -10,6 +10,13 @@ to use a different color start by replacing all instances of
     display:none;
 }
 
+.bordered {
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid gray;
+    border-radius: 2px;
+}
+
 #error{
     margin:20px 0px;
     width:100%;
