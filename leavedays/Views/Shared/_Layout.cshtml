@@ -1,0 +1,153 @@
+﻿
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        #nav ul ul {
+            display: none;
+            margin-left: 25px;
+            padding-left: 2px;
+            width: 220px;
+        }
+    </style>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+    <title>
+        home
+    </title>
+    <link type="text/css" href="~/Content/Style.css" rel="stylesheet">
+    <link href="~/Content/datepicker.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+</head>
+<body>
+    <div id="banner_div">
+        <img alt="leaveday banner" src="~/Content/img/top_banner.jpg">
+    </div>
+    <div id="topbar_div">
+        <div>
+            <img src="~/Content/img/logo-leavedays-small.png" alt="" class="pull-left">
+            <div id="leftWelcome" class="pull-left">
+                System of registration
+                Here should be your name!
+            </div>
+            <div id="rightWelcome">
+                <div id="rightWelcomeText">
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <text>Wellcome</text>
+                        @User.Identity.Name
+                        @Html.ActionLink("Log Out", "LogOff", "Account")
+                    }
+                    else
+                    {
+                        <span style="margin-right: 5px;">@Html.ActionLink("Log In", "Login", "Account")</span>
+                        <span>@Html.ActionLink("Register", "Register", "Account")</span>
+                    }
+                </div>
+                <div id="rightWelcomeHelpImg">
+                    <img src="~/Content/img/helpicon_gray.gif" alt="Help" style="cursor: pointer;" onclick="window.open('http://support.leavedays.com&#39;, &#39;CustomPopUp&#39;, &#39;width=800, height=600, scrollbars=1, menubar=no, resizable=yes')">
+                </div>
+            </div>
+        </div>
+        <br>
+    </div>
+    <div id="main_div">
+        <div id="menu-div" style="display: block;">
+
+            <div id="masterDiv" class="menu-open" style="">
+                <a id="homemenu" class="homemenu active-menu-item" href="@Url.Action("Index", "Home")" style="display: block;">
+                    <i class="menu-icon menu-icon-home pull-left"></i>
+                    <span class="pull-left">домашняя страница</span>
+                </a>
+                <div id="main_div">
+                    <div id="menu-div" style="display: block;">
+                        <div id="masterDiv" class="menu-open" style="">
+
+                            <div class="left" id="nav" style="font-size: 150%">
+                                <ul>
+                                    <li>
+                                        Main
+                                        <ul>
+                                            @if (User.Identity.IsAuthenticated)
+                                            {
+                                                <li>
+                                                    @Html.ActionLink("Request", "Create", "Module")
+                                                </li>
+                                            }
+                                            
+                                             @if (User.Identity.IsAuthenticated)
+                                             {
+                                                 <li>
+                                                 @Html.ActionLink("for consideration", "ConfirmNew", "Module")
+                                                  </li>
+                                              }
+                                              @if (User.IsInRole("financeadmin"))
+                                              {
+                                                   <li>
+                                                   @Html.ActionLink("Create Company", "CreateCompany", "Account")
+                                                   </li>
+                                              }
+                                              @if (User.IsInRole("customer"))
+                                              {
+                                                  <li>
+                                                  @Html.ActionLink("Create Emplyee", "CreateEmployee", "Account")
+                                                  </li>
+                                              }
+                                                                                                       
+                                        </ul>
+
+                                    </li>
+                                    <li>
+                                        Other 1
+                                        <ul>
+                                            <li>@Html.ActionLink("confirmed request", "ShowConfirmed", "Module")</li>
+                                            <li>@Html.ActionLink("my request", "ShowSended", "Module")</li>
+                                            <li>@Html.ActionLink("License info", "licenceInfo", "Module")</li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        Other 2
+                                        <ul>
+                                            <li>@Html.ActionLink("Employee Owerview", "eOwerview", "Module")</li>
+                                            <li>@Html.ActionLink("Calendar Owerview", "cOwerview", "Module")</li>
+                                            <li>@Html.ActionLink("Pending requests", "Pending", "Module")</li>
+                                            <li>@Html.ActionLink("Request", "Create", "Module")</li>
+                                            <li>@Html.ActionLink("for consideration", "ConfirmNew", "Module")</li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+                    <div id="content-div" style="display: block;">
+                        <div id="error-div" class="ui-state-error padded c-hide">
+                        </div>
+                        <div id="departmentCapacity"></div>
+                        <div>
+                            @RenderBody()
+                        </div>
+                        <br>
+                        <br>
+                    </div>
+                    <br>
+                </div>
+                <br>
+                <div id="footer_div">
+                    <span id="leftFooter"> Number of licenses</span>
+                    <span id="rightFooter">Some numbers(2017.73.6283.20254)</span>
+                    @*<script type="text/javascript" src="~/Scripts/asset(1).js"></script>
+            <script src="~/Scripts/analytics.js"></script>
+            <script src="~/Scripts/nr-1026.min.js"></script>*@
+                    <script>
+                        $('#nav ul li')
+                        .css({ cursor: "pointer" })
+                        .on('click', function () {
+                            $(this).find('ul').toggle();
+                        })
+                    </script>
+</body>
+</html>
+
