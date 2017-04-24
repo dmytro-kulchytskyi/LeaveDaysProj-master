@@ -43,7 +43,7 @@
     </table>
     <div id="info" style="display: none; margin: 25px 0 0  20%;">
         <span>
-            Extra costs: $<span id="price">$@Model.Price</span> per user per month.
+            Extra costs: $<span id="price">0</span> per user per month.
         </span>
         <br />
         <span>
@@ -51,7 +51,7 @@
         </span>
         <br />
         <span>
-            This will result in <span id="tatalCosts"></span> extra per month.
+            This will result in <span id="tatalCosts">0</span> extra per month.
         </span>
         <br />
         <span>
@@ -65,30 +65,29 @@
 
 <script>
     $(document).ready(function () {
-        var price = parseInt($('#price').val(), 10);
-        var total = parseInt($('#total').val(), 10);
-        var active = parseInt($('#active').val(), 10);
+        
+        var active = parseInt($('#active').html(), 10);
         var totalCostsFiled = $('#tatalCosts');
 
-
+        var price = $('#price');
         var table = $('#moduleTable');
         var submit = $('#submit');
-        var message = $('#message');
-        var extraCosts = $('#extraCosts');
         var infoBlock = $('#info');
         var checked;
-       
+
         $(table).on('click', 'input[type="checkbox"]', function ()
         {
-            var extraCostsNum = 0;
+            var extraCostsNum = 0.0;
             checked = $(table).find('td').find('input[type="checkbox"]:checked:not(.invisible)');
             $(checked).each(function (index, data) {
                 var tr = $(this).parent().parent();
-                extraCostsNum += parseFloat($(tr).attr('price'));
+                extraCostsNum = parseFloat($(tr).attr('price')) + extraCostsNum;
+                console.log(parseFloat($(tr).attr('price')));
             });
-            if (extraCostsNum > 0) {
-                $(extraCosts).html(extraCostsNum);
 
+            if (extraCostsNum > 0.0) {
+                $(price).html(extraCostsNum);
+                $(totalCostsFiled).html('$' + (extraCostsNum * active));
                 $(infoBlock).show();
             }
             else

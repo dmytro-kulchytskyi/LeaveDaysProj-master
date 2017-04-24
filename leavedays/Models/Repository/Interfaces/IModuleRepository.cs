@@ -9,8 +9,8 @@ namespace leavedays.Models.Repository.Interfaces
 {
     public interface IModuleRepository
     {
-        int Save(Module module);
         IEnumerable<int> Save(IEnumerable<Module> modules);
+        int Save(Module user);
         Module GetById(int id);
         IList<Module> GetAll();
         IList<Module> GetByLicenseId(int licensId, bool? isActive =  null);

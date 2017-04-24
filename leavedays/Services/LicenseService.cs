@@ -1,7 +1,6 @@
 ﻿using leavedays.Models;
 using leavedays.Models.Repository.Interfaces;
 using leavedays.Models.ViewModel;
-using leavedays.Models.ViewModels.License;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,15 +19,15 @@ namespace leavedays.Services
         private readonly IDefaultLicenseRepository defaultLicenseRepository;
 
         public LicenseService(
-           IUserRepository userRepository,
-           ILicenseRepository licenseRepository,
-           ICompanyRepository companyRepository,
-           IInvoiceRepository invoiceRepository,
-           IModuleRepository moduleRepository,
-           IDefaultModuleRepository defaultModuleRepository,
-           IDefaultLicenseRepository defaultLicenseRepository)
+          IUserRepository userRepository,
+          ILicenseRepository licenseRepository,
+          ICompanyRepository companyRepository,
+          IInvoiceRepository invoiceRepository,
+          IModuleRepository moduleRepository,
+          IDefaultModuleRepository defaultModuleRepository,
+          IDefaultLicenseRepository defaultLicenseRepository)
         {
-            this.userRepository = userRepository;
+            this.userRepository = userRepository;;
             this.licenseRepository = licenseRepository;
             this.companyRepository = companyRepository;
             this.invoiceRepository = invoiceRepository;
@@ -39,28 +38,25 @@ namespace leavedays.Services
 
         public List<LicenseInfo> GetLicenseInfoList()
         {
-            IList<Company> companys = companyRepository.GetAll();
-            List<int> companyIds = companys.Select(m => m.Id).ToList();
-            IList<AppUser> owners = userRepository.GetOwnersByCompanyIds(companyIds);
-            IList<License> licenses = licenseRepository.GetAll();
-            var result = owners.Select(m => new LicenseInfo
-            {
-                CompanyName = companys.Where(n => n.Id == m.CompanyId).Select(n => n.FullName).First(),
-                ContactPerson = m.FirstName + " " + m.LastName,
-                Email = m.UserName,
-                PhoneNumber = m.PhoneNumber,
-                LicenseId = companys.Where(n => n.Id == m.CompanyId).Select(n => n.LicenseId).First(),
-                LicenceCode = licenses.
-                    Where(n => n.Id == companys.Where(l => l.Id == m.CompanyId).
-                    Select(l => l.LicenseId).First()).
-                    Select(n => n.LicenseCode).First()
-            }).ToList();
+            var result = licenseRepository.GetLicenseInformation().ToList();
+            return result;
+        }
+
+        public List<LicenseInfo> GetSearchedLicenseInfo(string searchLine)
+        {
+            var result = licenseRepository.GetSearchedInformation(searchLine).ToList();
+            return result;
+        }
+
+        public List<LicenseInfo> GetAdwenchedSearchLicenseInfo(SearchOption option)
+        {
+            var result = licenseRepository.GetAdwenchedSearchedInformation(option).ToList();
             return result;
         }
 
         public IList<DefaultModule> GetDefaultModules(License license, bool? moduleStatus = null)
         {
-           
+
             var modules = moduleRepository.GetByLicenseId(license.Id, moduleStatus);
 
             var defaultModules = modules.Select(module =>
@@ -71,7 +67,7 @@ namespace leavedays.Services
             }).ToList();
 
             return defaultModules;
-            
+
         }
 
         public int EditModules(int userId, IEnumerable<string> moduleNames, bool moduleStatus)
@@ -118,7 +114,7 @@ namespace leavedays.Services
             var license = licenseRepository.GetById(company.LicenseId);
 
             var defaultLicense = defaultLicenseRepository.GetById(license.DefaultLicenseId);
-            
+
             var licenseInfo = new LicenseInformation()
             {
                 Company = company,
@@ -154,6 +150,5 @@ namespace leavedays.Services
 
             return 1;
         }
-
     }
 }

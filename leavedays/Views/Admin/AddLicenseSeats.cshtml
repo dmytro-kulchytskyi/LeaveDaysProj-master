@@ -28,14 +28,14 @@
                 <div>@Html.TextBox("Count")</div>
                 <div>@Model.LicenseName licenses less.</div>
             </td>
-            
+
         </tr>
     </table>
     <div id="info" style="display: none; margin: 25px 0 0  20%;">
         <span>
             Extra costs: $<span id="price">@Model.Price</span> per user per month.
         </span>
-        <br/>
+        <br />
         <span>
             You have <span id="total">@Model.LicensesCount</span> licenses of which <span id="active">@Model.ActiveLicensesCount</span> active.
         </span>
@@ -61,7 +61,7 @@
         var active = parseInt($('#active').val(), 10);
         var totalCostsFiled = $('#tatalCosts');
         $(totalCostsFiled).html(price * active);
-        
+
         $(submit).on('click', function () {
             var count = parseInt($(textBox).val());
             if (val >= 0 && val < total) {

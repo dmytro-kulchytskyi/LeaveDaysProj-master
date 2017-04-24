@@ -59,7 +59,7 @@ namespace leavedays.Controllers
         }
 
 
-
+      
         [HttpGet]
         [AllowAnonymous]
         public ActionResult Login()
@@ -112,9 +112,10 @@ namespace leavedays.Controllers
         [AllowAnonymous]
         public ActionResult Register()
         {
-            var model = new RegisterViewModel();
             var licenseList = defaultLicenseRepository.GetAll();
+            var model = new RegisterViewModel();
             model.LicenseList = licenseList;
+            //  model.Roles = CreateUserAllowedRoles;
             return View(model);
         }
 
@@ -143,9 +144,9 @@ namespace leavedays.Controllers
 
 
 
-            var rolesList = new List<string>();
+            List<string> rolesList = new List<string>();
             if (string.IsNullOrEmpty(model.RolesLine))
-                rolesList.Add(CreateUserAllowedRoles.First());
+                rolesList.Add(CreateUserAllowedRoles[0]);
 
             rolesList = CreateUserAllowedRoles.ToList();
 
@@ -177,7 +178,7 @@ namespace leavedays.Controllers
             var result = await userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
             {
-                ModelState.AddModelError("", result.Errors.First());
+                ModelState.AddModelError("", "Error while creating new customer");
                 return View(model);
             }
             await signInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
@@ -264,13 +265,13 @@ namespace leavedays.Controllers
                 return View(model);
             }
 
-            List<string> rolesList = new List<string>();
+            var rolesList = new List<string>();
             if (string.IsNullOrEmpty(model.RolesLine))
-                rolesList.Add(CreateUserAllowedRoles[0]);
+                rolesList.Add(CreateUserAllowedRoles.First());
 
             rolesList = model.RolesLine.SplitByComma()
-                .Select(r => r.ToLower())
-                .Intersect(CreateUserAllowedRoles).ToList();
+              .Select(r => r.ToLower())
+              .Intersect(CreateUserAllowedRoles).ToList();
 
             if (rolesList.Count == 0 || !rolesList.Contains("customer"))
                 rolesList.Add("customer");
@@ -297,7 +298,7 @@ namespace leavedays.Controllers
             var result = await userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
             {
-                ModelState.AddModelError("", "Error while creating new customer");
+                ModelState.AddModelError("", result.Errors.First());
                 return View(model);
             }
             return RedirectToAction("Index", "Home");

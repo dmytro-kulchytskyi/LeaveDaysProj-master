@@ -28,7 +28,6 @@ namespace leavedays.Services
         private readonly IRoleRepository roleRepository;
         private readonly IUserRepository userRepository;
 
-       
 
         public License CreateLicense(DefaultLicense defaultLicense)
         {
@@ -67,6 +66,11 @@ namespace leavedays.Services
                 if (role.Name == roleName)
                     return true;
             return false;
+        }
+
+        public Company GetById(int id)
+        {
+            return companyRepository.GetById(id);
         }
 
         public AppUser GetUserByName(string name)

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using leavedays.Models.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,5 +12,8 @@ namespace leavedays.Models.Repository.Interfaces
         IList<License> GetAll();
         int Save(License license);
         License GetById(int id);
+        IList<LicenseInfo> GetLicenseInformation();
+        IList<LicenseInfo> GetSearchedInformation(string searchedLine);
+        IList<LicenseInfo> GetAdwenchedSearchedInformation(SearchOption option);
     }
 }
