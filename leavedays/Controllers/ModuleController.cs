@@ -153,7 +153,7 @@ namespace leavedays.Controllers
             return View();
         }
 
-        [Authorize(Roles = "customer")]
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult> licenceInfo()
         {
