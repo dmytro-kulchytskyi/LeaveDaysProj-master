@@ -8,6 +8,7 @@
     <property name="DefaultLicenseId" />
     <property name="Price"/>
     <property name="LicenseCode" />
+    <property name="Seats" />
   </class>
 
 </hibernate-mapping>

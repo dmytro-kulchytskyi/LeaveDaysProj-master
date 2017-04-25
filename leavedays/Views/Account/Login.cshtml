@@ -15,24 +15,39 @@
     }))
     {
         @Html.AntiForgeryToken()
-        <div>
-            @Html.LabelFor(m => m.UserName)
-            @Html.TextBoxFor(m => m.UserName)
-            @Html.ValidationMessageFor(m => m.UserName)
+        <div class="bordered">
+            <table>
+                <tr>
+                    <td>@Html.LabelFor(m => m.UserName)</td>
+                    <td>@Html.TextBoxFor(m => m.UserName)</td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.ValidationMessageFor(m => m.UserName)
+                    </td>
+                </tr>
+                <tr>
+                    <td>@Html.LabelFor(m => m.Password)</td>
+                    <td>@Html.PasswordFor(m => m.Password)</td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.ValidationMessageFor(m => m.Password)
+                    </td>
+                </tr>
+                <tr>
+                    <td>@Html.LabelFor(m => m.RememberMe)</td>
+                    <td>@Html.CheckBoxFor(m => m.RememberMe)</td>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="submit" value="SignIn" />
+                    </td>
+                </tr>
+            </table>
+            <div>
+                @Html.ValidationSummary(true, "")
+            </div>
         </div>
-        <br />
-        <div>
-            @Html.LabelFor(m => m.Password)
-            @Html.PasswordFor(m => m.Password)
-            @Html.ValidationMessageFor(m => m.Password)
-        </div>
-        <br />
-        <div>
-            @Html.LabelFor(m => m.RememberMe)
-            @Html.CheckBoxFor(m => m.RememberMe)
-        </div>
-        <br />
-            @Html.ValidationSummary(true, "")
-            <input type="submit" value="SignIn" />
     }
 </div>

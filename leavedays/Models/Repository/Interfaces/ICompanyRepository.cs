@@ -14,5 +14,6 @@ namespace leavedays.Models.Repository.Interfaces
         IList<Company> GetAll();
         int GetOwnerId(int companyId);
         IList<Company> GetByCompanyIds(IList<int> companyIds);
+        int GetUsersCount(int companyId);
     }
 }

@@ -1,0 +1,81 @@
+﻿@using leavedays.Models.ViewModels.License;
+@using leavedays.Models;
+@model LicenseInformation
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="bordered">
+    <h2>Add Licenses</h2>
+    <br />
+    <table>
+        <tr>
+            <td>Name</td>
+            <td>@Model.LicenseName</td>
+
+        </tr>
+        <tr>
+            <td>License Code</td>
+            <td>@Model.LicenseCode</td>
+        </tr>
+
+        <tr>
+            <td>Current Package</td>
+            <td>@Model.LicenseName @Model.Price per user per month.</td>
+        </tr>
+        <tr>
+            <td>Add Licenses</td>
+            <td>
+                <div>@Html.TextBox("Count")</div>
+                <div>@Model.LicenseName licenses less.</div>
+            </td>
+
+        </tr>
+    </table>
+    <div id="info" style="display: none; margin: 25px 0 0  20%;">
+        <span>
+            Extra costs: $<span id="price">@Model.Price</span> per user per month.
+        </span>
+        <br />
+        <span>
+            You have <span id="total">@Model.LicensesCount</span> licenses of which <span id="active">@Model.ActiveLicensesCount</span> active.
+        </span>
+        <br />
+        <span>
+            This will result in <span id="tatalCosts"></span> extra per month.
+        </span>
+        <br />
+        <span>
+            Please confirm by clicking "Save" below.
+        </span>
+    </div>
+</div>
+<div style="margin-left: 10px;">
+    <input type="button" value="Submit" id="submit" />
+</div>
+
+<script>
+    $(document).ready(function () {
+        var textBox = $('input[name=Count]');
+        var price = parseInt($('#price').val(), 10);
+        var total = parseInt($('#total').val(), 10);
+        var active = parseInt($('#active').val(), 10);
+        var totalCostsFiled = $('#tatalCosts');
+        $(totalCostsFiled).html(price * active);
+
+        $(submit).on('click', function () {
+            var count = parseInt($(textBox).val());
+            if (val >= 0 && val < total) {
+                $.ajax({
+                    url: location.origin + '/Admin/AddlicenseSeats',
+                    type: "POST",
+                    data: {
+                        count: val
+                    }
+                }).done(function (data)
+                {
+                    alert(data);
+                    });
+            }
+        });
+    });
+</script>

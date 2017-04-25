@@ -32,7 +32,8 @@ namespace leavedays.Controllers
         private readonly UserManager<AppUser, int> userManager;
 
 
-        public ModuleController(
+        public ModuleController(RequestService requestService,
+            UserManager<AppUser, int> userManager,
            CompanyService companyService,
            IUserRepository userRepository,
            LicenseService licenseService,
@@ -58,6 +59,7 @@ namespace leavedays.Controllers
             this.requestService = requestService;
             this.userManager = userManager;
         }
+
 
         public ActionResult Index()
         {
