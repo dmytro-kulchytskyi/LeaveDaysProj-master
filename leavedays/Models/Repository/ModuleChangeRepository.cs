@@ -16,6 +16,15 @@ namespace leavedays.Models.Repository
             this.sessionFactory = sessionFactory;
         }
 
+        public IList<ModuleChange> GetByDate(int year, int month, int day)
+        {
+            using (var session = sessionFactory.OpenSession())
+            {
+                var query = string.Format(@"SELECT * FROM ModuleChange Where YEAR(StartDate) = {0} AND MONTH(StartDate) = {1} AND DAY(StartDate) = {2}", year, month, day);
+                return session.CreateSQLQuery(query).List<ModuleChange>();
+            }
+        }
+
         public ModuleChange GetById(int id)
         {
             using (var session = sessionFactory.OpenSession())
