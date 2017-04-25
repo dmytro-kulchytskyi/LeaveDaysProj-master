@@ -34,6 +34,17 @@ namespace leavedays.Models.Repository
             }
         }
 
+        public IList<DefaultLicense> GetByModuleId(int id)
+        {
+            using (var session = sessionFactory.OpenSession())
+            {
+                return session.CreateCriteria<DefaultLicense>().
+                    CreateAlias("DefaultModules", "module").
+                    Add(Restrictions.Eq("module.Id", id)).
+                    List<DefaultLicense>();
+            }
+        }
+
         public DefaultLicense GetByName(string name)
         {
             using (var session = sessionFactory.OpenSession())
@@ -42,6 +53,16 @@ namespace leavedays.Models.Repository
                     .Add(Restrictions.Eq("Name", name))
                     .UniqueResult<DefaultLicense>();
                 return result;
+            }
+        }
+
+        public IList<DefaultLicense> GetByNames(List<string> names)
+        {
+            using (var session = sessionFactory.OpenSession())
+            {
+                return session.CreateCriteria<DefaultLicense>().
+                    Add(Restrictions.In("Name", names.ToArray())).
+                    List<DefaultLicense>();
             }
         }
 
@@ -59,5 +80,20 @@ namespace leavedays.Models.Repository
             }
         }
 
+        public void Save(List<DefaultLicense> licenses)
+        {
+            using (var session = sessionFactory.OpenSession())
+            {
+                using (var t = session.BeginTransaction())
+                {
+                    foreach(DefaultLicense license in licenses)
+                    {
+                        session.SaveOrUpdate(license);
+                    }
+                    t.Commit();
+                }
+
+            }
+        }
     }
 }

@@ -8,6 +8,7 @@
 
     <property name="Name" />
     <property name="Price" />
+    <property name="Description" />
   </class>
 
 </hibernate-mapping>

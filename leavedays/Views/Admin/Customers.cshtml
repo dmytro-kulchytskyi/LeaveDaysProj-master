@@ -1,0 +1,36 @@
+﻿@using leavedays.Models.ViewModels.License
+
+@model IEnumerable<UserInfoViewModel>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Customers";
+}
+<table id="moduleTable">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Company</th>
+            <th>License code</th>
+        </tr>
+    </thead>
+    <tfoot></tfoot>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>
+                    <input type="hidden" value="@user.Id" />
+                    @user.FirstName @user.LastName
+                </td>
+                <td>@user.Company.FullName</td>
+                <td>@user.License.LicenseCode</td>
+            </tr>
+                        }
+    </tbody>
+</table>
+<script>
+    $("#moduleTable tbody").on("click", "tr", function (e) {
+        var index = $(this).find("input");
+    });
+</script>

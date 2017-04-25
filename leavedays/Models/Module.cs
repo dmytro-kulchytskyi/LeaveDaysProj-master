@@ -13,6 +13,7 @@ namespace leavedays.Models
         public virtual int LicenseId { get; set; }
         public virtual double Price { get; set; }
         public virtual bool IsActive { get; set; }
+        public virtual bool IsLocked { get; set; }
     }
 
     //public sealed class ModuleCsvMap:CsvClassMap<Module>

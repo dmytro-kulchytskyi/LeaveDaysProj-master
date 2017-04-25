@@ -14,5 +14,6 @@ namespace leavedays.Models.Repository.Interfaces
         Module GetById(int id);
         IList<Module> GetAll();
         IList<Module> GetByLicenseId(int licensId, bool? isActive =  null);
+        IList<Module> GetByLockStatus(int licenseId, bool lockStatus);
     }
 }

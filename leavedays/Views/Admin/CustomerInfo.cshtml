@@ -1,0 +1,138 @@
+﻿@using leavedays.Models.ViewModels.License
+
+@model UserInfoViewModel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Customer info";
+}
+@*<div id="confirmPopUp">
+        <p>Are you sure ?</p>
+        <button id="confirmYes">Yes</button><button id="confirmNo">No</button>
+    </div>*@
+<div class="detail_content">
+    <fieldset>
+        <div class="display-label" style="font-size:20px;">
+            @Model.FirstName @Model.LastName<br />
+        </div><br />
+        <div class="display-label">
+            Company
+        </div>
+        <div class="display-field">
+            @Model.Company.FullName
+        </div>
+        <br />
+        <div class="display-label">
+            License code
+        </div>
+        <div class="display-field">
+            @Model.License.LicenseCode
+        </div>
+        <br />
+        <div class="display-label">
+            <button id="showModule">Show modules panel</button>
+        </div><br />
+        <div id="modulePanel" class="hide">
+            <div class="display-label">
+                Modules and pricing information
+            </div>
+            <div class="display-field">
+                <form>
+                <input type="hidden" id="selectedModules" />
+                <table>
+                
+                        @foreach (var module in Model.Modules)
+                        {
+                            <tr>
+                                @if (module.isLocked)
+                                {
+                                    <td><span>@module.Name</span></td>
+                                    <td><input type="hidden" value="@module.Id" /><input type="checkbox" name="lockModule" value="@module.Name"/></td>
+                                }
+                                else
+                                {
+                                    <td><span>@module.Name</span></td>
+                                    <td><input type="hidden" value="@module.Id" /><input type="checkbox" checked="checked" name="lockModule" value="@module.Name"/></td>
+                                }
+                                <td><span>Price per license: </span></td>
+                                <td><input type="text" name="modulePrice" value="@module.Price" style="width:40px" /></td>
+                            </tr>
+                        }
+                </table>
+                <input type="text" id="calendar" name="VacationDates" data-val="true" data-val-required="You must choise a date" style="visibility:hidden; position:absolute; margin-top:15px;" /><br />
+                <input type="submit" id="saveChanges" value="Save"><br />
+                    </form>
+            </div>
+            <br />
+        </div>
+    </fieldset>
+</div>
+<script src="~/Scripts/datepicker.min.js"></script>
+<script>
+    $('#calendar').datepicker({
+        minDate: new Date(),
+        inline: true,
+        onSelect: function (formattedDate, date, inst) {
+            $("#calendar").val("" + formattedDate);
+        }
+    });
+</script>
+<script>
+    $(window).on("load", function () {
+        var defaultText = $("#modulePanel").html();
+        $("#showModule").on("click", function () {
+            if ($(this).text() == "Show modules panel") {
+                $("#modulePanel").toggleClass("hide");
+                $(this).text("Hide modules panel");
+            }
+            else {
+                $("#modulePanel").toggleClass("hide");
+                $(this).text("Show modules panel");
+            }
+        });
+
+        $("#saveChanges").on("click", function (event) {
+            event.preventDefault();
+            if ($("#calendar").val().length > 0) {
+                var objects = [];
+                var date = $("#calendar").val();
+                var tr = $("#modulePanel table tbody tr");
+                $(tr).each(function (index, elem) {
+                    console.log(elem);
+                    var Id = $(elem).find("input[type=hidden]").val();
+                    var Name = $(elem).find("input[type=checkbox]").val();
+                    var IsLocked = $(elem).find("input[type=checkbox]:checked").val();
+                    IsLocked = IsLocked == undefined ? true : false;
+                    var Price = $(elem).find("input[type='text']").val();
+                    objects.push({
+                        Id: Id,
+                        Name: Name,
+                        IsLocked: IsLocked,
+                        Price: Price
+                    })
+                });
+                $.ajax({
+                    url: location.origin + "/Admin/EditCustomerModules",
+                    async: true,
+                    type: "POST",
+                    data: { licenseId: @Model.License.Id, modules: objects, startDate: date },
+                    success: function (data) {
+                        alert(data);
+                    }
+                });
+            }
+            else {
+                alert("Date must be select");
+            }
+            console.log(objects);
+        });
+        //$("#modulePanel input[type='checkbox']").on("change", function () {
+        //    if ($("#modulePanel").html() != defaultText && !$("saveChanges").hasClass("hide")) {
+        //        $("saveChanges").toggleClass("hide");
+        //    }
+        //    else if ($("#modulePanel").html() == defaultText){
+        //        $("saveChanges").toggleClass("hide");
+        //    }
+        //});
+    });
+</script>
