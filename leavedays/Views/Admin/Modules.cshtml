@@ -27,9 +27,10 @@
         @foreach (var module in Model)
         {
             <tr>
+
                 <td>
-                    <input type="hidden" value="@module.Id"/>
-                    @module.Name
+                    <input type="hidden" value="@module.Id" />
+                    <a href="@Url.Action("ModuleInfo", "Admin", new { id = module.Id })">@module.Name</a>
                 </td>
                 <td>@module.Description</td>
                 <td>@module.Price</td>
@@ -39,6 +40,7 @@
                         @license.Name<br />
                     }
                 </td>
+
             </tr>
         }
     </tbody>
