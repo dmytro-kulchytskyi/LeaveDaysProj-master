@@ -43,9 +43,8 @@ namespace leavedays.Controllers
            IModuleRepository moduleRepository,
            InvoiceService invoiceService,
            IDefaultModuleRepository defaultModuleRepository,
-           IDefaultLicenseRepository defaultLicenseRepository,
-           RequestService requestService,
-            UserManager<AppUser, int> userManager)
+           IDefaultLicenseRepository defaultLicenseRepository
+          )
         {
             this.licenseService = licenseService;
             this.userRepository = userRepository;
@@ -56,8 +55,6 @@ namespace leavedays.Controllers
             this.invoiceService = invoiceService;
             this.defaultModuleRepository = defaultModuleRepository;
             this.defaultLicenseRepository = defaultLicenseRepository;
-            this.requestService = requestService;
-            this.userManager = userManager;
         }
 
 
