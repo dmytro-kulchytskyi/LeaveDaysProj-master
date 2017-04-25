@@ -260,6 +260,7 @@
     <Compile Include="Models\ViewModels\Account\CreateEmployeeViewModel.cs" />
     <Compile Include="Models\ViewModels\Account\LoginViewModel.cs" />
     <Compile Include="Models\ViewModels\Account\RegisterViewModel.cs" />
+    <Compile Include="Models\ViewModels\License\CreateLicense.cs" />
     <Compile Include="Models\ViewModels\License\EditLicenseModules.cs" />
     <Compile Include="Models\ViewModels\License\InvoiceForDownload.cs" />
     <Compile Include="Models\ViewModels\License\InvoiceView.cs" />
@@ -302,6 +303,7 @@
     <Content Include="Views\Admin\DisableModules.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Admin\CreateLicense.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -81,7 +81,7 @@ namespace leavedays.Models.Repository
         }
 
         public int Save(License license)
-        {
+    {
             using (var session = sessionFactory.OpenSession())
             {
                 using (var t = session.BeginTransaction())

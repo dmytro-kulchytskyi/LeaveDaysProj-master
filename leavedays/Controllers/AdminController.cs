@@ -304,5 +304,24 @@ namespace leavedays.Controllers
             var result = licenseService.GetAdwenchedSearchLicenseInfo(option);
             return Json(result, JsonRequestBehavior.AllowGet);
         }
+
+        [Authorize]
+        [HttpGet]
+        public ActionResult CreateLicense()
+        {
+            var model = new CreateLicense()
+            {
+                Modules = defaultModuleRepository.GetAll()
+            };
+            return View(model);
+        }
+
+        [Authorize]
+        [HttpPost]
+        public JsonResult CreateLicense(string modulesLine, int id, string name)
+        {
+            
+            return Json("success");
+        }
     }
 }
