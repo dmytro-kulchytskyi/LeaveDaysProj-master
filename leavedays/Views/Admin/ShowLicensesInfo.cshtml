@@ -31,7 +31,6 @@
     <button id="searchButton" class="sButton">Search</button>
 </div>
 <button id="adwenchedSearch">Adwenched search</button>
-
 <table class="searchLicense" id="licensesTable">
     <thead>
         <tr>
@@ -119,6 +118,7 @@
             });
         });
         $("#adwenchedSearch").on("click", function () {
+            $()
             $("#standartSearch").toggleClass("hide");
             $("#adwenchedSearchTable").toggleClass("hide");
         });

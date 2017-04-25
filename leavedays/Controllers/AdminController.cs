@@ -27,12 +27,14 @@ namespace leavedays.Controllers
         private readonly ICompanyRepository companyRepository;
         private readonly IInvoiceRepository invoiceRepository;
         private readonly IModuleRepository moduleRepository;
+        private readonly IModuleChangeRepository moduleChangeRepository;
         private readonly LicenseService licenseService;
         private readonly IDefaultModuleRepository defaultModuleRepository;
         private readonly IDefaultLicenseRepository defaultLicenseRepository;
 
 
         public AdminController(
+           IModuleChangeRepository moduleChangeRepository,
            CompanyService companyService,
            IUserRepository userRepository,
            LicenseService licenseService,
@@ -44,6 +46,7 @@ namespace leavedays.Controllers
            IDefaultModuleRepository defaultModuleRepository,
            IDefaultLicenseRepository defaultLicenseRepository)
         {
+            this.moduleChangeRepository = moduleChangeRepository;
             this.licenseService = licenseService;
             this.userRepository = userRepository;
             this.companyService = companyService;
@@ -303,6 +306,220 @@ namespace leavedays.Controllers
         {
             var result = licenseService.GetAdwenchedSearchLicenseInfo(option);
             return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        [Authorize(Roles = "financeadmin")]
+        [HttpGet]
+        public ActionResult Modules()
+        {
+            var licenses = defaultLicenseRepository.GetAll();
+            var modules = defaultModuleRepository.GetAll();
+            var modulesInfo = modules.Select(m => new ModuleInfo()
+            {
+                Id = m.Id,
+                Name = m.Name,
+                Price = m.Price,
+                Description = m.Description,
+                Licenses = licenses.Where(l => l.DefaultModules.Select(k => k.Id).Contains(m.Id))
+            });
+            return View(modulesInfo);
+        }
+
+        [Authorize(Roles = "financeadmin")]
+        [HttpGet]
+        public ActionResult ModuleInfo(int id)
+        {
+            var module = defaultModuleRepository.GetById(id);
+            var licenses = defaultLicenseRepository.GetByModuleId(module.Id);
+            ModuleInfo moduleInfo = new ModuleInfo()
+            {
+                Id = module.Id,
+                Name = module.Name,
+                Description = module.Description,
+                Price = module.Price,
+                Licenses = licenses
+            };
+            return View(moduleInfo);
+        }
+
+        [Authorize(Roles = "financeadmin")]
+        [HttpGet]
+        public ActionResult EditModule(int id)
+        {
+            var module = defaultModuleRepository.GetById(id);
+            var moduleLicenses = defaultLicenseRepository.GetByModuleId(module.Id);
+            var allLicenses = defaultLicenseRepository.GetAll();
+            EditModuleModel editModule = new EditModuleModel()
+            {
+                Id = module.Id,
+                Name = module.Name,
+                Description = module.Description,
+                Price = module.Price,
+                ModuleLicenses = moduleLicenses.ToList(),
+                AllLicenses = allLicenses.ToList()
+            };
+            return View(editModule);
+        }
+
+        [Authorize(Roles = "financeadmin")]
+        [HttpPost]
+        public ActionResult EditModule(EditModuleModel editModule, string[] selectedLicenses)
+        {
+            var module = defaultModuleRepository.GetById(editModule.Id);
+            module.Name = editModule.Name;
+            module.Description = editModule.Description;
+            module.Price = editModule.Price;
+            var selectLicenses = defaultLicenseRepository.GetByNames(selectedLicenses.ToList());
+            var allLicenses = defaultLicenseRepository.GetAll();
+            if (selectedLicenses != null)
+            {
+                foreach (var license in allLicenses)
+                {
+                    if (selectLicenses.Select(m => m.Id).Contains(license.Id) && !license.DefaultModules.Select(l => l.Id).Contains(module.Id))
+                    {
+                        license.DefaultModules.Add(module);
+                    }
+                    else if (!selectLicenses.Select(m => m.Id).Contains(license.Id) && license.DefaultModules.Select(l => l.Id).Contains(module.Id))
+                    {
+                        license.DefaultModules = new HashSet<DefaultModule>(license.DefaultModules.Where(m => m.Id != module.Id));
+                    }
+                }
+            }
+            else
+            {
+                foreach (var license in allLicenses)
+                {
+                    license.DefaultModules = new HashSet<DefaultModule>(license.DefaultModules.Where(m => m.Id != module.Id));
+                }
+            }
+            defaultLicenseRepository.Save(allLicenses.ToList());
+            defaultModuleRepository.Save(module);
+            return RedirectToAction("ModuleInfo", new { id = module.Id });
+        }
+
+        [Authorize(Roles = "financeadmin")]
+        [HttpGet]
+        public ActionResult CreateModule()
+        {
+            EditModuleModel editModule = new EditModuleModel()
+            {
+                ModuleLicenses = new List<DefaultLicense>(),
+                AllLicenses = defaultLicenseRepository.GetAll().ToList()
+            };
+            return View(editModule);
+        }
+
+        [Authorize(Roles = "financeadmin")]
+        [HttpPost]
+        public ActionResult CreateModule(EditModuleModel editModule, string[] selectedLicenses)
+        {
+            DefaultModule defaultModule = new DefaultModule()
+            {
+                Name = editModule.Name,
+                Description = editModule.Description,
+                Price = editModule.Price
+            };
+            defaultModuleRepository.Save(defaultModule);
+            if(selectedLicenses != null)
+            {
+                var defaultLicenses = defaultLicenseRepository.GetByNames(selectedLicenses.ToList());
+                foreach(var license in defaultLicenses)
+                {
+                    license.DefaultModules.Add(defaultModule);
+                }
+                defaultLicenseRepository.Save(defaultLicenses.ToList());
+                var licenses = licenseRepository.GetByDefaultLicenseIds(defaultLicenses.Select(m => m.Id).ToArray());
+                foreach(var license in licenses)
+                {
+                    Module module = new Module()
+                    {
+                        DefaultModuleId = defaultModule.Id,
+                        Price = defaultModule.Price,
+                        LicenseId = license.Id,
+                        IsActive = false,
+                    };
+                    moduleRepository.Save(module);
+                }
+            }
+            return RedirectToAction("ModuleInfo", new { id = defaultModule.Id});
+        }
+
+        [Authorize(Roles = "financeadmin")]
+        [HttpGet]
+        public ActionResult Customers()
+        {
+            var customers = userRepository.GetCustomers();
+            var companys = companyService.GetCompanysByCompanyIds(customers.Select(m => m.CompanyId).ToArray());
+            var licenses = licenseRepository.GetAll();
+            var usersInfo = customers.Select(m => new UserInfoViewModel()
+            {
+                Id = m.Id,
+                FirstName = m.FirstName,
+                LastName = m.LastName,
+                Company = companys.Where(c => c.Id == m.CompanyId).First(),
+                License = licenses.Where(l => l.Id == companys.Where(c => c.Id == m.CompanyId).First().LicenseId).First()
+            });
+            return View(usersInfo);
+        }
+
+        [Authorize(Roles = "financeadmin")]
+        [HttpGet]
+        public ActionResult CustomerInfo(int id)
+        {
+            var customer = userRepository.GetById(id);
+            var company = companyService.GetById(customer.CompanyId);
+            var license = licenseRepository.GetById(company.LicenseId);
+            UserInfoViewModel customerInfo = new UserInfoViewModel()
+            {
+                Id = customer.Id,
+                FirstName = customer.FirstName,
+                LastName = customer.LastName,
+                Company = company,
+                License = license,
+                Modules = moduleRepository.GetByLicenseId(license.Id).Select(m => new Models.ViewModels.License.ModuleInfo()
+                {
+                    Id = m.Id,
+                    Name = defaultModuleRepository.GetById(m.DefaultModuleId).Name,
+                    Price = m.Price,
+                    isLocked = m.IsLocked
+                }).ToList()
+            };
+            return View(customerInfo);
+        }
+
+        [Authorize(Roles = "financeadmin")]
+        [HttpPost]
+        public JsonResult EditCustomerModules(int licenseId, ModuleInfo[] modules, string startDate = "")
+        {
+            var defaultModules = moduleRepository.GetByLicenseId(licenseId);
+            List<ModuleChange> modulesChange = new List<ModuleChange>();
+            List<ModuleInfo> modulesInfo = new List<Models.ViewModels.License.ModuleInfo>();
+            foreach(var defModule in defaultModules)
+            {
+                var res = modules.Where(m => m.Id == defModule.Id && (m.isLocked != defModule.IsLocked || m.Price != defModule.Price));
+                if(res.Count() > 0)
+                {
+                    modulesInfo.Add(res.First());
+                }
+            }
+            if (modulesInfo.Count > 0)
+            {
+                string[] date = startDate.Split('.');
+                foreach (ModuleInfo module in modulesInfo)
+                {
+                    ModuleChange moduleChange = new ModuleChange()
+                    {
+                        ModuleId = module.Id,
+                        IsLocked = module.isLocked,
+                        Price = module.Price,
+                        StartDate = new DateTime(int.Parse(date[2]), int.Parse(date[1]), int.Parse(date[0]))
+                    };
+                    modulesChange.Add(moduleChange);
+                }
+                moduleChangeRepository.Save(modulesChange);
+                return Json("All changes was saved");
+            }
+            return Json("It is nothing to change");
         }
     }
 }

@@ -11,7 +11,5 @@ namespace leavedays.Models
         public virtual int DefaultLicenseId { get; set; }
         public virtual double Price { get; set; }
         public virtual string LicenseCode { get; set; }
-
-      
     }
 }

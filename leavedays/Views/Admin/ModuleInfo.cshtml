@@ -1,0 +1,46 @@
+﻿@using leavedays.Models.ViewModels.License
+
+@model ModuleInfo
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Modules";
+}
+<div class="detail_content">
+    <fieldset>
+        <div class="display-label">
+            Module Name
+        </div>
+        <div class="display-field">
+            @Model.Name
+        </div>
+        <br />
+        <div class="display-label">
+            Description
+        </div>
+        <div class="display-field">
+            @Model.Description
+        </div>
+        <br />
+        <div class="display-label">
+            Price
+        </div>
+        <div class="display-field">
+            @Model.Price
+        </div>
+        <br />
+        <div class="display-label">
+            Licenses
+        </div>
+        <div class="display-field">
+            <ul style="list-style:circle">
+                @foreach (var license in Model.Licenses)
+                {
+                    <li>@license.Name</li>
+                }
+            </ul>
+        </div>
+        <br />
+    </fieldset>
+</div>
+<a href="/Admin/EditModule?id=@Model.Id">Edit module</a>

@@ -4,8 +4,50 @@ The base color for this template is #5c87b2. If you'd like
 to use a different color start by replacing all instances of
 #5c87b2 with your new color.
 ----------------------------------------------------------*/
+
+#confirmPopUp{
+    width:300px;
+    height:150px;
+    border:2px solid black;
+    border-radius:10px;
+}
+
+#confirmPopUp p{
+    text-align:center;
+    color:black;
+    font-size:18px;
+}
+
+#confirmPopUp button{
+    margin-top:15px;
+    margin-left:32px;
+    background-color:transparent;
+    padding:10px 30px;
+    border:1px solid black;
+    font-size:25px;
+}
+
+#confirmYes:hover {
+    cursor: pointer;
+    background-color: rgb(140, 200, 60);
+    color:white;
+}
+
+#confirmNo:hover{
+    cursor: pointer;
+    background-color: lightcoral;
+    color: white;
+}
+
 .hide {
     display: none;
+}
+
+#showModule{
+    border:none;
+    text-decoration:underline;
+    background-color:transparent;
+    padding:0px;
 }
 
 #adwenchedSearchTable label {
@@ -70,7 +112,7 @@ to use a different color start by replacing all instances of
     background-color: #FFCA73;
 }
 
-#searchField {
+#standartSearch #searchField {
     width: 60%;
     height: 20px;
     padding: 5px 10px;
@@ -191,13 +233,13 @@ span.arrow {
 }
 
 
-table#invoiceTable {
+table#invoiceTable, table#moduleTable {
     background-color: white;
     font-family: Arial;
     font-size: 11px;
 }
 
-    table#invoiceTable thead {
+    table#invoiceTable thead, table#moduleTable thead {
         background-color: white;
         color: gray;
         font-size: 14px;
@@ -207,12 +249,35 @@ table#invoiceTable {
         border-bottom: 1px solid rgb(140, 200, 60);
     }
 
-    table#invoiceTable tfoot {
+    table#invoiceTable tfoot, table#moduleTable tfoot {
         border-top: 1px solid rgb(140, 200, 60);
     }
 
-    table#invoiceTable tr td {
+    table#invoiceTable tr td, table#moduleTable tr td {
         padding: 10px 0px;
+    }
+
+    table#moduleTable tbody tr:hover{
+        cursor:pointer;
+        background-color:lightgray;
+        color:black;
+    }
+
+    table#moduleTable #addModule:hover {
+        background-color: rgb(140, 200, 60);
+        border-color:lightgray;
+        cursor:pointer;
+    }
+
+    table#moduleTable #addModule {
+        top:-11px;
+        position:relative;
+        background-color: white;
+        border: 1px solid rgb(140, 200, 60);
+        font-size:25px;
+        font-weight:bold;
+        color:white;
+        background-color:lightgray;
     }
 
 table.searchLicense {

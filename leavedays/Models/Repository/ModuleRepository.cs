@@ -35,6 +35,17 @@ namespace leavedays.Models.Repository
             }
         }
 
+        public IList<Module> GetByLockStatus(int licenseId, bool lockStatus)
+        {
+            using (var session = sessionFactory.OpenSession())
+            {
+                return session.CreateCriteria<Module>().
+                    Add(Restrictions.Eq("IsLocked", lockStatus)).
+                    List<Module>();
+                    
+            }
+        }
+
         public IList<Module> GetByLicenseId(int licensId, bool? isActive = null)
         {
             using (var session = sessionFactory.OpenSession())
