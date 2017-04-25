@@ -1,0 +1,51 @@
+﻿@using leavedays.Models.ViewModels.License
+
+@model IEnumerable<ModuleInfo>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Modules";
+}
+<table id="moduleTable">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Price</th>
+            <th>Licenses</th>
+        </tr>
+    </thead>
+    <tfoot>
+        <tr>
+            <td><button id="addModule" title="Create new module">+</button></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+    </tfoot>
+    <tbody>
+        @foreach (var module in Model)
+        {
+            <tr>
+                <td>
+                    <input type="hidden" value="@module.Id"/>
+                    @module.Name
+                </td>
+                <td>@module.Description</td>
+                <td>@module.Price</td>
+                <td>
+                    @foreach (var license in @module.Licenses)
+                    {
+                        @license.Name<br />
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<script>
+    $("#moduleTable tbody").on("click", "tr", function (e) {
+        var index = $(this).find("input");
+    });
+</script>
+

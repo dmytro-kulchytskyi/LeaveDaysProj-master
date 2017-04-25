@@ -49,7 +49,7 @@ namespace leavedays.Models.Repository
             {
                 using (var t = session.BeginTransaction())
                 {
-                    session.Save(module);
+                    session.SaveOrUpdate(module);
                     t.Commit();
                     return module.Id;
                 }

@@ -1,0 +1,59 @@
+﻿@using leavedays.Models.ViewModels.License
+
+@model EditModuleModel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Edit Module";
+}
+
+@using (Html.BeginForm("EditModule", "Admin"))
+{
+    <div class="detail_content">
+        <fieldset>
+            @Html.HiddenFor(model => model.Id)
+            <div class="display-label">
+                @Html.LabelFor(model => model.Name)
+            </div>
+            <div class="display-field">
+                @Html.EditorFor(model => model.Name)
+            </div>
+            <br />
+            <div class="display-label">
+                @Html.LabelFor(model => model.Description)
+            </div>
+            <div class="display-field">
+                @Html.EditorFor(model => model.Description)
+            </div>
+            <br />
+            <div class="display-label">
+                @Html.LabelFor(model => model.Price)
+            </div>
+            <div class="display-field">
+                @Html.EditorFor(model => model.Price)
+            </div>
+            <br />
+            <div class="display-label">
+                @Html.LabelFor(model => model.ModuleLicenses)
+            </div>
+            <div class="display-field">
+                <select name="selectedLicenses" multiple>
+                    @foreach (var license in Model.AllLicenses)
+                {
+                    if (Model.ModuleLicenses.Select(m => m.Id).Contains(license.Id))
+                    {
+                            <option value="@license.Name" selected>@license.Name</option>
+                        }
+                        else
+                        {
+                            <option value="@license.Name">@license.Name</option>
+                        }
+                    }
+                </select>
+            </div>
+            <br />
+        </fieldset>
+    </div>
+    <input type="submit" value="Save" />
+}
+

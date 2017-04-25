@@ -21,7 +21,11 @@ namespace leavedays.Models.Repository
 
         public IList<AppUser> GetAll()
         {
-            throw new NotImplementedException();
+            using (var session = sessionFactory.OpenSession())
+            {
+                return session.CreateCriteria<AppUser>().
+                    List<AppUser>();
+            }
         }
 
         public IList<AppUser> GetByCompanyId(int companyId)
@@ -88,6 +92,17 @@ namespace leavedays.Models.Repository
                     t.Commit();
                     return user.Id;
                 }
+            }
+        }
+
+        public IList<AppUser> GetCustomers()
+        {
+            using (var session = sessionFactory.OpenSession())
+            {
+                return session.CreateCriteria<AppUser>().
+                     CreateAlias("Roles", "roles").
+                    Add(Restrictions.Eq("roles.Name", "customer")).
+                    List<AppUser>();
             }
         }
     }

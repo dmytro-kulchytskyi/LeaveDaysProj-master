@@ -9,6 +9,7 @@
     <property name="DefaultModuleId" />
     <property name="Price" />
     <property name="IsActive" />
+    <property name="IsLocked" />
     <property name="LicenseId" />
   </class>
 

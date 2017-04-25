@@ -86,10 +86,30 @@ namespace leavedays.Models.Repository
             {
                 using (var t = session.BeginTransaction())
                 {
-                    session.Save(license);
+                    session.SaveOrUpdate(license);
                     t.Commit();
                     return license.Id;
                 }
+            }
+        }
+
+        public IList<License> GetByDefaultLicenseId(int id)
+        {
+            using (var session = sessionFactory.OpenSession())
+            {
+                return session.CreateCriteria<License>().
+                    Add(Restrictions.Eq("DefaultLicenseId", id)).
+                    List<License>();
+            }
+        }
+
+        public IList<License> GetByDefaultLicenseIds(int[] id)
+        {
+            using (var session = sessionFactory.OpenSession())
+            {
+                return session.CreateCriteria<License>().
+                    Add(Restrictions.In("DefaultLicenseId", id)).
+                    List<License>();
             }
         }
     }

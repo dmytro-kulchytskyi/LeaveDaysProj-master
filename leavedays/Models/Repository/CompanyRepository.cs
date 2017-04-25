@@ -76,5 +76,17 @@ namespace leavedays.Models.Repository
                 }
             }
         }
+
+        public int GetUsersCount(int companyId)
+        {
+            using (var session = sessionFactory.OpenSession())
+            {
+                var result = session.CreateCriteria<AppUser>()
+                    .SetProjection(Projections.RowCount())
+                    .Add(Restrictions.Eq("CompanyId", companyId))
+                    .UniqueResult<int>();
+                return result;
+            }
+        }
     }
 }

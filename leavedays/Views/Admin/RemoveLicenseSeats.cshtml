@@ -1,0 +1,121 @@
+﻿@using leavedays.Models.ViewModels.License;
+@using leavedays.Models;
+@model LicenseInformation
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="bordered">
+    <h2>Remove Licenses</h2>
+    <br />
+    <table>
+        <tr>
+            <td>Name</td>
+            <td>@Model.LicenseName</td>
+
+        </tr>
+        <tr>
+            <td>License Code</td>
+            <td>@Model.LicenseCode</td>
+        </tr>
+
+        <tr>
+            <td>Current Package</td>
+            <td>@Model.LicenseName @Model.Price per user per month.</td>
+        </tr>
+        <tr>
+            <td>Add Licenses</td>
+            <td>
+                <div>@Html.TextBox("Count") <span> @Model.LicenseName licenses less.</span></div>
+                
+            </td>
+        </tr>
+    </table>
+    <div id="info" style="display: none; margin: 25px 0 0  20%;">
+        <span>
+            You save: $<span id="price">@Model.Price</span> per user per month.
+        </span>
+        <br />
+        <span>
+            You have <span id="total">@Model.LicensesCount</span> licenses of which <span id="active">@Model.ActiveLicensesCount</span> active.
+        </span>
+        <br />
+        <span>
+            This will result in <span id="tatalCosts"></span> save per month.
+        </span>
+        <br />
+        <span>
+            Please confirm by clicking "Save" below.
+        </span>
+    </div>
+</div>
+<div style="margin-left: 10px;">
+    <input type="button" value="Save" id="submit" />
+</div>
+
+<script>
+    $(document).ready(function () {
+        var msg = $('.successMessage');
+
+        var submit = $('#submit');
+
+        var info = $('#info');
+        var priceNum = parseInt($('#price').html(), 10);
+        var activeSeatsNum = parseInt($('#active').html(), 10);
+
+        var textBox = $('input[name=Count]');
+        $(textBox).addClass('licenseSeatsTextBox');
+        var total = $('#total');
+        var totalCostsFiled = $('#tatalCosts');
+       
+        $(totalCostsFiled).html(priceNum * parseInt($('#total').html(), 10));
+
+        $(textBox).on('input', function () {
+            $(info).show();
+            var num = parseInt($(this).val(), 10);
+            console.log(num);
+            if (isNaN(num) || num <= 0 || parseInt($(total).html(), 10) - activeSeatsNum - num < 0) {
+                $(textBox).toggleClass('redBorder', true);
+                $(info).hide();
+            }
+            else {
+                if ($(textBox).hasClass('redBorder')) {
+                    $(textBox).toggleClass('redBorder', false);
+                }
+                $(totalCostsFiled).html(priceNum *  num);
+            }
+            
+        });
+
+        $(submit).on('click', function () {
+            var val = parseInt($(textBox).val(), 10);
+            console.log('1313131213');
+            if (val >= 0 && parseInt($(total).html(), 10) - activeSeatsNum - val >= 0) {
+                $.ajax({
+                    url: location.origin + '/Admin/RemoveLicenseSeats',
+                    type: "POST",
+                    dataType: "json",
+                    data: {
+                        count: val
+                    }
+                }).done(function (data) {
+                    if (data == 1) {
+                        alert('Success!');
+                        $(textBox).val('');
+                        var newTotalNum = parseInt($(total).html(), 10) - val;
+                        $(total).html(newTotalNum);
+                        $(info).hide();
+                    }
+                    else
+                    {
+                        alert('Error');
+                    }
+                });
+            }
+        });
+
+        function msgFadeout()
+        {
+            $(msg).fadeOut(500);
+        }
+    });
+</script>

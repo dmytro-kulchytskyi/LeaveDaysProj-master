@@ -201,6 +201,7 @@
     <EmbeddedResource Include="Models\Nhibernate\DefaultLicense.hbm.xml" />
     <EmbeddedResource Include="Models\Nhibernate\DefaultModule.hbm.xml" />
     <EmbeddedResource Include="Models\Nhibernate\Invoice.hbm.xml" />
+    <EmbeddedResource Include="Models\Nhibernate\ModuleChange.hbm.xml" />
     <Content Include="Scripts\datepicker.min.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
     <Content Include="Scripts\analytics.js" />
@@ -211,7 +212,9 @@
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\NinjectWebCommon.cs" />
@@ -224,6 +227,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="IdentityHelper.cs" />
     <Compile Include="Models\Company.cs" />
     <Compile Include="Models\DefaultLicense.cs" />
     <Compile Include="Models\DefaultModule.cs" />
@@ -234,7 +238,9 @@
     <Compile Include="Models\Identity\Principal.cs" />
     <Compile Include="Models\Invoice.cs" />
     <Compile Include="Models\License.cs" />
+    <Compile Include="Models\LicenseInformation.cs" />
     <Compile Include="Models\Module.cs" />
+    <Compile Include="Models\ModuleChange.cs" />
     <Compile Include="Models\Repository\CompanyRepository.cs" />
     <Compile Include="Models\Repository\DefaultLicenseRepository.cs" />
     <Compile Include="Models\Repository\Interfaces\ICompanyRepository.cs" />
@@ -242,6 +248,7 @@
     <Compile Include="Models\Repository\Interfaces\IDefaultModuleRepository.cs" />
     <Compile Include="Models\Repository\Interfaces\IInvoiceRepository.cs" />
     <Compile Include="Models\Repository\Interfaces\ILicenseRepository.cs" />
+    <Compile Include="Models\Repository\Interfaces\IModuleChangeRepository.cs" />
     <Compile Include="Models\Repository\Interfaces\IRequestRepository.cs" />
     <Compile Include="Models\Repository\Interfaces\IRoleRepository.cs" />
     <Compile Include="Models\Repository\Interfaces\IModuleRepository.cs" />
@@ -249,6 +256,7 @@
     <Compile Include="Models\Repository\InvoiceRepository.cs" />
     <Compile Include="Models\Repository\LicenseRepository.cs" />
     <Compile Include="Models\Repository\DefaultModuleRepository.cs" />
+    <Compile Include="Models\Repository\ModuleChangeRepository.cs" />
     <Compile Include="Models\Repository\RequestRepository.cs" />
     <Compile Include="Models\Repository\RoleRepository.cs" />
     <Compile Include="Models\Repository\ModuleRepository.cs" />
@@ -262,9 +270,12 @@
     <Compile Include="Models\ViewModels\Account\RegisterViewModel.cs" />
     <Compile Include="Models\ViewModels\License\CreateLicense.cs" />
     <Compile Include="Models\ViewModels\License\EditLicenseModules.cs" />
+    <Compile Include="Models\ViewModels\License\EditLicenseSeatsModel.cs" />
+    <Compile Include="Models\ViewModels\License\EditModuleModel.cs" />
     <Compile Include="Models\ViewModels\License\InvoiceForDownload.cs" />
     <Compile Include="Models\ViewModels\License\InvoiceView.cs" />
     <Compile Include="Models\ViewModels\License\ModuleInfo.cs" />
+    <Compile Include="Models\ViewModels\License\UserInfoViewModel.cs" />
     <Compile Include="Models\ViewModel\LicenseInfo.cs" />
     <Compile Include="Models\ViewModel\ViewRequest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -273,6 +284,7 @@
     <Compile Include="Services\LicenseService.cs" />
     <Compile Include="Services\RequestService.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="StringHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\web.config" />
@@ -302,8 +314,15 @@
     <Content Include="Views\Admin\EnableModules.cshtml" />
     <Content Include="Views\Admin\DisableModules.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Admin\AddLicenseSeats.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
-    <Content Include="Views\Admin\CreateLicense.cshtml" />
+    <Content Include="Views\Admin\Modules.cshtml" />
+    <Content Include="Views\Admin\ModuleInfo.cshtml" />
+    <Content Include="Views\Admin\EditModule.cshtml" />
+    <Content Include="Views\Admin\CreateModule.cshtml" />
+    <Content Include="Views\Admin\Customers.cshtml" />
+    <Content Include="Views\Admin\CustomerInfo.cshtml" />
+    <Content Include="Views\Admin\RemoveLicenseSeats.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

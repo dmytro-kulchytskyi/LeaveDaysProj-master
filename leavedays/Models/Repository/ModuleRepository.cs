@@ -35,6 +35,17 @@ namespace leavedays.Models.Repository
             }
         }
 
+        public IList<Module> GetByLockStatus(int licenseId, bool lockStatus)
+        {
+            using (var session = sessionFactory.OpenSession())
+            {
+                return session.CreateCriteria<Module>().
+                    Add(Restrictions.Eq("IsLocked", lockStatus)).
+                    List<Module>();
+                    
+            }
+        }
+
         public IList<Module> GetByLicenseId(int licensId, bool? isActive = null)
         {
             using (var session = sessionFactory.OpenSession())
@@ -58,6 +69,24 @@ namespace leavedays.Models.Repository
                     session.SaveOrUpdate(module);
                     t.Commit();
                     return module.Id;
+                }
+            }
+        }
+
+        public IEnumerable<int> Save(IEnumerable<Module> modules)
+        {
+            using (var session = sessionFactory.OpenSession())
+            {
+                using (var t = session.BeginTransaction())
+                {
+                    var ids = new HashSet<int>();
+                    foreach (var m in modules)
+                    {
+                        session.SaveOrUpdate(m);
+                        ids.Add(m.Id);
+                    }
+                    t.Commit();
+                    return ids;
                 }
             }
         }

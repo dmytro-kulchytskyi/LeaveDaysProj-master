@@ -87,6 +87,8 @@ namespace leavedays.App_Start
             kernel.Bind<ILicenseRepository>().To<LicenseRepository>();
             kernel.Bind<IModuleRepository>().To<ModuleRepository>();
 
+            kernel.Bind<IModuleChangeRepository>().To<ModuleChangeRepository>();
+
             kernel.Bind<IDefaultLicenseRepository>().To<DefaultLicenseRepository>();
             kernel.Bind<IDefaultModuleRepository>().To<DefaultModuleRepository>();
             kernel.Bind<IInvoiceRepository>().To<InvoiceRepository>();

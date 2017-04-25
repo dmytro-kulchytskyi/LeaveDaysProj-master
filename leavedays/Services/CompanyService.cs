@@ -28,16 +28,6 @@ namespace leavedays.Services
         private readonly IRoleRepository roleRepository;
         private readonly IUserRepository userRepository;
 
-        public string[] SplitLine(string line)
-        {
-            if (string.IsNullOrWhiteSpace(line))
-                return new string[0];
-            line = line.Trim(',');
-            var roles = line.Split(',');
-            if (roles.Length == 0)
-                return new string[0];
-            else return roles;
-        }
 
         public License CreateLicense(DefaultLicense defaultLicense)
         {
@@ -45,22 +35,20 @@ namespace leavedays.Services
             {
                 DefaultLicenseId = defaultLicense.Id,
                 Price = defaultLicense.Price,
-                LicenseCode = Guid.NewGuid().ToString()                
+                LicenseCode = Guid.NewGuid().ToString(),
+                Seats = 1
             };
-
             licenseRepository.Save(license);
-            foreach (var defaultModule in defaultLicense.DefaultModules)
+
+            var modules = defaultLicense.DefaultModules.Select(defaultModule => new Module()
             {
-                var module = new Module()
-                {
-                    DefaultModuleId = defaultModule.Id,
-                    Price = defaultModule.Price,
-                    IsActive = true,
-                    LicenseId = license.Id
-                };
-                moduleRepository.Save(module);
-            }
-         
+                DefaultModuleId = defaultModule.Id,
+                Price = defaultModule.Price,
+                IsActive = true,
+                LicenseId = license.Id
+            });
+            moduleRepository.Save(modules);
+
             return license;
         }
 
