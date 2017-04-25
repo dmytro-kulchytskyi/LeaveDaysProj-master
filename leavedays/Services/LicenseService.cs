@@ -61,7 +61,7 @@ namespace leavedays.Services
 
             var defaultModules = modules.Select(module =>
             {
-                var m = defaultModuleRepository.GetById(module.Id);
+                var m = defaultModuleRepository.GetById(module.DefaultModuleId);
                 m.Price = module.Price;
                 return m;
             }).ToList();
