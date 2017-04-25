@@ -21,12 +21,13 @@
             <tr>
                 <td>
                     <input type="hidden" value="@user.Id" />
-                    @user.FirstName @user.LastName
+                    <a href="@Url.Action("CustomerInfo", "Admin", new { id = user.Id })"> @user.FirstName @user.LastName</a>
                 </td>
                 <td>@user.Company.FullName</td>
                 <td>@user.License.LicenseCode</td>
+
             </tr>
-                        }
+        }
     </tbody>
 </table>
 <script>

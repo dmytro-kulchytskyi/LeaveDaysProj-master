@@ -330,6 +330,7 @@ namespace leavedays.Controllers
         [HttpGet]
         public ActionResult EditModule(int id)
         {
+          
             var module = defaultModuleRepository.GetById(id);
             var moduleLicenses = defaultLicenseRepository.GetByModuleId(module.Id);
             var allLicenses = defaultLicenseRepository.GetAll();
@@ -349,6 +350,7 @@ namespace leavedays.Controllers
         [HttpPost]
         public ActionResult EditModule(EditModuleModel editModule, string[] selectedLicenses)
         {
+            if (!ModelState.IsValid) return RedirectToAction("EditModule", new { id = editModule.Id });
             var module = defaultModuleRepository.GetById(editModule.Id);
             module.Name = editModule.Name;
             module.Description = editModule.Description;
