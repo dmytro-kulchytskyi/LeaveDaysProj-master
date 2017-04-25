@@ -190,6 +190,8 @@ namespace leavedays.Controllers
             return View("ShowLicensesInfo", licenseService.GetLicenseInfoList());
         }
 
+        //-------
+
         [Authorize(Roles = "customer")]
         [HttpGet]
         public ActionResult EnableModules()
@@ -233,6 +235,41 @@ namespace leavedays.Controllers
             licenseService.EditModules(User.Identity.GetUserId<int>(), moduleNames, false);
             return Json(1);
         }
+
+        //-------
+        [Authorize(Roles = "customer")]
+        [HttpGet]
+        public ActionResult AddLicenseSeats()
+        {
+            var model = licenseService.GetLicenseInfo(User.Identity.GetUserId<int>());
+            return View(model);
+        }
+
+        [Authorize(Roles = "customer")]
+        [HttpPost]
+        public JsonResult AddLicenseSeats(int count)
+        {
+            var result = licenseService.EditLicenseSeats(User.Identity.GetUserId<int>(), count);
+            return Json(result);
+        }
+
+        [Authorize(Roles = "customer")]
+        [HttpGet]
+        public ActionResult RemoveLicenseSeats()
+        {
+            var model = licenseService.GetLicenseInfo(User.Identity.GetUserId<int>());
+            return View(model);
+        }
+
+        [Authorize(Roles = "customer")]
+        [HttpPost]
+        public JsonResult RemoveLicenseSeats(int count)
+        {
+            var result = licenseService.EditLicenseSeats(User.Identity.GetUserId<int>(), -count);
+            return Json(result);
+        }
+        //-------
+
 
 
 

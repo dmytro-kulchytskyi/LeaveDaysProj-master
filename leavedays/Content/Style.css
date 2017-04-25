@@ -7,6 +7,15 @@ to use a different color start by replacing all instances of
 .hide {
     display: none;
 }
+
+.licenseSeatsTextBox {
+    width: 20px;
+}
+
+.redBorder {
+    border: 2px solid red;
+}
+
 .bordered {
     margin: 10px;
     padding: 10px;

@@ -5,7 +5,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <div class="bordered">
-    <h2>Add Licenses</h2>
+    <h2>Remove Licenses</h2>
     <br />
     <table>
         <tr>
@@ -25,13 +25,14 @@
         <tr>
             <td>Add Licenses</td>
             <td>
-                <div>@Html.TextBox("Count") <span> @Model.LicenseName licenses more.</span></div>
+                <div>@Html.TextBox("Count") <span> @Model.LicenseName licenses less.</span></div>
+                
             </td>
         </tr>
     </table>
     <div id="info" style="display: none; margin: 25px 0 0  20%;">
         <span>
-            Extra costs: $<span id="price">@Model.Price</span> per user per month.
+            You save: $<span id="price">@Model.Price</span> per user per month.
         </span>
         <br />
         <span>
@@ -39,7 +40,7 @@
         </span>
         <br />
         <span>
-            This will result in <span id="tatalCosts"></span> extra per month.
+            This will result in <span id="tatalCosts"></span> save per month.
         </span>
         <br />
         <span>
@@ -70,10 +71,9 @@
 
         $(textBox).on('input', function () {
             $(info).show();
-            
             var num = parseInt($(this).val(), 10);
             console.log(num);
-            if (isNaN(num) || num <= 0) {
+            if (isNaN(num) || num <= 0 || parseInt($(total).html(), 10) - activeSeatsNum - num < 0) {
                 $(textBox).toggleClass('redBorder', true);
                 $(info).hide();
             }
@@ -87,11 +87,11 @@
         });
 
         $(submit).on('click', function () {
-           // console.log('EVFHSDGFHSDFJSDHFGJSFDGHJKSDFGSDJHFGSDFH');
             var val = parseInt($(textBox).val(), 10);
-            if (val >= 0) {
+            console.log('1313131213');
+            if (val >= 0 && parseInt($(total).html(), 10) - activeSeatsNum - val >= 0) {
                 $.ajax({
-                    url: location.origin + '/Admin/AddLicenseSeats',
+                    url: location.origin + '/Admin/RemoveLicenseSeats',
                     type: "POST",
                     dataType: "json",
                     data: {
@@ -101,7 +101,7 @@
                     if (data == 1) {
                         alert('Success!');
                         $(textBox).val('');
-                        var newTotalNum = parseInt($(total).html(), 10) + val;
+                        var newTotalNum = parseInt($(total).html(), 10) - val;
                         $(total).html(newTotalNum);
                         $(info).hide();
                     }

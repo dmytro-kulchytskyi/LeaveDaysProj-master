@@ -86,7 +86,7 @@ namespace leavedays.Models.Repository
             {
                 using (var t = session.BeginTransaction())
                 {
-                    session.Save(license);
+                    session.SaveOrUpdate(license);
                     t.Commit();
                     return license.Id;
                 }

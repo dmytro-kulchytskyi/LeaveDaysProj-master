@@ -136,14 +136,14 @@ namespace leavedays.Services
             var company = companyRepository.GetById(user.CompanyId);
             if (company == null) return 0;
 
+            var activeSeats = companyRepository.GetUsersCount(company.Id);
+
             var license = licenseRepository.GetById(company.Id);
             if (license == null) return 0;
 
-            if (count < 0)
-            {
-                if (license.Seats + count <= 0)
+           
+            if (license.Seats - activeSeats + count < 0)
                     return 0;
-            }
 
             license.Seats += count;
             licenseRepository.Save(license);
