@@ -53,6 +53,7 @@ namespace leavedays.Controllers
             this.invoiceService = invoiceService;
             this.defaultModuleRepository = defaultModuleRepository;
             this.defaultLicenseRepository = defaultLicenseRepository;
+            this.userManager = userManager;
         }
 
 
