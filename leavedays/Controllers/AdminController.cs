@@ -14,6 +14,7 @@ using System.Text;
 using System.IO;
 using CsvHelper;
 using CsvHelper.Configuration;
+using Hangfire;
 
 namespace leavedays.Controllers
 {
@@ -31,6 +32,7 @@ namespace leavedays.Controllers
         private readonly LicenseService licenseService;
         private readonly IDefaultModuleRepository defaultModuleRepository;
         private readonly IDefaultLicenseRepository defaultLicenseRepository;
+        private readonly EmailSenderService emailService;
 
 
         public AdminController(
@@ -44,8 +46,10 @@ namespace leavedays.Controllers
            IModuleRepository moduleRepository,
            InvoiceService invoiceService,
            IDefaultModuleRepository defaultModuleRepository,
-           IDefaultLicenseRepository defaultLicenseRepository)
+           IDefaultLicenseRepository defaultLicenseRepository,
+           EmailSenderService emailService)
         {
+            this.emailService = emailService;
             this.moduleChangeRepository = moduleChangeRepository;
             this.licenseService = licenseService;
             this.userRepository = userRepository;
@@ -66,7 +70,13 @@ namespace leavedays.Controllers
             return View();
         }
 
-        [Authorize(Roles = Roles.FinanceAdmin)]
+        public ActionResult Send()
+        {
+            EmailSenderService.Send(userRepository.GetCustomers());
+            return Content("ok");
+        }
+
+        [Authorize(Roles = "financeadmin")]
         [HttpGet]
         public ActionResult Invoices()
         {
@@ -332,7 +342,7 @@ namespace leavedays.Controllers
         [HttpGet]
         public ActionResult EditModule(int id)
         {
-          
+
             var module = defaultModuleRepository.GetById(id);
             var moduleLicenses = defaultLicenseRepository.GetByModuleId(module.Id);
             var allLicenses = defaultLicenseRepository.GetAll();
@@ -408,16 +418,16 @@ namespace leavedays.Controllers
                 Price = editModule.Price
             };
             defaultModuleRepository.Save(defaultModule);
-            if(selectedLicenses != null)
+            if (selectedLicenses != null)
             {
                 var defaultLicenses = defaultLicenseRepository.GetByNames(selectedLicenses.ToList());
-                foreach(var license in defaultLicenses)
+                foreach (var license in defaultLicenses)
                 {
                     license.DefaultModules.Add(defaultModule);
                 }
                 defaultLicenseRepository.Save(defaultLicenses.ToList());
                 var licenses = licenseRepository.GetByDefaultLicenseIds(defaultLicenses.Select(m => m.Id).ToArray());
-                foreach(var license in licenses)
+                foreach (var license in licenses)
                 {
                     Module module = new Module()
                     {
@@ -429,7 +439,7 @@ namespace leavedays.Controllers
                     moduleRepository.Save(module);
                 }
             }
-            return RedirectToAction("ModuleInfo", new { id = defaultModule.Id});
+            return RedirectToAction("ModuleInfo", new { id = defaultModule.Id });
         }
 
         [Authorize(Roles = Roles.FinanceAdmin)]
@@ -482,10 +492,10 @@ namespace leavedays.Controllers
             var defaultModules = moduleRepository.GetByLicenseId(licenseId);
             List<ModuleChange> modulesChange = new List<ModuleChange>();
             List<ModuleInfo> modulesInfo = new List<Models.ViewModels.License.ModuleInfo>();
-            foreach(var defModule in defaultModules)
+            foreach (var defModule in defaultModules)
             {
                 var res = modules.Where(m => m.Id == defModule.Id && (m.isLocked != defModule.IsLocked || m.Price != defModule.Price));
-                if(res.Count() > 0)
+                if (res.Count() > 0)
                 {
                     modulesInfo.Add(res.First());
                 }
@@ -525,11 +535,8 @@ namespace leavedays.Controllers
         [HttpPost]
         public JsonResult CreateLicense(string modulesLine, int id, string name)
         {
-            
+
             return Json("success");
         }
     }
-
-
-   
 }

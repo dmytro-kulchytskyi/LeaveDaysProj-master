@@ -7,6 +7,7 @@ namespace leavedays.Models.ViewModel
 {
     public class LicenseInfo
     {
+        public int UserId { get; set; }
         public int LicenseId { get; set; }
         public string LicenceCode { get; set; }
         public DateTime ExpirationDate { get; set; }
@@ -17,6 +18,7 @@ namespace leavedays.Models.ViewModel
         public string[] AvilableModules { get; set; }
         public int UsersNum { get; set; }
         public int UsedLicenses { get; set; }
+        public bool IsPaid { get; set; }
     }
 
     public class SearchOption

@@ -30,6 +30,19 @@
         </div>
         <br />
         <div class="display-label">
+            Payment state
+        </div>
+        <div class="display-field">
+            @if (Model.Company.IsPaid)
+            {
+                 <p>Payd</p>
+            }
+            else
+            {
+                <p>Unpayd</p>
+            }
+        </div><br />
+        <div class="display-label">
             <button id="showModule">Show modules panel</button>
         </div><br />
         <div id="modulePanel" class="hide">

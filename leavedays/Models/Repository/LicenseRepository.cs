@@ -40,7 +40,7 @@ namespace leavedays.Models.Repository
         {
             using (var session = sessionFactory.OpenSession())
             {
-                string sqlQuery = string.Format(@"SELECT (u.FirstName+u.LastName)AS ContactPerson, u.UserName AS Email, u.PhoneNumber, c.FullName AS CompanyName, l.LicenseId, l.LicenseCode AS LicenceCode ");
+                string sqlQuery = string.Format(@"SELECT (u.FirstName+u.LastName)AS ContactPerson, u.UserId, u.UserName AS Email, u.PhoneNumber, c.IsPaid, c.FullName AS CompanyName, l.LicenseId, l.LicenseCode AS LicenceCode ");
                 sqlQuery = string.Concat(sqlQuery, "FROM AppUser as u INNER JOIN Company AS c ON u.CompanyId = c.CompanyId INNER JOIN License AS l ON c.LicenseId = l.LicenseId INNER JOIN User_Role AS ur ON u.UserId = ur.UserId ");
                 sqlQuery = string.Concat(sqlQuery, "WHERE ur.RoleId = 3");
                 var licenses = session.CreateSQLQuery(sqlQuery).
@@ -54,11 +54,11 @@ namespace leavedays.Models.Repository
         {
             using (var session = sessionFactory.OpenSession())
             {
-                string sqlQuery = (@"SELECT(u.FirstName + u.LastName)AS ContactPerson, u.UserName AS Email, u.PhoneNumber, c.FullName AS CompanyName, l.LicenseId, l.LicenseCode AS LicenceCode ");
+                string sqlQuery = (@"SELECT(u.FirstName + u.LastName)AS ContactPerson, u.UserId, u.UserName AS Email, u.PhoneNumber, c.IsPaid, c.FullName AS CompanyName, l.LicenseId, l.LicenseCode AS LicenceCode ");
                 sqlQuery = string.Concat(sqlQuery, "FROM AppUser as u INNER JOIN Company AS c ON u.CompanyId = c.CompanyId INNER JOIN License AS l ON c.LicenseId = l.LicenseId INNER JOIN User_Role AS ur ON u.UserId = ur.UserId ");
-                sqlQuery = string.Concat(sqlQuery, "WHERE (ur.RoleId = 3) AND ((u.FirstName LIKE '%{0}%') OR (u.LastName LIKE '%{0}%') OR (u.PhoneNumber LIKE '%{0}%') OR (u.UserName LIKE '%{0}%') OR (c.FullName LIKE '%{0}%') OR (l.LicenseCode LIKE '%{0}%'))");
-                sqlQuery = string.Format(sqlQuery, searchedLine);
+                sqlQuery = string.Concat(sqlQuery, "WHERE (ur.RoleId = 3) AND ((u.FirstName LIKE :param) OR (u.LastName LIKE :param) OR (u.PhoneNumber LIKE :param) OR (u.UserName LIKE :param) OR (c.FullName LIKE :param) OR (l.LicenseCode LIKE :param))");
                 var licenses = session.CreateSQLQuery(sqlQuery).
+                    SetParameter("param", "%" + searchedLine + "%").
                     SetResultTransformer(Transformers.AliasToBean<LicenseInfo>()).
                     List<LicenseInfo>();
                 return licenses;
@@ -69,11 +69,16 @@ namespace leavedays.Models.Repository
         {
             using (var session = sessionFactory.OpenSession())
             {
-                string sqlQuery = (@"SELECT(u.FirstName + u.LastName)AS ContactPerson, u.UserName AS Email, u.PhoneNumber, c.FullName AS CompanyName, l.LicenseId, l.LicenseCode AS LicenceCode ");
+                string sqlQuery = (@"SELECT(u.FirstName + u.LastName)AS ContactPerson, u.UserId, u.UserName AS Email, u.PhoneNumber, c.IsPaid, c.FullName AS CompanyName, l.LicenseId, l.LicenseCode AS LicenceCode ");
                 sqlQuery = string.Concat(sqlQuery, "FROM AppUser as u INNER JOIN Company AS c ON u.CompanyId = c.CompanyId INNER JOIN License AS l ON c.LicenseId = l.LicenseId INNER JOIN User_Role AS ur ON u.UserId = ur.UserId ");
-                sqlQuery = string.Concat(sqlQuery, "WHERE (ur.RoleId = 3) AND (((u.FirstName + u.LastName) LIKE '%{0}%') AND (u.PhoneNumber LIKE '%{1}%') AND (u.UserName LIKE '%{2}%') AND (c.FullName LIKE '%{3}%') AND (l.LicenseCode LIKE '%{4}%'))");
+                sqlQuery = string.Concat(sqlQuery, "WHERE (ur.RoleId = 3) AND (((u.FirstName + u.LastName) LIKE :name) AND (u.PhoneNumber LIKE :phone) AND (u.UserName LIKE :email) AND (c.FullName LIKE :company) AND (l.LicenseCode LIKE :license))");
                 sqlQuery = string.Format(sqlQuery, option.ContactPerson, option.PhoneNumber, option.Email, option.CompanyName, option.LicenceCode);
                 var licenses = session.CreateSQLQuery(sqlQuery).
+                    SetParameter("name", "%" + option.ContactPerson + "%").
+                    SetParameter("phone", "%" + option.PhoneNumber + "%").
+                    SetParameter("email", "%" + option.Email + "%").
+                    SetParameter("company", "%" + option.CompanyName + "%").
+                    SetParameter("license", "%" + option.LicenceCode + "%").
                     SetResultTransformer(Transformers.AliasToBean<LicenseInfo>()).
                     List<LicenseInfo>();
                 return licenses;
@@ -81,7 +86,7 @@ namespace leavedays.Models.Repository
         }
 
         public int Save(License license)
-    {
+        {
             using (var session = sessionFactory.OpenSession())
             {
                 using (var t = session.BeginTransaction())
