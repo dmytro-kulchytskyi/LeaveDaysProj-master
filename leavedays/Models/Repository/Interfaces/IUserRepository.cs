@@ -17,5 +17,6 @@ namespace leavedays.Models.Repository.Interfaces
         AppUser GetOwnerByCompanyId(int companyId);
         IList<AppUser> GetOwnersByCompanyIds(IList<int> companyId);
         IList<AppUser> GetCustomers();
+        int Delete(AppUser user);
     }
 }

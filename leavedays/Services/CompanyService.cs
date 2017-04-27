@@ -1,61 +1,108 @@
 ﻿using leavedays.Models;
 using leavedays.Models.Repository.Interfaces;
+using leavedays.Models.ViewModels.Account;
+using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace leavedays.Services
 {
     public class CompanyService
     {
-        public CompanyService(IUserRepository userRepository, 
-            IRoleRepository roleRepository, 
-            ICompanyRepository companyRepository, 
-            ILicenseRepository licenseRepository, 
-            IModuleRepository moduleRepository)
+        public CompanyService(IUserRepository userRepository,
+            IRoleRepository roleRepository,
+            ICompanyRepository companyRepository,
+            ILicenseRepository licenseRepository,
+            IModuleRepository moduleRepository,
+            LicenseService licenseService)
         {
             this.moduleRepository = moduleRepository;
             this.licenseRepository = licenseRepository;
             this.companyRepository = companyRepository;
             this.roleRepository = roleRepository;
             this.userRepository = userRepository;
+            this.licenseService = licenseService;
         }
+
+        private readonly LicenseService licenseService;
         private readonly ILicenseRepository licenseRepository;
         private readonly IModuleRepository moduleRepository;
         private readonly ICompanyRepository companyRepository;
         private readonly IRoleRepository roleRepository;
         private readonly IUserRepository userRepository;
 
-
-        public License CreateLicense(DefaultLicense defaultLicense)
+        public bool IsCompanyDomainUniq(string domain)
         {
-            var license = new License()
-            {
-                DefaultLicenseId = defaultLicense.Id,
-                Price = defaultLicense.Price,
-                LicenseCode = Guid.NewGuid().ToString(),
-                Seats = 1
-            };
-            licenseRepository.Save(license);
+            return companyRepository.GetByUrlName(domain.ToLower()) == null;
+        }
 
-            var modules = defaultLicense.DefaultModules.Select(defaultModule => new Module()
+
+        public Result<Company> CreateCompany(string companyName, string domain, string licenseName)
+        {
+            if (!IsCompanyDomainUniq(domain))
             {
-                DefaultModuleId = defaultModule.Id,
-                Price = defaultModule.Price,
-                IsActive = true,
+                return Result<Company>.Error("A company with this URL already exists");
+            }
+            var licenseResult = licenseService.CreateLicense(licenseName);
+            if (!licenseResult.Succed)
+            {
+                return Result<Company>.Error("Error while creating new user");
+            }
+            var license = licenseResult.GetResult();
+            
+            var company = new Company()
+            {
+                FullName = companyName,
+                UrlName = domain,
                 LicenseId = license.Id
-            });
-            moduleRepository.Save(modules);
+            };
+            var companyId = companyRepository.Save(company);
+            if (companyId == 0)
+            {
+                return Result<Company>.Error("Error while creating new user");
+            }
+            return Result<Company>.Success(company);
+        }
 
-            return license;
+        public async Task<Result<AppUser>> CreateUserAsync(CreateUser userInfo, UserManager<AppUser, int> userManager)
+        {
+            var role = roleRepository.GetByName(userInfo.Role);
+            if (role == null)
+            {
+                return Result<AppUser>.Error("Error while creating new user");
+            }
+            var roles = new HashSet<Role>();
+            roles.Add(role);
+
+            var user = new AppUser()
+            {
+                FirstName = userInfo.FirstName,
+                LastName = userInfo.LastName,
+                Email = userInfo.Email,
+                UserName = userInfo.UserName,
+                CompanyId = userInfo.Comapany.Id,
+                PhoneNumber = userInfo.PhoneNumber,
+                Password = userInfo.Password,
+                Roles = roles
+            };
+
+            var result = await userManager.CreateAsync(user, user.Password);
+            if (!result.Succeeded)
+            {
+                return Result<AppUser>.Error(result.Errors.First());
+            }
+
+            return Result<AppUser>.Success(user);
         }
 
         public IEnumerable<Role> GetRolesList(IEnumerable<string> roles)
         {
-            var allRoles = roleRepository.GetAll();
-            var userRoles = allRoles.Where(x => roles.Contains(x.Name));
+            var userRoles = roleRepository.GetByName(roles);
+
             return userRoles;
         }
 

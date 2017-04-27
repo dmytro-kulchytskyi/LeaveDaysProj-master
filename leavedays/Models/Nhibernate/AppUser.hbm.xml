@@ -10,7 +10,7 @@
     <property name="CompanyId" />
     <property name="FirstName" />
     <property name="LastName" />
-
+    <property name="Email" />
     <property name="AccessFailedCount" />
     <property name="LockoutEnabled" />
     <property name="LockoutEnd" />
@@ -23,7 +23,5 @@
       <key column="UserId"/>
       <one-to-many class="Request"/>
     </bag>
-   
   </class>
-
 </hibernate-mapping>

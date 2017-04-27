@@ -66,7 +66,7 @@ namespace leavedays.Controllers
             return View();
         }
 
-        [Authorize(Roles = "financeadmin")]
+        [Authorize(Roles = Roles.FinanceAdmin)]
         [HttpGet]
         public ActionResult Invoices()
         {
@@ -130,7 +130,7 @@ namespace leavedays.Controllers
             //    stream.Seek(0, SeekOrigin.Begin);
             //    return File(stream, "text/csv", "Invoice" + id.ToString() + ".csv");
             //}
-            Stream stream = new MemoryStream();
+            var stream = new MemoryStream();
             TextWriter textWriter = new StreamWriter(stream);
 
             CsvConfiguration csvConfiguration = new CsvConfiguration();
@@ -186,7 +186,7 @@ namespace leavedays.Controllers
             return Content(invoice.Id.ToString());
         }
 
-        [Authorize(Roles = "financeadmin")]
+        [Authorize(Roles = Roles.FinanceAdmin)]
         [HttpGet]
         public ActionResult LicensesInfo()
         {
@@ -195,7 +195,7 @@ namespace leavedays.Controllers
 
         //-------
 
-        [Authorize(Roles = "customer")]
+        [Authorize(Roles = Roles.Customer)]
         [HttpGet]
         public ActionResult EnableModules()
         {
@@ -204,20 +204,22 @@ namespace leavedays.Controllers
             return View(model);
         }
 
-        [Authorize(Roles = "customer")]
+        [Authorize(Roles = Roles.Customer)]
         [HttpPost]
-        public JsonResult EnableModules(string modulesLine = "")
+        public ActionResult EnableModules(ModuleStatus model)
         {
-            if (string.IsNullOrEmpty(modulesLine)) return Json(0);
+           
+            //if (string.IsNullOrEmpty(modulesLine)) return Json(0);
 
-            var moduleNames = modulesLine.SplitByComma();
+            //var moduleNames = modulesLine.SplitByComma();
 
-            licenseService.EditModules(User.Identity.GetUserId<int>(), moduleNames, true);
+            //licenseService.EditModules(User.Identity.GetUserId<int>(), moduleNames, true);
             return Json(1);
+
         }
 
 
-        [Authorize(Roles = "customer")]
+        [Authorize(Roles = Roles.Customer)]
         [HttpGet]
         public ActionResult DisableModules()
         {
@@ -227,7 +229,7 @@ namespace leavedays.Controllers
         }
 
 
-        [Authorize(Roles = "customer")]
+        [Authorize(Roles = Roles.Customer)]
         [HttpPost]
         public JsonResult DisableModules(string modulesLine = "")
         {
@@ -240,7 +242,7 @@ namespace leavedays.Controllers
         }
 
         //-------
-        [Authorize(Roles = "customer")]
+        [Authorize(Roles = Roles.Customer)]
         [HttpGet]
         public ActionResult AddLicenseSeats()
         {
@@ -248,7 +250,7 @@ namespace leavedays.Controllers
             return View(model);
         }
 
-        [Authorize(Roles = "customer")]
+        [Authorize(Roles = Roles.Customer)]
         [HttpPost]
         public JsonResult AddLicenseSeats(int count)
         {
@@ -256,7 +258,7 @@ namespace leavedays.Controllers
             return Json(result);
         }
 
-        [Authorize(Roles = "customer")]
+        [Authorize(Roles = Roles.Customer)]
         [HttpGet]
         public ActionResult RemoveLicenseSeats()
         {
@@ -264,7 +266,7 @@ namespace leavedays.Controllers
             return View(model);
         }
 
-        [Authorize(Roles = "customer")]
+        [Authorize(Roles = Roles.Customer)]
         [HttpPost]
         public JsonResult RemoveLicenseSeats(int count)
         {
@@ -276,7 +278,7 @@ namespace leavedays.Controllers
 
 
 
-        [Authorize(Roles = "financeadmin")]
+        [Authorize(Roles = Roles.FinanceAdmin)]
         [HttpGet]
         public JsonResult GetSearchInvoice(string search = "")
         {
@@ -292,7 +294,7 @@ namespace leavedays.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
-        [Authorize(Roles = "financeadmin")]
+        [Authorize(Roles = Roles.FinanceAdmin)]
         [HttpGet]
         public ActionResult Modules()
         {
@@ -309,7 +311,7 @@ namespace leavedays.Controllers
             return View(modulesInfo);
         }
 
-        [Authorize(Roles = "financeadmin")]
+        [Authorize(Roles = Roles.FinanceAdmin)]
         [HttpGet]
         public ActionResult ModuleInfo(int id)
         {
@@ -326,7 +328,7 @@ namespace leavedays.Controllers
             return View(moduleInfo);
         }
 
-        [Authorize(Roles = "financeadmin")]
+        [Authorize(Roles = Roles.FinanceAdmin)]
         [HttpGet]
         public ActionResult EditModule(int id)
         {
@@ -383,7 +385,7 @@ namespace leavedays.Controllers
             return RedirectToAction("ModuleInfo", new { id = module.Id });
         }
 
-        [Authorize(Roles = "financeadmin")]
+        [Authorize(Roles = Roles.FinanceAdmin)]
         [HttpGet]
         public ActionResult CreateModule()
         {
@@ -395,7 +397,7 @@ namespace leavedays.Controllers
             return View(editModule);
         }
 
-        [Authorize(Roles = "financeadmin")]
+        [Authorize(Roles = Roles.FinanceAdmin)]
         [HttpPost]
         public ActionResult CreateModule(EditModuleModel editModule, string[] selectedLicenses)
         {
@@ -430,7 +432,7 @@ namespace leavedays.Controllers
             return RedirectToAction("ModuleInfo", new { id = defaultModule.Id});
         }
 
-        [Authorize(Roles = "financeadmin")]
+        [Authorize(Roles = Roles.FinanceAdmin)]
         [HttpGet]
         public ActionResult Customers()
         {
@@ -448,7 +450,7 @@ namespace leavedays.Controllers
             return View(usersInfo);
         }
 
-        [Authorize(Roles = "financeadmin")]
+        [Authorize(Roles = Roles.FinanceAdmin)]
         [HttpGet]
         public ActionResult CustomerInfo(int id)
         {
@@ -473,7 +475,7 @@ namespace leavedays.Controllers
             return View(customerInfo);
         }
 
-        [Authorize(Roles = "financeadmin")]
+        [Authorize(Roles = Roles.FinanceAdmin)]
         [HttpPost]
         public JsonResult EditCustomerModules(int licenseId, ModuleInfo[] modules, string startDate = "")
         {
@@ -527,4 +529,7 @@ namespace leavedays.Controllers
             return Json("success");
         }
     }
+
+
+   
 }

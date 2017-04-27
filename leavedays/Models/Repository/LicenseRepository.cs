@@ -112,5 +112,17 @@ namespace leavedays.Models.Repository
                     List<License>();
             }
         }
+
+        public void Delete(License license)
+        {
+            using (var session = sessionFactory.OpenSession())
+            {
+                using (var t = session.BeginTransaction())
+                {
+                    session.Delete(license);
+                    t.Commit();
+                }
+            }
+        }
     }
 }

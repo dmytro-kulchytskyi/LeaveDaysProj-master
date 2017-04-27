@@ -10,14 +10,14 @@ namespace leavedays.Models
 {
     public class AppUser : IUser<int>
     {
-        public virtual int Id { get; set; } = 0;
+        public virtual int Id { get; set; }
+        public virtual int CompanyId { get; set; }
         public virtual string UserName { get; set; }
         public virtual string Password { get; set; }
-        public virtual int CompanyId { get; set; }
         public virtual string FirstName { get; set; }
         public virtual string LastName { get; set; }
         public virtual string PhoneNumber { get; set; }
-
+        public virtual string Email { get; set; }
 
         public virtual int AccessFailedCount { get; set; }
         public virtual bool LockoutEnabled { get; set; }
@@ -36,7 +36,6 @@ namespace leavedays.Models
             }
         }
        
-
         private IList<Request> _requests;
         public virtual IList<Request> Requests
         {

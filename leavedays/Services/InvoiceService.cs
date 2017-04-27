@@ -34,6 +34,11 @@ namespace leavedays.Services
             return invoiceRepository.GetByDeleteStatus(status).ToList();
         }
 
+        public List<Invoice> GetInvoices()
+        {
+            return invoiceRepository.GetByDeleteStatus(false).ToList();
+        }
+
         public Invoice GetById(int id)
         {
             return invoiceRepository.GetById(id);
