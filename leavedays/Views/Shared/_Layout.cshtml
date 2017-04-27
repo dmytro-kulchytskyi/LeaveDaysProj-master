@@ -65,7 +65,7 @@
                             <div class="left" id="nav" style="font-size: 150%">
                                 <ul>
                                     <li>
-                                        Main
+                                        Customer
                                         <ul>
                                             @if (User.Identity.IsAuthenticated)
                                             {
@@ -96,16 +96,22 @@
                                         </ul>
 
                                     </li>
+    
+                                    @if (User.IsInRole("financeadmin")) {
                                     <li>
-                                        Other 1
+                                        Finance Admin
                                         <ul>
-                                            <li>@Html.ActionLink("confirmed request", "ShowConfirmed", "Module")</li>
-                                            <li>@Html.ActionLink("my request", "ShowSended", "Module")</li>
-                                            <li>@Html.ActionLink("License info", "licenceInfo", "Module")</li>
+                                            <li>@Html.ActionLink("Invoices", "Invoices", "Admin")</li>
+                                            <li>@Html.ActionLink("EnableModules", "EnableModules", "Admin")</li>
+                                            <li>@Html.ActionLink("DisableModules", "DisableModules", "Admin")</li>
+                                            <li>@Html.ActionLink("AddLicenseSeats", "AddLicenseSeats", "Admin")</li>
+                                            <li>@Html.ActionLink("RemoveLicenseSeats", "RemoveLicenseSeats", "Admin")</li>
+                                            <li>@Html.ActionLink("Modules", "Modules", "Admin")</li>
+                                            <li>@Html.ActionLink("Customers", "Customers", "Admin")</li>
                                         </ul>
-                                    </li>
+                                    </li>}
                                     <li>
-                                        Other 2
+                                        Other
                                         <ul>
                                             <li>@Html.ActionLink("Employee Owerview", "eOwerview", "Module")</li>
                                             <li>@Html.ActionLink("Calendar Owerview", "cOwerview", "Module")</li>
