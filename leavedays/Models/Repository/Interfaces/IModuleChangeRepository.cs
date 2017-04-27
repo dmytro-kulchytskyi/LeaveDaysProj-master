@@ -11,5 +11,6 @@ namespace leavedays.Models.Repository.Interfaces
         ModuleChange GetById(int id);
         IList<ModuleChange> GetByModuleId(int id);
         void Save(List<ModuleChange> modules);
+        IList<ModuleChange> GetByDate(int year, int month, int day);
     }
 }
