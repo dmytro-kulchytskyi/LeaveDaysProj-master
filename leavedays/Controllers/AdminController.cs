@@ -32,11 +32,10 @@ namespace leavedays.Controllers
         private readonly LicenseService licenseService;
         private readonly IDefaultModuleRepository defaultModuleRepository;
         private readonly IDefaultLicenseRepository defaultLicenseRepository;
-        private readonly ChangeService changeService;
+        private readonly EmailSenderService emailService;
 
 
         public AdminController(
-            ChangeService changeService,
            IModuleChangeRepository moduleChangeRepository,
            CompanyService companyService,
            IUserRepository userRepository,
@@ -47,9 +46,10 @@ namespace leavedays.Controllers
            IModuleRepository moduleRepository,
            InvoiceService invoiceService,
            IDefaultModuleRepository defaultModuleRepository,
-           IDefaultLicenseRepository defaultLicenseRepository)
+           IDefaultLicenseRepository defaultLicenseRepository,
+           EmailSenderService emailService)
         {
-            this.changeService = changeService;
+            this.emailService = emailService;
             this.moduleChangeRepository = moduleChangeRepository;
             this.licenseService = licenseService;
             this.userRepository = userRepository;
@@ -70,10 +70,10 @@ namespace leavedays.Controllers
             return View();
         }
 
-        public ActionResult ApplyChanges()
+        public ActionResult Send()
         {
-            RecurringJob.AddOrUpdate(() => changeService.ApplyChanges(), Cron.Daily());
-            return RedirectToAction("Index", "Home");
+            EmailSenderService.Send(userRepository.GetCustomers());
+            return Content("ok");
         }
 
         [Authorize(Roles = "financeadmin")]

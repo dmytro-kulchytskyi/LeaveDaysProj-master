@@ -351,19 +351,21 @@ table.searchLicense {
 }
 
     table.searchLicense thead > tr > th {
-        color: #5fc0c3;
+        color: rgb(140, 200, 60);
         font-family: Arial;
         font-size: 14px;
         padding: 10px;
         background-color: white;
     }
 
-    table.searchLicense tr:nth-child(2n) {
+    /*table.searchLicense tr:nth-child(2n) {
         background-color: #f0f0f0;
-    }
+    }*/
 
     table.searchLicense tr {
         border-bottom: 1px solid #ddd;
+        transition-property:all;
+        transition-duration: 0.3s;
     }
 
         table.searchLicense tr td {
@@ -372,6 +374,11 @@ table.searchLicense {
             font-size: 16px;
             padding: 10px;
         }
+    table.searchLicense tbody tr:hover {
+        cursor: pointer;
+        background-color: rgb(140, 200, 60);
+        color:white;
+    }
 
 body {
     background-color: #f2f2f2;

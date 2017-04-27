@@ -12,6 +12,7 @@
             <th>Name</th>
             <th>Company</th>
             <th>License code</th>
+            <th>Payment state</th>
         </tr>
     </thead>
     <tfoot></tfoot>
@@ -25,7 +26,14 @@
                 </td>
                 <td>@user.Company.FullName</td>
                 <td>@user.License.LicenseCode</td>
-
+                @if (@user.Company.IsPaid)
+                {
+                <td>Paid</td>
+                }
+                else
+                {
+                    <td>Unpaid</td>
+                }
             </tr>
         }
     </tbody>
