@@ -55,6 +55,7 @@ namespace leavedays.Controllers
             this.defaultModuleRepository = defaultModuleRepository;
             this.defaultLicenseRepository = defaultLicenseRepository;
             this.userManager = userManager;
+            this.requestService = requestService;
         }
 
 
