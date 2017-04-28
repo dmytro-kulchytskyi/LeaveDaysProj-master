@@ -4,9 +4,12 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+<script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
 <div class="bordered">
     <h2>Add Modules</h2>
     <br />
+
     <table>
         <tr>
             <td>Name</td>
@@ -20,24 +23,16 @@
         <tr>
             <td>Available for purchase modules</td>
             <td>
-                <table id="moduleTable">
-                    @if (Model.DefaultModules.Count == 0)
-                    {
-                        <text>No available for purchase modules</text>
-                    }
-                    else
-                    {
-                        foreach (var module in Model.DefaultModules)
-                        {
-                            <tr price="@module.Price">
-                                <td>@Html.CheckBox(module.Name)</td>
-                                <td>@module.Name</td>
-                                <td>@module.Price per person per month.</td>
-                            </tr>
-                        }
-                    }
-                </table>
-
+                @using (Ajax.BeginForm("EnableModules", new AjaxOptions
+                {
+                    UpdateTargetId = "tableBlock"
+                }))
+                {
+                    <div id="tableBlock">
+                        @Html.Partial("SwitchModules", Model.ModulesInfoList)
+                        
+                    </div>
+                }
             </td>
         </tr>
     </table>
@@ -51,7 +46,7 @@
         </span>
         <br />
         <span>
-            This will result in <span id="tatalCosts">0</span> extra per month.
+            This will result in $<span id="tatalCosts"></span> extra per month.
         </span>
         <br />
         <span>
@@ -59,13 +54,11 @@
         </span>
     </div>
 </div>
-<div style="margin-left: 10px;">
-    <input type="button" value="Submit" id="submit" />
-</div>
+
 
 <script>
     $(document).ready(function () {
-        
+
         var active = parseInt($('#active').html(), 10);
         var totalCostsFiled = $('#tatalCosts');
 
@@ -75,44 +68,26 @@
         var infoBlock = $('#info');
         var checked;
 
-        $(table).on('click', 'input[type="checkbox"]', function ()
-        {
+        $(table).on('click', 'input[type="checkbox"]', function () {
             var extraCostsNum = 0.0;
-            checked = $(table).find('td').find('input[type="checkbox"]:checked:not(.invisible)');
+            checked = $(table).find('td').find('input[type="checkbox"]:checked');
             $(checked).each(function (index, data) {
                 var tr = $(this).parent().parent();
                 extraCostsNum = parseFloat($(tr).attr('price')) + extraCostsNum;
-                console.log(parseFloat($(tr).attr('price')));
             });
 
             if (extraCostsNum > 0.0) {
                 $(price).html(extraCostsNum);
-                $(totalCostsFiled).html('$' + (extraCostsNum * active));
+                $(totalCostsFiled).html(extraCostsNum * active);
                 $(infoBlock).show();
             }
-            else
-            {
+            else {
                 $(infoBlock).fadeOut(200);
             }
         });
 
         $(submit).on('click', function () {
-            var line = '';
-            $(checked).each(function (index, data) {
-                line += $(this).attr('name') + ',';
-                var tr = $(this).parent().parent();
-                $(this).toggleClass('invisible', true);
-                $(infoBlock).hide();
-                $(tr).fadeOut(500);
-            });
-
-            $.ajax({
-                url: location.origin + '/Admin/EnableModules',
-                type: "POST",
-                data: {
-                    modulesLine: line
-                }
-            });
+            $(infoBlock).hide();
         });
     });
 </script>

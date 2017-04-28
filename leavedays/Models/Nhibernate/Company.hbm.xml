@@ -8,6 +8,7 @@
     <property name="FullName" />
     <property name="UrlName" />
     <property name="LicenseId" />
+    <property name="IsPaid" />
     <bag name="Invoices" inverse="true">
       <key column="CompanyId"/>
       <one-to-many class="Invoice"/>

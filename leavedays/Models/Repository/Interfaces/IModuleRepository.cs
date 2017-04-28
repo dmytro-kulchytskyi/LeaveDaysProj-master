@@ -12,8 +12,10 @@ namespace leavedays.Models.Repository.Interfaces
         IEnumerable<int> Save(IEnumerable<Module> modules);
         int Save(Module user);
         Module GetById(int id);
+        IList<Module> GetById(IEnumerable<int> ids);
         IList<Module> GetAll();
         IList<Module> GetByLicenseId(int licensId, bool? isActive =  null);
         IList<Module> GetByLockStatus(int licenseId, bool lockStatus);
+        void Delete(Module module);
     }
 }

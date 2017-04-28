@@ -90,5 +90,26 @@ namespace leavedays.Models.Repository
                 }
             }
         }
+
+        public void Delete(Module module)
+        {
+            using (var session = sessionFactory.OpenSession())
+            {
+                using (var t = session.BeginTransaction())
+                {
+                    session.Delete(module);
+                    t.Commit();
+                }
+            }
+        }
+
+        public IList<Module> GetById(IEnumerable<int> ids)
+        {
+            using (var session = sessionFactory.OpenSession())
+            {
+                var modules = ids.Select(id => session.Get<Module>(id)).ToList();
+                return modules;
+            }
+        }
     }
 }

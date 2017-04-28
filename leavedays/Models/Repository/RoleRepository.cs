@@ -43,16 +43,27 @@ namespace leavedays.Models.Repository
             }
         }
 
-        public int Save(Role group)
+        public IList<Role> GetByName(IEnumerable<string> names)
+        {
+            using (var session = sessionFactory.OpenSession())
+            {
+                var result = session.CreateCriteria<Role>()
+                    .Add(Restrictions.In("Name", names.ToArray()))
+                    .List<Role>();
+                return result;
+            }
+        }
+
+        public int Save(Role role)
         {
 
             using (var session = sessionFactory.OpenSession())
             {
                 using (var t = session.BeginTransaction())
                 {
-                    session.SaveOrUpdate(group);
+                    session.SaveOrUpdate(role);
                     t.Commit();
-                    return group.Id;
+                    return role.Id;
                 }
             }
         }

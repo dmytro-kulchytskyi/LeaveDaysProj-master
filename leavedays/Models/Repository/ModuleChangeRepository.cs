@@ -59,15 +59,13 @@ namespace leavedays.Models.Repository
         public void Save(List<ModuleChange> modules)
         {
             using (var session = sessionFactory.OpenSession())
+            using (var t = session.BeginTransaction())
             {
-                using (var t = session.BeginTransaction())
+                foreach (ModuleChange module in modules)
                 {
-                    foreach(ModuleChange module in modules)
-                    {
-                        session.SaveOrUpdate(module);
-                    }
-                    t.Commit();
+                    session.SaveOrUpdate(module);
                 }
+                t.Commit();
             }
         }
     }

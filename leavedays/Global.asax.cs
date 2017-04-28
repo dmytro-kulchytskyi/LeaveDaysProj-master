@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Hangfire;
+using leavedays.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -13,7 +15,8 @@ namespace leavedays
         {
             AreaRegistration.RegisterAllAreas();
             RouteConfig.RegisterRoutes(RouteTable.Routes);
-            
+            //RecurringJob.AddOrUpdate(() => ChangeService.ApplyChanges(), Cron.Daily());
+
         }
         void Application_AuthenticateRequest(object sender, EventArgs e)
         {

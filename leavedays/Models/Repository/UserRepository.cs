@@ -105,5 +105,19 @@ namespace leavedays.Models.Repository
                     List<AppUser>();
             }
         }
+
+        public int Delete(AppUser user)
+        {
+            using (var session = sessionFactory.OpenSession())
+            {
+                using (var t = session.BeginTransaction())
+                {
+                    session.Delete(user);
+                    return user.Id;
+                    t.Commit();
+                }
+            }
+        }
+        
     }
 }

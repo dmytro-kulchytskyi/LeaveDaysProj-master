@@ -13,8 +13,13 @@ namespace leavedays.Models.ViewModels.Account
 
         [ScaffoldColumn(false)]
         public string RolesLine { get; set; }
+
         [Required]
-        [RegularExpression(@"\d+", ErrorMessage = "Bad phone number")]
+        [EmailAddress]
+        public string Email { get; set; }
+
+        [Required]
+        [Phone(ErrorMessage = "Bad phone number")]
         public string PhoneNumber { get; set; }
 
         [Required]
@@ -23,9 +28,8 @@ namespace leavedays.Models.ViewModels.Account
 
         [Required]
         [StringLength(250)]
-        [RegularExpression("^([A-Za-z0-9])+$", ErrorMessage = "Company URL must contains only letters and digits")]
+        [RegularExpression("^([A-Za-z0-9])+$", ErrorMessage = "Invalid URL")]
         public string CompanyUrl { get; set; }
-
 
         [Required]
         [StringLength(250)]
@@ -46,7 +50,5 @@ namespace leavedays.Models.ViewModels.Account
 
         [ScaffoldColumn(false)]
         public IList<DefaultLicense> LicenseList { get; set; }
-
-
     }
 }

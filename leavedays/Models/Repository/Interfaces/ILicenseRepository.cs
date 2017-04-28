@@ -17,5 +17,6 @@ namespace leavedays.Models.Repository.Interfaces
         IList<LicenseInfo> GetAdwenchedSearchedInformation(SearchOption option);
         IList<License> GetByDefaultLicenseId(int id);
         IList<License> GetByDefaultLicenseIds(int[] id);
+        void Delete(License license);
     }
 }

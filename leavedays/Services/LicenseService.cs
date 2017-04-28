@@ -27,13 +27,68 @@ namespace leavedays.Services
           IDefaultModuleRepository defaultModuleRepository,
           IDefaultLicenseRepository defaultLicenseRepository)
         {
-            this.userRepository = userRepository;;
+            this.userRepository = userRepository;
             this.licenseRepository = licenseRepository;
             this.companyRepository = companyRepository;
             this.invoiceRepository = invoiceRepository;
             this.moduleRepository = moduleRepository;
             this.defaultLicenseRepository = defaultLicenseRepository;
             this.defaultModuleRepository = defaultModuleRepository;
+        }
+
+
+        public Result<License> CreateLicense(string name)
+        {
+            var defaultLicense = defaultLicenseRepository.GetByName(name);
+            if (defaultLicense == null)
+            {
+                return null;
+            }
+            return CreateLicense(defaultLicense);
+        }
+
+        public Result<License> CreateLicense(int id)
+        {
+            var defaultLicense = defaultLicenseRepository.GetById(id);
+            if (defaultLicense == null)
+            {
+                return null;
+            }
+            return CreateLicense(defaultLicense);
+        }
+
+        public Result<License> CreateLicense(DefaultLicense defaultLicense)
+        {
+            if (defaultLicense == null)
+            {
+                return Result<License>.Error();
+            }
+
+            var license = new License()
+            {
+                DefaultLicenseId = defaultLicense.Id,
+                Price = defaultLicense.Price,
+                LicenseCode = Guid.NewGuid().ToString(),
+                Seats = 1
+            };
+
+            var licenseId = licenseRepository.Save(license);
+            if (licenseId == 0)
+            {
+                licenseRepository.Delete(license);
+                return Result<License>.Error();
+            }
+
+            var modules = defaultLicense.DefaultModules.Select(defaultModule => new Module()
+            {
+                DefaultModuleId = defaultModule.Id,
+                Price = defaultModule.Price,
+                IsActive = true,
+                LicenseId = license.Id
+            });
+            var ids = moduleRepository.Save(modules);
+
+            return Result<License>.Success(license);
         }
 
         public List<LicenseInfo> GetLicenseInfoList()
@@ -54,10 +109,21 @@ namespace leavedays.Services
             return result;
         }
 
+        public IList<ModuleShortInfo> GetModulesShortInfo(License license, bool? moduleStatus = null)
+        {
+            return GetDefaultModules(license, moduleStatus).Select(m => new ModuleShortInfo()
+            {
+                DefaultModuleId = m.Id,
+                Name = m.Name,
+                Price = m.Price
+            }).ToList();
+        }
+
         public IList<DefaultModule> GetDefaultModules(License license, bool? moduleStatus = null)
         {
 
             var modules = moduleRepository.GetByLicenseId(license.Id, moduleStatus);
+                modules = modules.Where(m => !m.IsLocked).ToList();
 
             var defaultModules = modules.Select(module =>
             {
@@ -70,30 +136,52 @@ namespace leavedays.Services
 
         }
 
-        public int EditModules(int userId, IEnumerable<string> moduleNames, bool moduleStatus)
+        public Result<License> EditModules(int userId, IEnumerable<ModuleShortInfo> moduleStatusList, bool setEnable)
         {
             var user = userRepository.GetById(userId);
-            if (user == null) return 0;
+            if (user == null)
+            {
+                return Result<License>.Error();
+            }
 
             var companyId = user.CompanyId;
 
             var company = companyRepository.GetById(companyId);
-            if (company == null) return 0;
+            if (company == null)
+            {
+                return Result<License>.Error();
+            }
 
             var licenseId = company.LicenseId;
+            var switchedModulesIds = moduleStatusList.Where(m => m.Checked).Select(m => m.DefaultModuleId).ToList();
+            var allModules = moduleRepository.GetByLicenseId(licenseId);
 
-            var modules = moduleRepository.GetByLicenseId(licenseId);
-            if (modules == null) return 0;
-
-            modules = modules.Where(module => moduleNames.Contains(defaultModuleRepository.GetById(module.DefaultModuleId).Name)).ToList();
-            foreach (var m in modules)
+            if (allModules == null || allModules.Count == 0)
             {
-                if (m == null) return 0;
-
-                m.IsActive = moduleStatus;
-                moduleRepository.Save(m);
+                return Result<License>.Error();
             }
-            return 1;
+
+            var switchedModules = allModules.Where(m => switchedModulesIds.Contains(m.DefaultModuleId)).ToList();
+
+            if (switchedModules != null && switchedModules.Count != 0)
+            {
+                foreach (var module in switchedModules)
+                {
+                    if (module != null && module.LicenseId == licenseId)
+                    {
+                        if (module.IsActive != setEnable)
+                        {
+                            if (!module.IsLocked)
+                            {
+                                module.IsActive = setEnable;
+                                moduleRepository.Save(module);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return Result<License>.Success(licenseRepository.GetById(licenseId));
         }
 
         public License GetLicenseByUserId(int userId)
@@ -141,9 +229,8 @@ namespace leavedays.Services
             var license = licenseRepository.GetById(company.Id);
             if (license == null) return 0;
 
-           
             if (license.Seats - activeSeats + count < 0)
-                    return 0;
+                return 0;
 
             license.Seats += count;
             licenseRepository.Save(license);

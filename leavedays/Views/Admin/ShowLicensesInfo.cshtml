@@ -39,30 +39,43 @@
             <th>ContactPerson</th>
             <th>Email</th>
             <th>Phonenumber</th>
+            <th>Payment state</th>
         </tr>
     </thead>
-    @foreach (LicenseInfo a in Model)
-    {
-        <tr>
-            @if (@a.LicenceCode.Length > 15)
-            {
-                <td>
-                    @(@a.LicenceCode.Substring(0, 15) + "...")
-                </td>
-            }
-            else
-            {
-                <td>
-                    @a.LicenceCode
-                </td>
-            }
-            <td>@a.CompanyName</td>
-            <td>@a.ContactPerson</td>
-            <td>@a.Email</td>
-            <td>@a.PhoneNumber</td>
-        </tr>
+    <tbody>
+        @foreach (LicenseInfo a in Model)
+        {
+            <tr>
+                @if (@a.LicenceCode.Length > 15)
+                {
+                    <td>
+                        <input type="hidden" value="@a.UserId" />
+                        @(@a.LicenceCode.Substring(0, 15) + "...")
+                    </td>
+                }
+                else
+                {
+                    <td>
+                        <input type="hidden" value="@a.UserId" />
+                        @a.LicenceCode
+                    </td>
+                }
+                <td>@a.CompanyName</td>
+                <td>@a.ContactPerson</td>
+                <td>@a.Email</td>
+                <td>@a.PhoneNumber</td>
+                @if (@a.IsPaid)
+                {
+                    <td>Paid</td>
+                }
+                else
+                {
+                    <td>Unpaid</td>
+                }
+            </tr>
 
-    }
+        }
+    </tbody>
 </table>
 <div id="loadingImage">
     <img src="~/Content/img/loading.gif" />
@@ -70,6 +83,9 @@
 <div id="error" class="warningMessage"></div>
 <script>
     $(window).load(function () {
+        $("#licensesTable tbody").on("click", "tr", function () {
+            location.href = location.origin + "/Admin/CustomerInfo/" + $(this).find("input[type='hidden']").val();
+        })
         $("#aSearchButton").on("click", function () {
             var LicenseCode = $("#aLicenseId").val();
             var CompanyName = $("#aCompanyName").val();
@@ -108,6 +124,12 @@
                                 str += "<td>" + element.ContactPerson + "</td>";
                                 str += "<td>" + element.Email + "</td>";
                                 str += "<td>" + element.PhoneNumber + "</td>";
+                                if (element.IsPaid) {
+                                    str += "<td>Paid</td>";
+                                }
+                                else {
+                                    str += "<td>Unpaid</td>";
+                                }
                                 str += "</tr>";
                                 $("#licensesTable tbody").append(str);
                             });
@@ -157,6 +179,12 @@
                                 str += "<td>" + element.ContactPerson + "</td>";
                                 str += "<td>" + element.Email + "</td>";
                                 str += "<td>" + element.PhoneNumber + "</td>";
+                                if (element.IsPaid) {
+                                    str += "<td>Paid</td>";
+                                }
+                                else {
+                                    str += "<td>Unpaid</td>";
+                                }
                                 str += "</tr>";
                                 $("#licensesTable tbody").append(str);
                             });

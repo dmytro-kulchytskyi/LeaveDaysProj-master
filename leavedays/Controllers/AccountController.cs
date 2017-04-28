@@ -20,8 +20,11 @@ namespace leavedays.Controllers
 
     public class AccountController : Controller
     {
-        private readonly string[] CreateUserAllowedRoles = new string[] { "worker", "manager" };
-
+        private readonly string[] EmployeeRoles = new string[] 
+        {
+            Roles.Worker,
+            Roles.Manager
+        };
 
         private readonly CompanyService companyService;
         private readonly UserManager<AppUser, int> userManager;
@@ -77,8 +80,6 @@ namespace leavedays.Controllers
             {
                 return View(model);
             }
-            // This doesn't count login failures towards account lockout
-            // To enable password failures to trigger account lockout, change to shouldLockout: true
             var user = new AppUser { UserName = model.UserName, Password = model.Password };
             var result = await signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, shouldLockout: false);
             switch (result)
@@ -91,11 +92,6 @@ namespace leavedays.Controllers
                         if (string.IsNullOrEmpty(company)) return RedirectToAction("Index", "Home");
                         return RedirectToAction("Company", "Account", new { companyName = company });
                     }
-                //case SignInStatus.LockedOut:
-                //    return View("Lockout");
-                //case SignInStatus.RequiresVerification:
-                //    return RedirectToAction("SendCode", new { ReturnUrl = "", RememberMe = model.RememberMe });
-                //case SignInStatus.Failure:
                 default:
                     ModelState.AddModelError("", "Invalid login attempt.");
                     return View(model);
@@ -112,6 +108,7 @@ namespace leavedays.Controllers
         [AllowAnonymous]
         public ActionResult Register()
         {
+            if (User.Identity.IsAuthenticated) return RedirectToAction("Index", "Home");
             var licenseList = defaultLicenseRepository.GetAll();
             var model = new RegisterViewModel();
             model.LicenseList = licenseList;
@@ -127,95 +124,69 @@ namespace leavedays.Controllers
             {
                 model.LicenseList = defaultLicenseRepository.GetAll();
                 return View(model);
-
             }
 
-            model.CompanyUrl = model.CompanyUrl.ToLower();
-
-            var isUniq = companyRepository.GetByUrlName(model.CompanyUrl) == null;
-            if (!isUniq)
+            var createCompanyResult = companyService.CreateCompany(model.CompanyName, model.CompanyUrl, model.LicenseName);
+            if (!createCompanyResult.Succed)
             {
-                ModelState.AddModelError("", "A company with this URL already exists");
+                ModelState.AddModelError("", createCompanyResult.GetMessage());
                 model.LicenseList = defaultLicenseRepository.GetAll();
                 return View(model);
             }
+            var company = createCompanyResult.GetResult();
 
-            var license = companyService.CreateLicense(defaultLicenseRepository.GetByName(model.LicenseName));
-
-
-
-            List<string> rolesList = new List<string>();
-            if (string.IsNullOrEmpty(model.RolesLine))
-                rolesList.Add(CreateUserAllowedRoles[0]);
-
-            rolesList = CreateUserAllowedRoles.ToList();
-
-            if (rolesList.Count == 0 || !rolesList.Contains("customer"))
-                rolesList.Add("customer");
-
-
-            var company = new Company()
-            {
-                FullName = model.CompanyName,
-                UrlName = model.CompanyUrl,
-                LicenseId = license.Id
-            };
-            var companyId = companyRepository.Save(company);
-
-            var userRoles = companyService.GetRolesList(rolesList);
-
-            var user = new AppUser()
+            
+            var userInfo = new CreateUser()
             {
                 UserName = model.UserName,
-                Roles = new HashSet<Role>(userRoles),
-                CompanyId = companyId,
+                Role = Roles.Customer,
+                Comapany  = company,
                 FirstName = model.FirstName,
                 LastName = model.LastName,
                 Password = model.Password,
-                PhoneNumber = model.PhoneNumber
+                PhoneNumber = model.PhoneNumber,
+                Email = model.Email
             };
 
-            var result = await userManager.CreateAsync(user, model.Password);
-            if (!result.Succeeded)
+            var createUserResult = await companyService.CreateUserAsync(userInfo, userManager);
+
+            if (!createUserResult.Succed)
             {
-                ModelState.AddModelError("", "Error while creating new customer");
+                ModelState.AddModelError("", createUserResult.GetMessage());
+                model.LicenseList = defaultLicenseRepository.GetAll();
                 return View(model);
             }
+            var user = createUserResult.GetResult();
+
             await signInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
             return RedirectToAction("Index", "Home");
         }
 
         // [Authorize(Roles="Customer")]
         [HttpGet]
-        [Authorize(Roles = "customer")]
+        [Authorize(Roles = Roles.Customer)]
         public ActionResult CreateEmployee()
         {
             // if (!userManager.IsInRole(User.Identity.GetUserId<int>(), "customer")) return HttpNotFound();
             var model = new CreateEmployeeViewModel();
-            model.Roles = CreateUserAllowedRoles;
+            model.Roles = EmployeeRoles;
 
             return View(model);
         }
 
         [HttpPost]
-        [Authorize(Roles = "customer")]
+        [Authorize(Roles = Roles.Customer)]
         public async Task<ActionResult> CreateEmployee(CreateEmployeeViewModel model)
         {
-            model.Roles = model.Roles = CreateUserAllowedRoles;
+            model.Roles = EmployeeRoles;
             if (!ModelState.IsValid)
             {
                 model.Password = "";
                 return View(model);
             }
 
+            var rolesList = model.RolesLine.SplitByComma().Intersect(EmployeeRoles, StringComparer.OrdinalIgnoreCase).ToList();
 
-            List<string> rolesList = new List<string>();
-            if (string.IsNullOrEmpty(model.RolesLine))
-                rolesList.Add(CreateUserAllowedRoles[0]);
-
-            rolesList = model.RolesLine.SplitByComma().Select(r => r.ToLower()).Intersect(CreateUserAllowedRoles).ToList();
-            if (rolesList.Count == 0)
-                rolesList.Add(CreateUserAllowedRoles[0]);
 
             var userRoles = companyService.GetRolesList(rolesList);
 
@@ -239,11 +210,11 @@ namespace leavedays.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "financeadmin")]
+        [Authorize(Roles = Roles.FinanceAdmin)]
         public ActionResult CreateCompany()
         {
             var model = new CreateCompanyViewModel();
-            model.Roles = CreateUserAllowedRoles;
+            model.Roles = EmployeeRoles;
             return View(model);
         }
 
@@ -253,7 +224,7 @@ namespace leavedays.Controllers
         {
 
             if (!userManager.IsInRole(User.Identity.GetUserId<int>(), "financeadmin")) return HttpNotFound();
-            model.Roles = model.Roles = CreateUserAllowedRoles;
+            model.Roles = model.Roles = EmployeeRoles;
             if (!ModelState.IsValid) return View(model);
 
             model.CompanyUrl = model.CompanyUrl.ToLower();
@@ -267,11 +238,10 @@ namespace leavedays.Controllers
 
             var rolesList = new List<string>();
             if (string.IsNullOrEmpty(model.RolesLine))
-                rolesList.Add(CreateUserAllowedRoles.First());
+                rolesList.Add(EmployeeRoles.First());
 
             rolesList = model.RolesLine.SplitByComma()
-              .Select(r => r.ToLower())
-              .Intersect(CreateUserAllowedRoles).ToList();
+              .Intersect(EmployeeRoles, StringComparer.InvariantCultureIgnoreCase).ToList();
 
             if (rolesList.Count == 0 || !rolesList.Contains("customer"))
                 rolesList.Add("customer");
