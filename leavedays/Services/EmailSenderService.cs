@@ -16,7 +16,7 @@ namespace leavedays.Services
         {
             foreach (var user in users)
             {
-                using (MailMessage message = new MailMessage(ConfigurationManager.AppSettings["CompanyEmail"], user.FirstName))
+                using (MailMessage message = new MailMessage(ConfigurationManager.AppSettings["CompanyEmail"], user.Email))
                 {
                     message.Subject = "Payment reminders";
                     string messageBody = "Dear " + user.FirstName + " " + user.LastName + Environment.NewLine;
