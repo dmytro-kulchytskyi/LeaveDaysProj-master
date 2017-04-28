@@ -102,5 +102,14 @@ namespace leavedays.Models.Repository
                 }
             }
         }
+
+        public IList<Module> GetById(IEnumerable<int> ids)
+        {
+            using (var session = sessionFactory.OpenSession())
+            {
+                var modules = ids.Select(id => session.Get<Module>(id)).ToList();
+                return modules;
+            }
+        }
     }
 }

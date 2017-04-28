@@ -10,7 +10,8 @@ namespace leavedays
     {
         public void Configuration(IAppBuilder app)
         {
-            GlobalConfiguration.Configuration.UseSqlServerStorage(@"Server=DESKTOP-ERHGVQ5;database=NewsWebSiteDB;Integrated Security=true;");
+            // GlobalConfiguration.Configuration.UseSqlServerStorage(@"Server=tcp:leavedays-db.database.windows.net,1433;Initial Catalog=leavedays;Persist Security Info=False;User ID=team3;Password=Hozzy1337;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;");
+            GlobalConfiguration.Configuration.UseSqlServerStorage(@"Server=DIMAS;database=test;Integrated Security=true;");
             app.UseHangfireServer();
             app.UseHangfireDashboard();
             ConfigureAuth(app);

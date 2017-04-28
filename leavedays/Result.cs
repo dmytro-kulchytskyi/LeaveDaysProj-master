@@ -8,7 +8,7 @@ namespace leavedays.Models
     public class Result<T>
         where T : class
     {
-        private Result() {}
+        private Result() { }
 
         public bool Succed { get; private set; }
         private string Message;
@@ -24,7 +24,7 @@ namespace leavedays.Models
 
         }
 
-        public static Result<T> Success(T result, string message = null)
+        public static Result<T> Success(T result = null, string message = null)
         {
             return new Result<T>()
             {

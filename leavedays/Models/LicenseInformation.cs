@@ -11,6 +11,7 @@ namespace leavedays.Models
         public Company Company { get; set; }
         public string LicenseName { get; set; }
         public IList<DefaultModule> DefaultModules { get; set; }
+        public IList<ModuleShortInfo> ModulesInfoList { get; set; }
         public IList<Module> Modules { get; set; }
         public string LicenseCode { get; set; }
         public int LicensesCount { get; set; }

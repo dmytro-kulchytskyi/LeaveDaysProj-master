@@ -249,6 +249,7 @@
     <Compile Include="Models\LicenseInformation.cs" />
     <Compile Include="Models\Module.cs" />
     <Compile Include="Models\ModuleChange.cs" />
+    <Compile Include="Models\ModuleShortInfo.cs" />
     <Compile Include="Models\ModuleStatus.cs" />
     <Compile Include="Result.cs" />
     <Compile Include="Models\Repository\CompanyRepository.cs" />
@@ -336,6 +337,7 @@
     <Content Include="Views\Admin\Customers.cshtml" />
     <Content Include="Views\Admin\CustomerInfo.cshtml" />
     <Content Include="Views\Admin\RemoveLicenseSeats.cshtml" />
+    <Content Include="Views\Admin\SwitchModules.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
