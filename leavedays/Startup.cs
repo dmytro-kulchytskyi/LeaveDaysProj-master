@@ -10,9 +10,6 @@ namespace leavedays
     {
         public void Configuration(IAppBuilder app)
         {
-            GlobalConfiguration.Configuration.UseSqlServerStorage(@"Server=DESKTOP-ERHGVQ5;database=NewsWebSiteDB;Integrated Security=true;");
-            app.UseHangfireServer();
-            app.UseHangfireDashboard();
             ConfigureAuth(app);
         }
     }

@@ -152,28 +152,27 @@ namespace leavedays.Controllers
         }
 
         //-------
-
         [Authorize(Roles = Roles.Customer)]
         [HttpGet]
         public ActionResult EnableModules()
         {
             var model = licenseService.GetLicenseInfo(User.Identity.GetUserId<int>());
-            model.DefaultModules = licenseService.GetDefaultModules(model.License, false);
+            model.ModulesInfoList = licenseService.GetModulesShortInfo(model.License, false);
             return View(model);
         }
 
         [Authorize(Roles = Roles.Customer)]
         [HttpPost]
-        public ActionResult EnableModules(ModuleStatus model)
+        public ActionResult EnableModules(List<ModuleShortInfo> model)
         {
-           
-            //if (string.IsNullOrEmpty(modulesLine)) return Json(0);
-
-            //var moduleNames = modulesLine.SplitByComma();
-
-            //licenseService.EditModules(User.Identity.GetUserId<int>(), moduleNames, true);
-            return Json(1);
-
+            var licenseResult = licenseService.EditModules(User.Identity.GetUserId<int>(), model, true);
+            if (licenseResult.Succed)
+            {
+                var license = licenseResult.GetResult();
+                var modulesInfo = licenseService.GetModulesShortInfo(license, false);
+                return PartialView("SwitchModules", modulesInfo);
+            }
+            return Content("Error");
         }
 
 
@@ -182,21 +181,24 @@ namespace leavedays.Controllers
         public ActionResult DisableModules()
         {
             var model = licenseService.GetLicenseInfo(User.Identity.GetUserId<int>());
-            model.DefaultModules = licenseService.GetDefaultModules(model.License, true);
+            model.ModulesInfoList = licenseService.GetModulesShortInfo(model.License, true);
             return View(model);
         }
 
-
         [Authorize(Roles = Roles.Customer)]
         [HttpPost]
-        public JsonResult DisableModules(string modulesLine = "")
+        public ActionResult DisableModules(List<ModuleShortInfo> model)
         {
-            if (string.IsNullOrEmpty(modulesLine)) return Json(0);
 
-            var moduleNames = modulesLine.SplitByComma();
+            var licenseResult = licenseService.EditModules(User.Identity.GetUserId<int>(), model, false);
+            if (licenseResult.Succed)
+            {
+                var license = licenseResult.GetResult();
+                var modulesInfo = licenseService.GetModulesShortInfo(license, true);
 
-            licenseService.EditModules(User.Identity.GetUserId<int>(), moduleNames, false);
-            return Json(1);
+                return PartialView("SwitchModules", modulesInfo);
+            }
+            return Content("Error");
         }
 
         //-------

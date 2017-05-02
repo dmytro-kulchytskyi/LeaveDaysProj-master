@@ -92,22 +92,28 @@
                                                   @Html.ActionLink("Create Emplyee", "CreateEmployee", "Account")
                                                   </li>
                                               }
-                                                                                                       
+                                              @if (User.IsInRole("customer"))
+                                              {
+                                                <li>@Html.ActionLink("Add modules to license", "EnableModules", "Admin")</li>
+                                                <li>@Html.ActionLink("Remove license's modules", "DisableModules", "Admin")</li>
+                                                <li>@Html.ActionLink("Add seats to license", "AddLicenseSeats", "Admin")</li>
+                                                <li>@Html.ActionLink("Remove seats from license", "RemoveLicenseSeats", "Admin")</li>
+
+                                              }
+
                                         </ul>
 
                                     </li>
     
                                     @if (User.IsInRole("financeadmin")) {
+
                                     <li>
                                         Finance Admin
                                         <ul>
                                             <li>@Html.ActionLink("Invoices", "Invoices", "Admin")</li>
-                                            <li>@Html.ActionLink("EnableModules", "EnableModules", "Admin")</li>
-                                            <li>@Html.ActionLink("DisableModules", "DisableModules", "Admin")</li>
-                                            <li>@Html.ActionLink("AddLicenseSeats", "AddLicenseSeats", "Admin")</li>
-                                            <li>@Html.ActionLink("RemoveLicenseSeats", "RemoveLicenseSeats", "Admin")</li>
                                             <li>@Html.ActionLink("Modules", "Modules", "Admin")</li>
-                                            <li>@Html.ActionLink("Customers", "LicensesInfo", "Admin")</li>
+                                            <li>@Html.ActionLink("Customers", "Customers", "Admin")</li>
+                                            <li>@Html.ActionLink("Create new module", "CreateModule", "Admin")</li>
                                         </ul>
                                     </li>}
                                     <li>
@@ -116,8 +122,10 @@
                                             <li>@Html.ActionLink("Employee Owerview", "eOwerview", "Module")</li>
                                             <li>@Html.ActionLink("Calendar Owerview", "cOwerview", "Module")</li>
                                             <li>@Html.ActionLink("Pending requests", "Pending", "Module")</li>
-                                            <li>@Html.ActionLink("Request", "Create", "Module")</li>
+                                            <li>@Html.ActionLink("Create request", "Create", "Module")</li>
                                             <li>@Html.ActionLink("for consideration", "ConfirmNew", "Module")</li>
+                                            <li>@Html.ActionLink("Confirmed requests", "ShowConfirmed", "Module")</li>
+                                            <li>@Html.ActionLink("Sended requests", "ShowSended", "Module")</li>
                                         </ul>
                                     </li>
                                 </ul>

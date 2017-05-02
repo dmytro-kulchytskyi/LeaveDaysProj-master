@@ -100,7 +100,7 @@ namespace leavedays.Controllers
 
         public string Info()
         {
-            return "Is Customer: " + User.IsInRole("customer") + "<br /> Is Auth: " + User.Identity.IsAuthenticated;
+            return "ID: " + User.Identity.GetUserId<int>() + "<br/>Is Customer: " + User.IsInRole("customer") + "<br /> Is Auth: " + User.Identity.IsAuthenticated;
         }
 
 

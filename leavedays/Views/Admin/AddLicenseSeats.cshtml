@@ -73,7 +73,7 @@
             
             var num = parseInt($(this).val(), 10);
             console.log(num);
-            if (isNaN(num) || num <= 0) {
+            if (isNaN(num) || num <= 0 || num > 10000) {
                 $(textBox).toggleClass('redBorder', true);
                 $(info).hide();
             }
