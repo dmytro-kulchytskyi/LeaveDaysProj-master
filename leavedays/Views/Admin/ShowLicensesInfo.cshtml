@@ -62,7 +62,7 @@
                 }
                 <td>@a.CompanyName</td>
                 <td>@a.ContactPerson</td>
-                <td>@a.Email</td>
+                <td>@a.Email.Split('@')[0]...</td>
                 <td>@a.PhoneNumber</td>
                 @if (@a.IsPaid)
                 {
@@ -122,7 +122,7 @@
                                 str += "<td>" + element.LicenceCode.slice(0, 15) + "..." + "</td>";
                                 str += "<td>" + element.CompanyName + "</td>";
                                 str += "<td>" + element.ContactPerson + "</td>";
-                                str += "<td>" + element.Email + "</td>";
+                                str += "<td>" + element.Email.slice(0, 15) +"...</td>";
                                 str += "<td>" + element.PhoneNumber + "</td>";
                                 if (element.IsPaid) {
                                     str += "<td>Paid</td>";

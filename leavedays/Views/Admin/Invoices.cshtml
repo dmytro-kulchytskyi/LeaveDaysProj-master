@@ -8,67 +8,64 @@
 }
 
 <table id="invoiceTable">
-@using (Html.BeginForm("DownloadInvoices", "Admin"))
-{
-    <thead>
-        <tr>
-            <th></th>
-            <th>Sender</th>
-            <th>Subject</th>
-            <th>Receiver</th>
-            <th>Att</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tfoot>
-        @if (Model.Count() > 0)
-        {
-        <tr>
-            
-                <td>
-            <input type="checkbox" name="name" value="" id="sellectAll" />
-                    <input type="hidden" name="" id="" value="" />
-                </td>
-                <td>Select all messages</td>
-                <td><input type="submit" id="downloadAll" value="Download" style="visibility:hidden" /></td>
-                <td><input type="submit" id="deleteAll" value="Delete" style="visibility:hidden" /></td>
-                <td></td>
-                <td></td>
-            
-        </tr>
-        }
-    </tfoot>
-    <tbody>
-        @foreach (var invoice in Model)
-        {
-            <tr>
-                @using (Html.BeginForm("DownloadInvoice", "Admin"))
+    @*@using (Html.BeginForm("DownloadInvoices", "Admin"))
+    {*@
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Sender</th>
+                    <th>Subject</th>
+                    <th>Receiver</th>
+                    <th>Att</th>
+                    <th></th>
+                </tr>
+            </thead>
+            @*<tfoot>
+                @if (Model.Count() > 0)
                 {
-                    <td>
-                        <input type="checkbox" name="ids" value="@invoice.Id" />
-                        <input type="hidden" name="id" value="@invoice.Id" />
-                    </td>
-                    <td>@invoice.CompanyName</td>
-                    <td>Invoice @invoice.Id</td>
-                    <td>@invoice.RecieveDate</td>
-                    <td>Att</td>
-                    <td>
-                        <ul class="drop-menu-main">
-                            <li>
-                                <span class="drop-down">Option<span class="arrow">&#9660;</span></span>
-                                <div class="drop-menu-main-sub">
-                                    <span class="title"></span>
-                                    <input type="submit" value="Download" />
-                                    <input type="submit" value="Delete" />
-                                </div>
-                            </li>
-                        </ul>
-                    </td>
+                    <tr>
+                        <td>
+                            <input type="checkbox" name="name" value="uuu" id="sellectAll" />
+                        </td>
+                        <td>Select all messages</td>
+                        <td><input type="submit" id="downloadAll" value="Download" style="visibility:hidden" /></td>
+                        <td><input type="submit" id="deleteAll" value="Delete" style="visibility:hidden" /></td>
+                        <td></td>
+                        <td></td>
+
+                    </tr>
                 }
-            </tr>
-        }
-    </tbody>
-}
+            </tfoot>*@
+            <tbody>
+                @foreach (var invoice in Model)
+                {
+                    <tr>
+                        <td>
+    @*<input type="checkbox" name="ids" value="@invoice.Id" />*@
+                        </td>
+                        @using (Html.BeginForm("DownloadInvoice", "Admin"))
+                        {
+                            <td><input type="hidden" name="id" value="@invoice.Id" />@invoice.CompanyName</td>
+                            <td>Invoice @invoice.Id</td>
+                            <td>@invoice.RecieveDate</td>
+                            <td>Att</td>
+                            <td>
+                                <ul class="drop-menu-main">
+                                    <li>
+                                        <span class="drop-down">Option<span class="arrow">&#9660;</span></span>
+                                        <div class="drop-menu-main-sub">
+                                            <span class="title"></span>
+                                            <input type="submit" value="Download" />
+                                            <input type="submit" value="Delete" />
+                                        </div>
+                                    </li>
+                                </ul>
+                            </td>
+                        }
+                        
+                    </tr>
+                }
+            </tbody>
 </table>
 
 <script>
