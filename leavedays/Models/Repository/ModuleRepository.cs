@@ -106,12 +106,16 @@ namespace leavedays.Models.Repository
             }
         }
 
-        public IList<ModuleForDownload> GetForDownload(int[] moduleId)
+        public IList<ModuleForDownload> GetForDownload(int[] moduleId, bool ignorLockStatus)
         {
             using (var session = sessionFactory.OpenSession())
             {
-                var sqlQuery = "SELECT m.ModuleId AS Id, m.Price , d.Name FROM Module AS m INNER JOIN DefaultModule AS d ON m.DefaultModuleId  = d.DefaultModuleId WHERE m.IsActive = 1 AND m.IsLocked = 0 AND m.ModuleId IN(" + string.Join(",", moduleId) + ")";
-                var res = session.CreateSQLQuery(sqlQuery);//.SetAnsiString("param", string.Join(",", moduleId));
+                var sqlQuery = "SELECT m.ModuleId AS Id, m.Price , d.Name FROM Module AS m INNER JOIN DefaultModule AS d ON m.DefaultModuleId  = d.DefaultModuleId WHERE m.IsActive = 1 AND m.ModuleId IN(" + string.Join(",", moduleId) + ") ";
+                if(!ignorLockStatus)
+                {
+                    sqlQuery += "AND m.IsLocked = 0";
+                }
+                var res = session.CreateSQLQuery(sqlQuery);
                 return res.
                     SetResultTransformer(Transformers.AliasToBean<ModuleForDownload>()).
                     List<ModuleForDownload>();

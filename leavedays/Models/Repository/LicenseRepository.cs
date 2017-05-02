@@ -129,5 +129,28 @@ namespace leavedays.Models.Repository
                 }
             }
         }
+
+        public IList<License> GetByPaidStatus(bool status)
+        {
+            using (var session = sessionFactory.OpenSession())
+            {
+                return session.CreateCriteria<License>().
+                    Add(Restrictions.Eq("IsPaid", status)).
+                    List<License>();
+            }
+        }
+
+        public void Save(IList<License> licenses)
+        {
+            using (var session = sessionFactory.OpenSession())
+            {
+                using (var t = session.BeginTransaction())
+                {
+                    foreach(var license in licenses)
+                        session.SaveOrUpdate(license);
+                    t.Commit();
+                }
+            }
+        }
     }
 }

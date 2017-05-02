@@ -12,6 +12,8 @@ namespace leavedays.Models.Repository.Interfaces
         IList<License> GetAll();
         int Save(License license);
         License GetById(int id);
+        IList<License> GetByPaidStatus(bool status);
+        void Save(IList<License> licenses);
         IList<LicenseInfo> GetLicenseInformation();
         IList<LicenseInfo> GetSearchedInformation(string searchedLine);
         IList<LicenseInfo> GetAdwenchedSearchedInformation(SearchOption option);

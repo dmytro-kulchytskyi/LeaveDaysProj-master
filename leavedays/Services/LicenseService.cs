@@ -270,12 +270,17 @@ namespace leavedays.Services
                 string[] date = startDate.Split('.');
                 foreach (ModuleInfo module in modulesInfo)
                 {
+                    var changeModule = moduleChangeRepository.GetByDate(int.Parse(date[1]), int.Parse(date[0]), module.Id);
+                    if(changeModule.Count != 0)
+                    {
+                        moduleChangeRepository.Delete(changeModule.First());
+                    }
                     ModuleChange moduleChange = new ModuleChange()
                     {
                         ModuleId = module.Id,
                         IsLocked = module.isLocked,
                         Price = module.Price,
-                        StartDate = new DateTime(int.Parse(date[2]), int.Parse(date[1]), int.Parse(date[0]))
+                        StartDate = new DateTime(int.Parse(date[1]), int.Parse(date[0]), 1)
                     };
                     modulesChange.Add(moduleChange);
                 }

@@ -1,6 +1,7 @@
 ﻿using leavedays.Models.Repository.Interfaces;
 using NHibernate;
 using NHibernate.Criterion;
+using NHibernate.Transform;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,12 +17,38 @@ namespace leavedays.Models.Repository
             this.sessionFactory = sessionFactory;
         }
 
-        public IList<ModuleChange> GetByDate(int year, int month, int day)
+        public int Delete(ModuleChange module)
         {
             using (var session = sessionFactory.OpenSession())
             {
-                var query = string.Format(@"SELECT * FROM ModuleChange Where YEAR(StartDate) = {0} AND MONTH(StartDate) = {1} AND DAY(StartDate) = {2}", year, month, day);
-                return session.CreateSQLQuery(query).List<ModuleChange>();
+                using (var t = session.BeginTransaction())
+                {
+                    var id = module.Id;
+                    session.Delete(module);
+                    t.Commit();
+                    return module.Id;
+                }
+            }
+        }
+
+        public IList<ModuleChange> GetByDate(int year, int month, int? moduleId)
+        {
+            using (var session = sessionFactory.OpenSession())
+            {
+                var query = string.Format(@"SELECT * FROM ModuleChange Where YEAR(StartDate) = :param1 AND MONTH(StartDate) = :param2 ");
+                if(moduleId != null)
+                {
+                    query += string.Join(query, "AND ModuleId = :param3");
+                }
+                var result =  session.CreateSQLQuery(query).
+                    SetParameter("param1", year).
+                    SetParameter("param2", month);
+                if(moduleId != null)
+                {
+                    result.SetParameter("param3", moduleId);
+                }
+                return result.SetResultTransformer(Transformers.AliasToBean<ModuleChange>()).
+                    List<ModuleChange>();
             }
         }
 

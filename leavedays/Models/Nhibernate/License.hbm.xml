@@ -9,6 +9,8 @@
     <property name="Price"/>
     <property name="LicenseCode" />
     <property name="Seats" />
+    <property name="IsLocked" />
+    <property name="IsPaid" />
   </class>
 
 </hibernate-mapping>

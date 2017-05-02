@@ -75,7 +75,7 @@ namespace leavedays.Controllers
         [HttpGet]
         public ActionResult Invoices()
         {
-            var invoices = invoiceService.GetByDeleteStatus(false);
+            var invoices = invoiceService.GetInvoices();
             var result = invoices.Select(m => new InvoiceView
             {
                 Id = m.Id,
@@ -343,6 +343,12 @@ namespace leavedays.Controllers
         [HttpPost]
         public JsonResult EditCustomerModules(int licenseId, ModuleInfo[] modules, string startDate = "")
         {
+            var date = DateTime.Now;
+            var selectedDate = startDate.Split('.');
+            if(startDate[1] < date.Year || (startDate[1] == date.Year && startDate[0] < date.Month))
+            {
+                return Json("Invalid date");
+            }
             return Json(licenseService.EditCustomerModules(licenseId, modules, startDate));
         }
 
@@ -357,11 +363,20 @@ namespace leavedays.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = Roles.Customer)]
+        [HttpGet]
+        public FileResult NextInvoice()
+        {
+            var currentUser = userRepository.GetById(User.Identity.GetUserId<int>());
+            var invoice = invoiceService.NextInvoice(currentUser.CompanyId);
+            var file = invoiceService.GetInvoiceFile(new List<InvoiceForDownload>() { invoice });
+            return File(file, "text/csv", "Invoices.csv");
+        }
+
         [Authorize]
         [HttpPost]
         public JsonResult CreateLicense(string modulesLine, int id, string name)
         {
-
             return Json("success");
         }
     }

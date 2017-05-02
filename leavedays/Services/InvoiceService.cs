@@ -19,22 +19,21 @@ namespace leavedays.Services
         private readonly ICompanyRepository companyRepository;
         private readonly IInvoiceRepository invoiceRepository;
         private readonly IModuleRepository moduleRepository;
+        private readonly IModuleChangeRepository changeRepository;
         public InvoiceService(
            IUserRepository userRepository,
            ILicenseRepository licenseRepository,
            ICompanyRepository companyRepository,
            IInvoiceRepository invoiceRepository,
-           IModuleRepository moduleRepository)
+           IModuleRepository moduleRepository,
+           IModuleChangeRepository changeRepository)
         {
+            this.changeRepository = changeRepository;
             this.userRepository = userRepository;
             this.licenseRepository = licenseRepository;
             this.companyRepository = companyRepository;
             this.invoiceRepository = invoiceRepository;
             this.moduleRepository = moduleRepository;
-        }
-        public List<Invoice> GetByDeleteStatus(bool status)
-        {
-            return invoiceRepository.GetByDeleteStatus(status).ToList();
         }
 
         public List<Invoice> GetInvoices()
@@ -76,16 +75,16 @@ namespace leavedays.Services
             var company = companyRepository.GetById(invoice.Company.Id);
             var owner = userRepository.GetOwnerByCompanyId(company.Id);
             var license = licenseRepository.GetById(company.LicenseId);
-            var modules = moduleRepository.GetByLicenseId(license.Id);
+            var modules = moduleRepository.GetByLicenseId(license.Id).Where(m => m.IsActive).ToList();
             var invoiceForDownload = new InvoiceForDownload
             {
                 Id = invoice.Id,
                 LicenceCode = license.LicenseCode,
                 CompanyName = company.FullName,
                 ContactPerson = owner.LastName + " " + owner.FirstName,
-                TotalPrice = (modules.Sum(m => m.Price) * license.Seats),
+                TotalPrice = (modules.Where(m => !m.IsLocked).Sum(m => m.Price) * license.Seats),
                 SeatsNumber = license.Seats,
-                Modules = moduleRepository.GetForDownload(modules.Select(m => m.Id).ToArray())
+                Modules = moduleRepository.GetForDownload(modules.Select(m => m.Id).ToArray(), false)
             };
             return invoiceForDownload;
         }
@@ -124,39 +123,44 @@ namespace leavedays.Services
                 }
             }
         }
-        //public byte[] GetInvoiceBytes(InvoiceForDownload invoiceForDownload)
-        //{
-        //    string invoiceText = "";
-        //    invoiceText += "InvoiceId;" + invoiceForDownload.Id.ToString() + Environment.NewLine;
-        //    invoiceText += "CompanyName;" + invoiceForDownload.Company.FullName + Environment.NewLine;
-        //    invoiceText += "Contact Person;" + invoiceForDownload.Owner.FirstName + " " + invoiceForDownload.Owner.LastName + Environment.NewLine;
-        //    invoiceText += "LicenseId;" + invoiceForDownload.License.Id.ToString() + Environment.NewLine;
-        //    invoiceText += "Modules";
-        //    var modules = moduleRepository.GetByLicenseId(invoiceForDownload.License.Id);
-        //    foreach (var module in modules)
-        //    {
-        //        invoiceText += ";" + module.Id.ToString();
 
-        //    }
-        //    invoiceText += Environment.NewLine;
-        //    invoiceText += "ModulesPrice";
-        //    foreach (var module in modules)
-        //    {
-        //        invoiceText += ";" + module.Price.ToString();
-        //    }
-        //    invoiceText += Environment.NewLine;
-        //    invoiceText += Environment.NewLine;
-        //    byte[] result = Encoding.Default.GetBytes(invoiceText);
-        //    return result;
-        //}
-        //public byte[] GetInvoicesBytes(List<InvoiceForDownload> invoices)
-        //{
-        //    List<byte> invoicesBytes = new List<byte>();
-        //    foreach(var invoice in invoices)
-        //    {
-        //        invoicesBytes.AddRange(GetInvoiceBytes(invoice).ToList());
-        //    }
-        //    return invoicesBytes.ToArray();
-        //}
+        public InvoiceForDownload NextInvoice(int companyId)
+        {
+            var currentDate = DateTime.Now;
+            var company = companyRepository.GetById(companyId);
+            var owner = userRepository.GetOwnerByCompanyId(company.Id);
+            var license = licenseRepository.GetById(company.LicenseId);
+            var modules = moduleRepository.GetByLicenseId(license.Id).Where(m => m.IsActive).ToList();
+            List<ModuleForDownload> modulesForDownload = new List<ModuleForDownload>(modules.Count);
+            foreach(var module in modules)
+            {
+                var changeModule = changeRepository.GetByDate(currentDate.Year, currentDate.Month + 1, module.Id);
+                if(changeModule.Count != 0)
+                {
+                    if (!changeModule.First().IsLocked)
+                    {
+                        var moduleForDownload = moduleRepository.GetForDownload(new[] { changeModule.First().ModuleId }, true).First();
+                        moduleForDownload.Price = changeModule.First().Price;
+                        modulesForDownload.Add(moduleForDownload);
+                    }
+                }
+                else
+                {
+                    if(!module.IsLocked)
+                        modulesForDownload.Add(moduleRepository.GetForDownload(new[] { module.Id }, false).First());
+                }
+            }
+            var invoiceForDownload = new InvoiceForDownload
+            {
+                Id = 1,
+                LicenceCode = license.LicenseCode,
+                CompanyName = company.FullName,
+                ContactPerson = owner.LastName + " " + owner.FirstName,
+                TotalPrice = (modulesForDownload.Sum(m => m.Price) * license.Seats),
+                SeatsNumber = license.Seats,
+                Modules = modulesForDownload
+            };
+            return invoiceForDownload;
+        }
     }
 }

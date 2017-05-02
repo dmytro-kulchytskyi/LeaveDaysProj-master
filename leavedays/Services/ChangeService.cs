@@ -12,6 +12,7 @@ namespace leavedays.Services
     {
         private readonly IModuleRepository moduleRepository;
         private readonly IModuleChangeRepository moduleChangeRepository;
+        private readonly ILicenseRepository licenseRepository;
 
         public static ChangeService Instance
         {
@@ -20,16 +21,18 @@ namespace leavedays.Services
 
         public ChangeService(
           IModuleRepository moduleRepository,
-          IModuleChangeRepository moduleChangeRepository)
+          IModuleChangeRepository moduleChangeRepository,
+          ILicenseRepository licenseRepository)
         {
             this.moduleRepository = moduleRepository;
             this.moduleChangeRepository = moduleChangeRepository;
+            this.licenseRepository = licenseRepository;
         }
 
-        public  void ApplyChanges()
+        public void ApplyChanges()
         {
-            var currentDSate = DateTime.Now;
-            var moduleNeedToChange = moduleChangeRepository.GetByDate(currentDSate.Year, currentDSate.Month, currentDSate.Day);
+            var currentDate = DateTime.Now;
+            var moduleNeedToChange = moduleChangeRepository.GetByDate(currentDate.Year, currentDate.Month, null);
             List<Module> editedModule = new List<Module>(); 
             foreach (var editModule in moduleNeedToChange)
             {
@@ -39,6 +42,16 @@ namespace leavedays.Services
                 editedModule.Add(module);
             }
             moduleRepository.Save(editedModule);
+        }
+
+        public void LockLicense()
+        {
+            var unpaidLicense = licenseRepository.GetByPaidStatus(false);
+            foreach(var license in unpaidLicense)
+            {
+                license.IsLocked = true;
+            }
+            licenseRepository.Save(unpaidLicense);
         }
     }
 

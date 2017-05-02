@@ -82,10 +82,17 @@
 </div>
 <script src="~/Scripts/datepicker.min.js"></script>
 <script>
+    var date = new Date();
+    var year = date.getFullYear();
+    var month = date.getMonth();
     $('#calendar').datepicker({
-        minDate: new Date(),
+        minDate: new Date(year, month + 1),
         inline: true,
+        minView: "months",
+        view: "months",
+        dateFormat: "m.yyyy",
         onSelect: function (formattedDate, date, inst) {
+            alert(formattedDate);
             $("#calendar").val("" + formattedDate);
         }
     });
@@ -139,13 +146,5 @@
             }
             console.log(objects);
         });
-        //$("#modulePanel input[type='checkbox']").on("change", function () {
-        //    if ($("#modulePanel").html() != defaultText && !$("saveChanges").hasClass("hide")) {
-        //        $("saveChanges").toggleClass("hide");
-        //    }
-        //    else if ($("#modulePanel").html() == defaultText){
-        //        $("saveChanges").toggleClass("hide");
-        //    }
-        //});
     });
 </script>

@@ -12,6 +12,7 @@ namespace leavedays.Models
         public virtual double Price { get; set; }
         public virtual string LicenseCode { get; set; }
         public virtual int Seats { get; set; }
-
+        public virtual bool IsLocked { get; set; }
+        public virtual bool IsPaid { get; set; }
     }
 }
