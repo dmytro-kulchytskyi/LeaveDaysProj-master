@@ -1,4 +1,5 @@
-﻿using leavedays.Models;
+﻿using leavedays.App_Start;
+using leavedays.Models;
 using leavedays.Models.Repository.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,11 @@ namespace leavedays.Services
     {
         private readonly IModuleRepository moduleRepository;
         private readonly IModuleChangeRepository moduleChangeRepository;
+
+        public static ChangeService Instance
+        {
+            get { return (ChangeService)NinjectWebCommon.bootstrapper.Kernel.GetService(typeof(ChangeService)); }
+        }
 
         public ChangeService(
           IModuleRepository moduleRepository,

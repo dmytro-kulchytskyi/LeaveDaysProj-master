@@ -1,6 +1,7 @@
 ﻿using leavedays.Models;
 using leavedays.Models.Repository.Interfaces;
 using leavedays.Models.ViewModel;
+using leavedays.Models.ViewModels.License;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,8 +18,10 @@ namespace leavedays.Services
         private readonly IModuleRepository moduleRepository;
         private readonly IDefaultModuleRepository defaultModuleRepository;
         private readonly IDefaultLicenseRepository defaultLicenseRepository;
+        private readonly IModuleChangeRepository moduleChangeRepository;
 
         public LicenseService(
+            IModuleChangeRepository moduleChangeRepository,
           IUserRepository userRepository,
           ILicenseRepository licenseRepository,
           ICompanyRepository companyRepository,
@@ -27,6 +30,7 @@ namespace leavedays.Services
           IDefaultModuleRepository defaultModuleRepository,
           IDefaultLicenseRepository defaultLicenseRepository)
         {
+            this.moduleChangeRepository = moduleChangeRepository;
             this.userRepository = userRepository;
             this.licenseRepository = licenseRepository;
             this.companyRepository = companyRepository;
@@ -124,6 +128,103 @@ namespace leavedays.Services
             return defaultModules;
 
         }
+        public IEnumerable<ModuleInfo> GetModulesInfo()
+        {
+            var licenses = defaultLicenseRepository.GetAll();
+            var modules = defaultModuleRepository.GetAll();
+            var modulesInfo = modules.Select(m => new ModuleInfo()
+            {
+                Id = m.Id,
+                Name = m.Name,
+                Price = m.Price,
+                Description = m.Description,
+                Licenses = licenses.Where(l => l.DefaultModules.Select(k => k.Id).Contains(m.Id))
+            });
+            return modulesInfo;
+        }
+
+        public ModuleInfo GetModuleInfo(int id)
+        {
+            var module = defaultModuleRepository.GetById(id);
+            var licenses = defaultLicenseRepository.GetByModuleId(module.Id);
+            ModuleInfo moduleInfo = new ModuleInfo()
+            {
+                Id = module.Id,
+                Name = module.Name,
+                Description = module.Description,
+                Price = module.Price,
+                Licenses = licenses
+            };
+            return moduleInfo;
+        }
+
+        public int CreateModule(EditModuleModel editModule, string[] selectedLicenses)
+        {
+            DefaultModule defaultModule = new DefaultModule()
+            {
+                Name = editModule.Name,
+                Description = editModule.Description,
+                Price = editModule.Price
+            };
+            defaultModuleRepository.Save(defaultModule);
+            if (selectedLicenses != null)
+            {
+                var defaultLicenses = defaultLicenseRepository.GetByNames(selectedLicenses.ToList());
+                foreach (var license in defaultLicenses)
+                {
+                    license.DefaultModules.Add(defaultModule);
+                }
+                defaultLicenseRepository.Save(defaultLicenses.ToList());
+                var licenses = licenseRepository.GetByDefaultLicenseIds(defaultLicenses.Select(m => m.Id).ToArray());
+                foreach (var license in licenses)
+                {
+                    Module module = new Module()
+                    {
+                        DefaultModuleId = defaultModule.Id,
+                        Price = defaultModule.Price,
+                        LicenseId = license.Id,
+                        IsActive = false,
+                    };
+                    moduleRepository.Save(module);
+                }
+            }
+            return defaultModule.Id;
+        }
+
+
+
+        public void EditModule(EditModuleModel editModule, string[] selectedLicenses)
+        {
+            var module = defaultModuleRepository.GetById(editModule.Id);
+            module.Name = editModule.Name;
+            module.Description = editModule.Description;
+            module.Price = editModule.Price;
+            var selectLicenses = defaultLicenseRepository.GetByNames(selectedLicenses.ToList());
+            var allLicenses = defaultLicenseRepository.GetAll();
+            if (selectedLicenses != null)
+            {
+                foreach (var license in allLicenses)
+                {
+                    if (selectLicenses.Select(m => m.Id).Contains(license.Id) && !license.DefaultModules.Select(l => l.Id).Contains(module.Id))
+                    {
+                        license.DefaultModules.Add(module);
+                    }
+                    else if (!selectLicenses.Select(m => m.Id).Contains(license.Id) && license.DefaultModules.Select(l => l.Id).Contains(module.Id))
+                    {
+                        license.DefaultModules = new HashSet<DefaultModule>(license.DefaultModules.Where(m => m.Id != module.Id));
+                    }
+                }
+            }
+            else
+            {
+                foreach (var license in allLicenses)
+                {
+                    license.DefaultModules = new HashSet<DefaultModule>(license.DefaultModules.Where(m => m.Id != module.Id));
+                }
+            }
+            defaultLicenseRepository.Save(allLicenses.ToList());
+            defaultModuleRepository.Save(module);
+        }
 
         public int EditModules(int userId, IEnumerable<string> moduleNames, bool moduleStatus)
         {
@@ -149,6 +250,39 @@ namespace leavedays.Services
                 moduleRepository.Save(m);
             }
             return 1;
+        }
+
+        public string EditCustomerModules(int licenseId, ModuleInfo[] modules, string startDate = "")
+        {
+            var defaultModules = moduleRepository.GetByLicenseId(licenseId);
+            List<ModuleChange> modulesChange = new List<ModuleChange>();
+            List<ModuleInfo> modulesInfo = new List<Models.ViewModels.License.ModuleInfo>();
+            foreach (var defModule in defaultModules)
+            {
+                var res = modules.Where(m => m.Id == defModule.Id && (m.isLocked != defModule.IsLocked || m.Price != defModule.Price));
+                if (res.Count() > 0)
+                {
+                    modulesInfo.Add(res.First());
+                }
+            }
+            if (modulesInfo.Count > 0)
+            {
+                string[] date = startDate.Split('.');
+                foreach (ModuleInfo module in modulesInfo)
+                {
+                    ModuleChange moduleChange = new ModuleChange()
+                    {
+                        ModuleId = module.Id,
+                        IsLocked = module.isLocked,
+                        Price = module.Price,
+                        StartDate = new DateTime(int.Parse(date[2]), int.Parse(date[1]), int.Parse(date[0]))
+                    };
+                    modulesChange.Add(moduleChange);
+                }
+                moduleChangeRepository.Save(modulesChange);
+                return "All changes was saved";
+            }
+            return "It is nothing to change";
         }
 
         public License GetLicenseByUserId(int userId)

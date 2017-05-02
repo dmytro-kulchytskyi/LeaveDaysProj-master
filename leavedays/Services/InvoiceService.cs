@@ -1,8 +1,11 @@
-﻿using leavedays.Models;
+﻿using CsvHelper;
+using CsvHelper.Configuration;
+using leavedays.Models;
 using leavedays.Models.Repository.Interfaces;
 using leavedays.Models.ViewModels.License;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
@@ -80,19 +83,46 @@ namespace leavedays.Services
                 LicenceCode = license.LicenseCode,
                 CompanyName = company.FullName,
                 ContactPerson = owner.LastName + " " + owner.FirstName,
-                Modules = modules.ToList()
+                TotalPrice = (modules.Sum(m => m.Price) * license.Seats),
+                SeatsNumber = license.Seats,
+                Modules = moduleRepository.GetForDownload(modules.Select(m => m.Id).ToArray())
             };
             return invoiceForDownload;
         }
         public List<InvoiceForDownload> CreateInvoicesForDownload(int[] ids)
         {
             List<InvoiceForDownload> invoices = new List<InvoiceForDownload>();
-            foreach(int id in ids)
+            foreach (int id in ids)
             {
                 invoices.Add(CreateInvoiceForDownload(id));
             }
             return invoices;
 
+        }
+
+        public byte[] GetInvoiceFile(List<InvoiceForDownload> invoices)
+        {
+            using (var stream = new MemoryStream())
+            using (TextWriter textWriter = new StreamWriter(stream))
+            {
+                CsvConfiguration configuration = new CsvConfiguration()
+                {
+                    Delimiter = ";"
+                };
+                configuration.RegisterClassMap(configuration.AutoMap<InvoiceForDownload>());
+                using (var csvWriter = new CsvWriter(textWriter, configuration))
+                {
+                    csvWriter.WriteHeader<InvoiceForDownload>();
+                    foreach(var invoice in invoices)
+                    {
+                        csvWriter.WriteRecord(invoice);
+                        csvWriter.WriteRecords(invoice.Modules);
+                    }
+                    textWriter.Flush();
+                    stream.Seek(0, SeekOrigin.Begin);
+                    return stream.ToArray();
+                }
+            }
         }
         //public byte[] GetInvoiceBytes(InvoiceForDownload invoiceForDownload)
         //{

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using leavedays.Models.ViewModels.License;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,7 @@ namespace leavedays.Models.Repository.Interfaces
         IList<Module> GetAll();
         IList<Module> GetByLicenseId(int licensId, bool? isActive =  null);
         IList<Module> GetByLockStatus(int licenseId, bool lockStatus);
+        IList<ModuleForDownload> GetForDownload(int[] moduleId);
         void Delete(Module module);
     }
 }

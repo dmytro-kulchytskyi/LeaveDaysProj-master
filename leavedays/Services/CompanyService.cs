@@ -1,6 +1,7 @@
 ﻿using leavedays.Models;
 using leavedays.Models.Repository.Interfaces;
 using leavedays.Models.ViewModels.Account;
+using leavedays.Models.ViewModels.License;
 using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,7 @@ namespace leavedays.Services
             ICompanyRepository companyRepository,
             ILicenseRepository licenseRepository,
             IModuleRepository moduleRepository,
+            IDefaultModuleRepository defaultModuleRepository,
             LicenseService licenseService)
         {
             this.moduleRepository = moduleRepository;
@@ -26,6 +28,7 @@ namespace leavedays.Services
             this.roleRepository = roleRepository;
             this.userRepository = userRepository;
             this.licenseService = licenseService;
+            this.defaultModuleRepository = defaultModuleRepository;
         }
 
         private readonly LicenseService licenseService;
@@ -34,12 +37,35 @@ namespace leavedays.Services
         private readonly ICompanyRepository companyRepository;
         private readonly IRoleRepository roleRepository;
         private readonly IUserRepository userRepository;
+        private readonly IDefaultModuleRepository defaultModuleRepository;
 
         public bool IsCompanyDomainUniq(string domain)
         {
             return companyRepository.GetByUrlName(domain.ToLower()) == null;
         }
 
+        public UserInfoViewModel GetUserInfo(int id)
+        {
+            var customer = userRepository.GetById(id);
+            var company = GetById(customer.CompanyId);
+            var license = licenseRepository.GetById(company.LicenseId);
+            UserInfoViewModel customerInfo = new UserInfoViewModel()
+            {
+                Id = customer.Id,
+                FirstName = customer.FirstName,
+                LastName = customer.LastName,
+                Company = company,
+                License = license,
+                Modules = moduleRepository.GetByLicenseId(license.Id).Select(m => new Models.ViewModels.License.ModuleInfo()
+                {
+                    Id = m.Id,
+                    Name = defaultModuleRepository.GetById(m.DefaultModuleId).Name,
+                    Price = m.Price,
+                    isLocked = m.IsLocked
+                }).ToList()
+            };
+            return customerInfo;
+        }
 
         public Result<Company> CreateCompany(string companyName, string domain, string licenseName)
         {

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Web;
 using leavedays.Models;
 using leavedays.Models.Repository.Interfaces;
+using leavedays.Models.ViewModels.License;
 
 namespace leavedays.Models.Repository
 {
@@ -34,6 +35,8 @@ namespace leavedays.Models.Repository
                 return session.Get<Module>(id);
             }
         }
+
+        
 
         public IList<Module> GetByLockStatus(int licenseId, bool lockStatus)
         {
@@ -100,6 +103,18 @@ namespace leavedays.Models.Repository
                     session.Delete(module);
                     t.Commit();
                 }
+            }
+        }
+
+        public IList<ModuleForDownload> GetForDownload(int[] moduleId)
+        {
+            using (var session = sessionFactory.OpenSession())
+            {
+                var sqlQuery = "SELECT m.ModuleId AS Id, m.Price , d.Name FROM Module AS m INNER JOIN DefaultModule AS d ON m.DefaultModuleId  = d.DefaultModuleId WHERE m.IsActive = 1 AND m.IsLocked = 0 AND m.ModuleId IN(" + string.Join(",", moduleId) + ")";
+                var res = session.CreateSQLQuery(sqlQuery);//.SetAnsiString("param", string.Join(",", moduleId));
+                return res.
+                    SetResultTransformer(Transformers.AliasToBean<ModuleForDownload>()).
+                    List<ModuleForDownload>();
             }
         }
     }

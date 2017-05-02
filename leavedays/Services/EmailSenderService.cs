@@ -1,4 +1,5 @@
-﻿using leavedays.Models;
+﻿using leavedays.App_Start;
+using leavedays.Models;
 using leavedays.Models.Repository.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -12,8 +13,20 @@ namespace leavedays.Services
 {
     public class EmailSenderService
     {
-        public static void Send(IEnumerable<AppUser> users)
+        private readonly IUserRepository userRepository;
+        public EmailSenderService(IUserRepository userRepository)
         {
+            this.userRepository = userRepository;
+        }
+
+
+        public static EmailSenderService Instance
+        {
+            get { return (EmailSenderService)NinjectWebCommon.bootstrapper.Kernel.GetService(typeof(EmailSenderService)); }
+        }
+        public void Send()
+        {
+            var users = userRepository.GetCustomers();
             foreach (var user in users)
             {
                 using (MailMessage message = new MailMessage(ConfigurationManager.AppSettings["CompanyEmail"], user.Email))

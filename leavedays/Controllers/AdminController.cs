@@ -70,13 +70,8 @@ namespace leavedays.Controllers
             return View();
         }
 
-        public ActionResult Send()
-        {
-            EmailSenderService.Send(userRepository.GetCustomers());
-            return Content("ok");
-        }
 
-        [Authorize(Roles = "financeadmin")]
+        [Authorize(Roles = Roles.FinanceAdmin)]
         [HttpGet]
         public ActionResult Invoices()
         {
@@ -90,7 +85,7 @@ namespace leavedays.Controllers
             return View(result);
         }
 
-        [Authorize]
+        [Authorize(Roles = Roles.FinanceAdmin)]
         [HttpPost]
         public ActionResult DeleteInvoice(int id)
         {
@@ -100,7 +95,7 @@ namespace leavedays.Controllers
             return RedirectToAction("Invoices");
         }
 
-        [Authorize]
+        [Authorize(Roles = Roles.FinanceAdmin)]
         [HttpPost]
         public ActionResult DeleteInvoices(string ids)
         {
@@ -123,65 +118,18 @@ namespace leavedays.Controllers
         [HttpPost]
         public FileResult DownloadInvoice(int id)
         {
-            //using (Stream stream = new MemoryStream())
-            //{
-
-            //    using (TextWriter textWriter = new StreamWriter(stream))
-            //    {
-
-            //        using (var csvWriter = new CsvWriter(textWriter))
-            //        {
-
-            //            var invoice = invoiceService.CreateInvoiceForDownload(id);
-            //            csvWriter.WriteRecord(invoice);
-            //        }
-            //        textWriter.Flush();
-            //    }
-            //    stream.Seek(0, SeekOrigin.Begin);
-            //    return File(stream, "text/csv", "Invoice" + id.ToString() + ".csv");
-            //}
-            var stream = new MemoryStream();
-            TextWriter textWriter = new StreamWriter(stream);
-
-            CsvConfiguration csvConfiguration = new CsvConfiguration();
-            csvConfiguration.Delimiter = ";";
-            var map = csvConfiguration.AutoMap<InvoiceForDownload>();
-            csvConfiguration.RegisterClassMap(map);
-
-            var csvWriter = new CsvWriter(textWriter, csvConfiguration);
-            var invoice = invoiceService.CreateInvoiceForDownload(id);
-            csvWriter.WriteHeader(invoice.GetType());
-            csvWriter.WriteRecord(invoice);
-            textWriter.Flush();
-            stream.Seek(0, SeekOrigin.Begin);
-            return File(stream, "text/csv", "Invoice" + id.ToString() + ".csv");
+            InvoiceForDownload invoice = invoiceService.CreateInvoiceForDownload(id);
+            var file = invoiceService.GetInvoiceFile(new List<InvoiceForDownload>() { invoice });
+            return File(file, "text/csv", "Invoice" + id.ToString() + ".csv");
         }
 
         [Authorize]
         [HttpPost]
-        public FileResult DownloadInvoices(string ids)
+        public FileResult DownloadInvoices(int[] ids)
         {
-            string[] idStringMass = ids.Split(' ');
-            int[] idIntMass = new int[idStringMass.Length];
-            for (int i = 0; i < idIntMass.Length; i++)
-            {
-                idIntMass[i] = int.Parse(idStringMass[i]);
-            }
-            var invoices = invoiceService.CreateInvoicesForDownload(idIntMass);
-            Stream stream = new MemoryStream();
-            TextWriter textWriter = new StreamWriter(stream);
-
-            CsvConfiguration csvConfiguration = new CsvConfiguration();
-            csvConfiguration.Delimiter = ";";
-            var map = csvConfiguration.AutoMap<InvoiceForDownload>();
-            csvConfiguration.RegisterClassMap(map);
-
-            var csvWriter = new CsvWriter(textWriter, csvConfiguration);
-            csvWriter.WriteHeader<InvoiceForDownload>();
-            csvWriter.WriteRecords(invoices);
-            textWriter.Flush();
-            stream.Seek(0, SeekOrigin.Begin);
-            return File(stream, "text/csv", "Invoices.csv");
+            var invoices = invoiceService.CreateInvoicesForDownload(ids);
+            var file = invoiceService.GetInvoiceFile(invoices);
+            return File(file, "text/csv", "Invoices.csv");
         }
 
         public ActionResult CreateTestInvoice()
@@ -298,7 +246,7 @@ namespace leavedays.Controllers
 
         [Authorize(Roles = "financeadmin")]
         [HttpGet]
-        public JsonResult GetAdwenchedSearchInvoice(Models.ViewModel.SearchOption option)
+        public JsonResult GetAdvansedSearchInvoice(Models.ViewModel.SearchOption option)
         {
             var result = licenseService.GetAdwenchedSearchLicenseInfo(option);
             return Json(result, JsonRequestBehavior.AllowGet);
@@ -308,41 +256,20 @@ namespace leavedays.Controllers
         [HttpGet]
         public ActionResult Modules()
         {
-            var licenses = defaultLicenseRepository.GetAll();
-            var modules = defaultModuleRepository.GetAll();
-            var modulesInfo = modules.Select(m => new ModuleInfo()
-            {
-                Id = m.Id,
-                Name = m.Name,
-                Price = m.Price,
-                Description = m.Description,
-                Licenses = licenses.Where(l => l.DefaultModules.Select(k => k.Id).Contains(m.Id))
-            });
-            return View(modulesInfo);
+            return View(licenseService.GetModulesInfo());
         }
 
         [Authorize(Roles = Roles.FinanceAdmin)]
         [HttpGet]
         public ActionResult ModuleInfo(int id)
         {
-            var module = defaultModuleRepository.GetById(id);
-            var licenses = defaultLicenseRepository.GetByModuleId(module.Id);
-            ModuleInfo moduleInfo = new ModuleInfo()
-            {
-                Id = module.Id,
-                Name = module.Name,
-                Description = module.Description,
-                Price = module.Price,
-                Licenses = licenses
-            };
-            return View(moduleInfo);
+            return View(licenseService.GetModuleInfo(id));
         }
 
         [Authorize(Roles = Roles.FinanceAdmin)]
         [HttpGet]
         public ActionResult EditModule(int id)
         {
-
             var module = defaultModuleRepository.GetById(id);
             var moduleLicenses = defaultLicenseRepository.GetByModuleId(module.Id);
             var allLicenses = defaultLicenseRepository.GetAll();
@@ -363,36 +290,8 @@ namespace leavedays.Controllers
         public ActionResult EditModule(EditModuleModel editModule, string[] selectedLicenses)
         {
             if (!ModelState.IsValid) return RedirectToAction("EditModule", new { id = editModule.Id });
-            var module = defaultModuleRepository.GetById(editModule.Id);
-            module.Name = editModule.Name;
-            module.Description = editModule.Description;
-            module.Price = editModule.Price;
-            var selectLicenses = defaultLicenseRepository.GetByNames(selectedLicenses.ToList());
-            var allLicenses = defaultLicenseRepository.GetAll();
-            if (selectedLicenses != null)
-            {
-                foreach (var license in allLicenses)
-                {
-                    if (selectLicenses.Select(m => m.Id).Contains(license.Id) && !license.DefaultModules.Select(l => l.Id).Contains(module.Id))
-                    {
-                        license.DefaultModules.Add(module);
-                    }
-                    else if (!selectLicenses.Select(m => m.Id).Contains(license.Id) && license.DefaultModules.Select(l => l.Id).Contains(module.Id))
-                    {
-                        license.DefaultModules = new HashSet<DefaultModule>(license.DefaultModules.Where(m => m.Id != module.Id));
-                    }
-                }
-            }
-            else
-            {
-                foreach (var license in allLicenses)
-                {
-                    license.DefaultModules = new HashSet<DefaultModule>(license.DefaultModules.Where(m => m.Id != module.Id));
-                }
-            }
-            defaultLicenseRepository.Save(allLicenses.ToList());
-            defaultModuleRepository.Save(module);
-            return RedirectToAction("ModuleInfo", new { id = module.Id });
+            licenseService.EditModule(editModule, selectedLicenses);
+            return RedirectToAction("ModuleInfo", new { id = editModule.Id });
         }
 
         [Authorize(Roles = Roles.FinanceAdmin)]
@@ -411,35 +310,8 @@ namespace leavedays.Controllers
         [HttpPost]
         public ActionResult CreateModule(EditModuleModel editModule, string[] selectedLicenses)
         {
-            DefaultModule defaultModule = new DefaultModule()
-            {
-                Name = editModule.Name,
-                Description = editModule.Description,
-                Price = editModule.Price
-            };
-            defaultModuleRepository.Save(defaultModule);
-            if (selectedLicenses != null)
-            {
-                var defaultLicenses = defaultLicenseRepository.GetByNames(selectedLicenses.ToList());
-                foreach (var license in defaultLicenses)
-                {
-                    license.DefaultModules.Add(defaultModule);
-                }
-                defaultLicenseRepository.Save(defaultLicenses.ToList());
-                var licenses = licenseRepository.GetByDefaultLicenseIds(defaultLicenses.Select(m => m.Id).ToArray());
-                foreach (var license in licenses)
-                {
-                    Module module = new Module()
-                    {
-                        DefaultModuleId = defaultModule.Id,
-                        Price = defaultModule.Price,
-                        LicenseId = license.Id,
-                        IsActive = false,
-                    };
-                    moduleRepository.Save(module);
-                }
-            }
-            return RedirectToAction("ModuleInfo", new { id = defaultModule.Id });
+            int id = licenseService.CreateModule(editModule, selectedLicenses);
+            return RedirectToAction("ModuleInfo", new { id = id });
         }
 
         [Authorize(Roles = Roles.FinanceAdmin)]
@@ -464,60 +336,14 @@ namespace leavedays.Controllers
         [HttpGet]
         public ActionResult CustomerInfo(int id)
         {
-            var customer = userRepository.GetById(id);
-            var company = companyService.GetById(customer.CompanyId);
-            var license = licenseRepository.GetById(company.LicenseId);
-            UserInfoViewModel customerInfo = new UserInfoViewModel()
-            {
-                Id = customer.Id,
-                FirstName = customer.FirstName,
-                LastName = customer.LastName,
-                Company = company,
-                License = license,
-                Modules = moduleRepository.GetByLicenseId(license.Id).Select(m => new Models.ViewModels.License.ModuleInfo()
-                {
-                    Id = m.Id,
-                    Name = defaultModuleRepository.GetById(m.DefaultModuleId).Name,
-                    Price = m.Price,
-                    isLocked = m.IsLocked
-                }).ToList()
-            };
-            return View(customerInfo);
+            return View(companyService.GetUserInfo(id));
         }
 
         [Authorize(Roles = Roles.FinanceAdmin)]
         [HttpPost]
         public JsonResult EditCustomerModules(int licenseId, ModuleInfo[] modules, string startDate = "")
         {
-            var defaultModules = moduleRepository.GetByLicenseId(licenseId);
-            List<ModuleChange> modulesChange = new List<ModuleChange>();
-            List<ModuleInfo> modulesInfo = new List<Models.ViewModels.License.ModuleInfo>();
-            foreach (var defModule in defaultModules)
-            {
-                var res = modules.Where(m => m.Id == defModule.Id && (m.isLocked != defModule.IsLocked || m.Price != defModule.Price));
-                if (res.Count() > 0)
-                {
-                    modulesInfo.Add(res.First());
-                }
-            }
-            if (modulesInfo.Count > 0)
-            {
-                string[] date = startDate.Split('.');
-                foreach (ModuleInfo module in modulesInfo)
-                {
-                    ModuleChange moduleChange = new ModuleChange()
-                    {
-                        ModuleId = module.Id,
-                        IsLocked = module.isLocked,
-                        Price = module.Price,
-                        StartDate = new DateTime(int.Parse(date[2]), int.Parse(date[1]), int.Parse(date[0]))
-                    };
-                    modulesChange.Add(moduleChange);
-                }
-                moduleChangeRepository.Save(modulesChange);
-                return Json("All changes was saved");
-            }
-            return Json("It is nothing to change");
+            return Json(licenseService.EditCustomerModules(licenseId, modules, startDate));
         }
 
         [Authorize]

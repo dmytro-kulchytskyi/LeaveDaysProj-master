@@ -250,6 +250,7 @@
     <Compile Include="Models\Module.cs" />
     <Compile Include="Models\ModuleChange.cs" />
     <Compile Include="Models\ModuleStatus.cs" />
+    <Compile Include="Models\ViewModels\License\ModuleForDownload.cs" />
     <Compile Include="Result.cs" />
     <Compile Include="Models\Repository\CompanyRepository.cs" />
     <Compile Include="Models\Repository\DefaultLicenseRepository.cs" />

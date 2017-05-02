@@ -13,7 +13,9 @@ namespace leavedays.Models.ViewModels.License
         public string LicenceCode { get; set; }
         public string CompanyName { get; set; }
         public string ContactPerson { get; set; }
-        public IEnumerable<Module> Modules { get; set; }
+        public int SeatsNumber { get; set; }
+        public double TotalPrice { get; set; }
+        public IEnumerable<ModuleForDownload> Modules { get; set; }
     }
 
     public sealed class InvoiceForDownloadCsvMap:CsvClassMap<InvoiceForDownload>
