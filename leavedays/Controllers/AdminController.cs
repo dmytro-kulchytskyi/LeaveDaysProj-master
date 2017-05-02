@@ -345,7 +345,7 @@ namespace leavedays.Controllers
         {
             var date = DateTime.Now;
             var selectedDate = startDate.Split('.');
-            if(startDate[1] < date.Year || (startDate[1] == date.Year && startDate[0] < date.Month))
+            if(int.Parse(selectedDate[1]) < date.Year || (int.Parse(selectedDate[1]) == date.Year && int.Parse(selectedDate[0]) < date.Month))
             {
                 return Json("Invalid date");
             }
