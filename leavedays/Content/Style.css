@@ -337,7 +337,12 @@ table#invoiceTable, table#moduleTable {
     }
 
     table#moduleTable #addModule {
+        display:block;
+        width:30px;
+        height:30px;
+        text-align:center;
         top:-11px;
+        text-decoration:none;
         position:relative;
         background-color: white;
         border: 1px solid rgb(140, 200, 60);

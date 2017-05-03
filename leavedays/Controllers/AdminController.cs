@@ -125,7 +125,7 @@ namespace leavedays.Controllers
 
         [Authorize]
         [HttpPost]
-        public FileResult DownloadInvoices(string[] ids, FormCollection form)
+        public FileResult DownloadInvoices(string[] ids)
         {
             var invoices = invoiceService.CreateInvoicesForDownload(ids.Select(m => int.Parse(m)).ToArray());
             var file = invoiceService.GetInvoiceFile(invoices);
