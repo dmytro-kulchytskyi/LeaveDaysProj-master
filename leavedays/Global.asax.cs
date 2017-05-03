@@ -1,4 +1,5 @@
 ﻿using Hangfire;
+using Hangfire.SqlServer;
 using leavedays.Services;
 using System;
 using System.Collections.Generic;
@@ -15,9 +16,10 @@ namespace leavedays
         {
             AreaRegistration.RegisterAllAreas();
             RouteConfig.RegisterRoutes(RouteTable.Routes);
-            //RecurringJob.AddOrUpdate(() => ChangeService.Instance.ApplyChanges(), Cron.Daily());
-            //RecurringJob.AddOrUpdate(() => EmailSenderService.Instance.Send(), Cron.Monthly(1));
-            //RecurringJob.AddOrUpdate(() => ChangeService.Instance.LockLicense(), Cron.Monthly(5));
+            JobStorage.Current = new SqlServerStorage("Server = DESKTOP-ERHGVQ5; database = NewsWebSiteDB; Integrated Security = true;");
+            RecurringJob.AddOrUpdate(() => ChangeService.Instance.ApplyChanges(), Cron.Monthly(1));
+            RecurringJob.AddOrUpdate(() => EmailSenderService.Instance.Send(), Cron.Monthly(1));
+            RecurringJob.AddOrUpdate(() => ChangeService.Instance.LockLicense(), Cron.Monthly(5));
         }
         void Application_AuthenticateRequest(object sender, EventArgs e)
         {
