@@ -339,6 +339,7 @@
     <Content Include="Views\Admin\CustomerInfo.cshtml" />
     <Content Include="Views\Admin\RemoveLicenseSeats.cshtml" />
     <Content Include="Views\Admin\SwitchModules.cshtml" />
+    <Content Include="Views\Admin\CreateLicense.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
