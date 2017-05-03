@@ -22,7 +22,6 @@ namespace leavedays.App_Start
     using Models.Identity;
     using Microsoft.Owin.Security;
 
-
     public static class NinjectWebCommon
     {
         public static readonly Bootstrapper bootstrapper = new Bootstrapper();
@@ -111,9 +110,9 @@ namespace leavedays.App_Start
 
                 configuration.Configure();
                 configuration.AddAssembly(typeof(AppUser).Assembly);
+                configuration.SetProperty(NHibernate.Cfg.Environment.ConnectionString, System.Configuration.ConfigurationManager.ConnectionStrings["DBConnection"].ConnectionString);
                 ISessionFactory sessionFactory = configuration.BuildSessionFactory();
                 new SchemaUpdate(configuration).Execute(true, true);
-
                 return sessionFactory;
             }).InSingletonScope();
         }

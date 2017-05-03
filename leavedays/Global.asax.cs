@@ -16,7 +16,7 @@ namespace leavedays
         {
             AreaRegistration.RegisterAllAreas();
             RouteConfig.RegisterRoutes(RouteTable.Routes);
-            JobStorage.Current = new SqlServerStorage(@"server=dimas;database=test;integrated security=true;");
+            JobStorage.Current = new SqlServerStorage(System.Configuration.ConfigurationManager.ConnectionStrings["DBConnection"].ConnectionString);
             RecurringJob.AddOrUpdate(() => ChangeService.Instance.ApplyChanges(), Cron.Monthly(1));
             RecurringJob.AddOrUpdate(() => EmailSenderService.Instance.Send(), Cron.Monthly(1));
             RecurringJob.AddOrUpdate(() => ChangeService.Instance.LockLicense(), Cron.Monthly(5));
