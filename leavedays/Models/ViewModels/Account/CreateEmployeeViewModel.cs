@@ -27,6 +27,14 @@ namespace leavedays.Models.ViewModels.Account
         [StringLength(250)]
         public string LastName { get; set; }
 
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; }
+
+        [Required]
+        [Phone]
+        public string Phone { get; set; }
+
         [ScaffoldColumn(false)]
         public string[] Roles { get; set; }
         

@@ -6,49 +6,87 @@
 <script src="~/Scripts/jquery.validate.min.js"></script>
 <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
 
-
-
 <div class="fieldBlock">
     @using (Html.BeginForm("CreateEmployee", "Account", FormMethod.Post, new { id = "form" }))
     {
         <h2>Create Employee</h2>
         @Html.AntiForgeryToken()
         @Html.ValidationSummary(true, "")
-
-        <div>
-            @Html.LabelFor(model => model.UserName)
-            @Html.EditorFor(model => model.UserName)
-            @Html.ValidationMessageFor(model => model.UserName)
+        <div class="bordered">
+            <table>
+                <tr>
+                    <td>
+                        @Html.LabelFor(model => model.UserName)
+                    </td>
+                    <td>
+                        @Html.EditorFor(model => model.UserName)
+                        @Html.ValidationMessageFor(model => model.UserName)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(model => model.Password)
+                    </td>
+                    <td>
+                        @Html.PasswordFor(model => model.Password)
+                        @Html.ValidationMessageFor(model => model.Password)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(model => model.FirstName)
+                    </td>
+                    <td>
+                        @Html.EditorFor(model => model.FirstName)
+                        @Html.ValidationMessageFor(model => model.FirstName)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(model => model.LastName)
+                    </td>
+                    <td>
+                        @Html.EditorFor(model => model.LastName)
+                        @Html.ValidationMessageFor(model => model.LastName)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(model => model.Email)
+                    </td>
+                    <td>
+                        @Html.EditorFor(model => model.Email)
+                        @Html.ValidationMessageFor(model => model.Email)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(model => model.Phone)
+                    </td>
+                    <td>
+                        @Html.EditorFor(model => model.Phone)
+                        @Html.ValidationMessageFor(model => model.Phone)
+                    </td>
+                </tr>
+                <tr>
+                    <td id="checkboxes">
+                        @foreach (var role in Model.Roles)
+                        {
+                            <input type="checkbox" name="@role" value="@role" class="checkbox" />
+                            <span>@role</span>
+                            <br />
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.HiddenFor(model => model.RolesLine, new { @id = "RolesLine" })
+                        <input type="submit" value="Submit" name="submit" style="margin-left: 10px;">
+                    </td>
+                </tr>
+            </table>
         </div>
-            <br />
-            <div>
-                @Html.LabelFor(model => model.Password)
-                @Html.PasswordFor(model => model.Password)
-                @Html.ValidationMessageFor(model => model.Password)
-            </div>
-            <br />
-            <div>
-                @Html.LabelFor(model => model.FirstName)
-                @Html.EditorFor(model => model.FirstName)
-                @Html.ValidationMessageFor(model => model.FirstName)
-            </div>
-            <br />
-            <div>
-                @Html.LabelFor(model => model.LastName)
-                @Html.EditorFor(model => model.LastName)
-                @Html.ValidationMessageFor(model => model.LastName)
-            </div>
-            <br />
-            <div id="checkboxes">
-                @foreach (var role in Model.Roles)
-                {
-                    <input type="checkbox" name="@role" value="@role" class="checkbox" />
-                    <span>@role</span>
-                    <br />
-                }
-            </div>
-            @Html.HiddenFor(model => model.RolesLine, new { @id = "RolesLine" })
-            <input type="submit" value="Create" id="submit" />
+
     }
 </div>
 <script>
@@ -61,9 +99,6 @@
                 roles += $(value).val() + ',';
             });
             $(rolesLine).val(roles);
-            // alert(roles);
         });
-
     });
-
 </script>

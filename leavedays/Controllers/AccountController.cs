@@ -61,7 +61,6 @@ namespace leavedays.Controllers
             }
         }
 
-
       
         [HttpGet]
         [AllowAnonymous]
@@ -110,16 +109,15 @@ namespace leavedays.Controllers
         {
             if (User.Identity.IsAuthenticated) return RedirectToAction("Index", "Home");
             var licenseList = defaultLicenseRepository.GetAll();
-            var model = new RegisterViewModel();
+            var model = new CreateUserModel();
             model.LicenseList = licenseList;
             //  model.Roles = CreateUserAllowedRoles;
             return View(model);
         }
 
         [HttpPost]
-        public async Task<ActionResult> Register(RegisterViewModel model)
+        public async Task<ActionResult> Register(CreateUserModel model)
         {
-
             if (!ModelState.IsValid)
             {
                 model.LicenseList = defaultLicenseRepository.GetAll();
@@ -134,7 +132,6 @@ namespace leavedays.Controllers
                 return View(model);
             }
             var company = createCompanyResult.GetResult();
-
             
             var userInfo = new CreateUser()
             {
@@ -167,10 +164,8 @@ namespace leavedays.Controllers
         [Authorize(Roles = Roles.Customer)]
         public ActionResult CreateEmployee()
         {
-            // if (!userManager.IsInRole(User.Identity.GetUserId<int>(), "customer")) return HttpNotFound();
             var model = new CreateEmployeeViewModel();
             model.Roles = EmployeeRoles;
-
             return View(model);
         }
 
@@ -181,29 +176,53 @@ namespace leavedays.Controllers
             model.Roles = EmployeeRoles;
             if (!ModelState.IsValid)
             {
-                model.Password = "";
+                return View(model);
+            }
+
+            var customer = userRepository.GetById(User.Identity.GetUserId<int>());
+
+            var company = companyRepository.GetById(customer.CompanyId);
+            var license = licenseRepository.GetById(company.LicenseId);
+
+            var activeUsers = companyRepository.GetUsersCount(company.Id);
+
+            if (license.Seats - activeUsers <= 0)
+            {
+                ModelState.AddModelError("", "No free seats");
+                return View(model);
+            }
+
+            if (customer == null)
+            {
+                ModelState.AddModelError("", "Error while creating employee");
                 return View(model);
             }
 
             var rolesList = model.RolesLine.SplitByComma().Intersect(EmployeeRoles, StringComparer.OrdinalIgnoreCase).ToList();
 
-
             var userRoles = companyService.GetRolesList(rolesList);
+            if (userRoles == null || userRoles.Count() == 0)
+            {
+                ModelState.AddModelError("", "You must select a role(s)");
+                return View(model);
+            }
 
             var user = new AppUser()
             {
                 UserName = model.UserName,
                 Roles = new HashSet<Role>(userRoles),
-                CompanyId = userRepository.GetById(User.Identity.GetUserId<int>()).CompanyId,
+                CompanyId = customer.CompanyId,
                 FirstName = model.FirstName,
                 LastName = model.LastName,
                 Password = model.Password,
-
+                Email = model.Email,
+                PhoneNumber = model.Phone
             };
+
             var result = await userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
             {
-                ModelState.AddModelError("", "Error while creating new customer");
+                ModelState.AddModelError("", "Error while creating employee");
                 return View(model);
             }
             return RedirectToAction("Index", "Home");
@@ -213,64 +232,52 @@ namespace leavedays.Controllers
         [Authorize(Roles = Roles.FinanceAdmin)]
         public ActionResult CreateCompany()
         {
-            var model = new CreateCompanyViewModel();
+            var model = new CreateUserModel();
             model.Roles = EmployeeRoles;
+            model.LicenseList = defaultLicenseRepository.GetAll();
             return View(model);
         }
 
         [HttpPost]
         [Authorize]
-        public async Task<ActionResult> CreateCompany(CreateCompanyViewModel model)
+        public async Task<ActionResult> CreateCompany(CreateUserModel model)
         {
-
-            if (!userManager.IsInRole(User.Identity.GetUserId<int>(), "financeadmin")) return HttpNotFound();
-            model.Roles = model.Roles = EmployeeRoles;
-            if (!ModelState.IsValid) return View(model);
-
-            model.CompanyUrl = model.CompanyUrl.ToLower();
-
-            var isUniq = companyRepository.GetByUrlName(model.CompanyUrl) == null;
-            if (!isUniq)
+            if (!ModelState.IsValid)
             {
-                ModelState.AddModelError("", "A company with this URL already exists");
+                model.LicenseList = defaultLicenseRepository.GetAll();
                 return View(model);
             }
 
-            var rolesList = new List<string>();
-            if (string.IsNullOrEmpty(model.RolesLine))
-                rolesList.Add(EmployeeRoles.First());
-
-            rolesList = model.RolesLine.SplitByComma()
-              .Intersect(EmployeeRoles, StringComparer.InvariantCultureIgnoreCase).ToList();
-
-            if (rolesList.Count == 0 || !rolesList.Contains("customer"))
-                rolesList.Add("customer");
-
-            var company = new Company()
+            var createCompanyResult = companyService.CreateCompany(model.CompanyName, model.CompanyUrl, model.LicenseName);
+            if (!createCompanyResult.Succed)
             {
-                FullName = model.CompanyName,
-                UrlName = model.CompanyUrl
-            };
-            var companyId = companyRepository.Save(company);
+                ModelState.AddModelError("", createCompanyResult.GetMessage());
+                model.LicenseList = defaultLicenseRepository.GetAll();
+                return View(model);
+            }
+            var company = createCompanyResult.GetResult();
 
-            var userRoles = companyService.GetRolesList(rolesList);
-
-            var user = new AppUser()
+            var userInfo = new CreateUser()
             {
                 UserName = model.UserName,
-                Roles = new HashSet<Role>(userRoles),
-                CompanyId = companyId,
-                LastName = model.LastName,
+                Role = Roles.Customer,
+                Comapany = company,
                 FirstName = model.FirstName,
-                Password = model.Password
+                LastName = model.LastName,
+                Password = model.Password,
+                PhoneNumber = model.PhoneNumber,
+                Email = model.Email
             };
 
-            var result = await userManager.CreateAsync(user, model.Password);
-            if (!result.Succeeded)
+            var createUserResult = await companyService.CreateUserAsync(userInfo, userManager);
+
+            if (!createUserResult.Succed)
             {
-                ModelState.AddModelError("", result.Errors.First());
+                ModelState.AddModelError("", createUserResult.GetMessage());
+                model.LicenseList = defaultLicenseRepository.GetAll();
                 return View(model);
             }
+           
             return RedirectToAction("Index", "Home");
         }
 

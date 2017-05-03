@@ -6,13 +6,16 @@ using System.Web;
 
 namespace leavedays.Models.ViewModels.Account
 {
-    public class RegisterViewModel
+    public class CreateUserModel
     {
         [Required(ErrorMessage = "You must select a license")]
         public string LicenseName { get; set; }
 
         [ScaffoldColumn(false)]
         public string RolesLine { get; set; }
+
+        [ScaffoldColumn(false)]
+        public IEnumerable<string> Roles { get; set; }
 
         [Required]
         [EmailAddress]
