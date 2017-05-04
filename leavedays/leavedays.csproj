@@ -236,6 +236,7 @@
     </Compile>
     <Compile Include="IdentityHelper.cs" />
     <Compile Include="Models\Company.cs" />
+    <Compile Include="Models\CreateDefaultLicense.cs" />
     <Compile Include="Models\CreateUser.cs" />
     <Compile Include="Models\DefaultLicense.cs" />
     <Compile Include="Models\DefaultModule.cs" />
@@ -340,6 +341,7 @@
     <Content Include="Views\Admin\RemoveLicenseSeats.cshtml" />
     <Content Include="Views\Admin\SwitchModules.cshtml" />
     <Content Include="Views\Admin\CreateLicense.cshtml" />
+    <Content Include="Views\Admin\LicenseSucces.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

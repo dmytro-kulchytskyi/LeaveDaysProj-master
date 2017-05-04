@@ -365,27 +365,28 @@ namespace leavedays.Controllers
             return File(file, "text/csv", "Invoices.csv");
         }
 
-        [Authorize]
+        [Authorize(Roles = Roles.FinanceAdmin)]
         [HttpGet]
         public ActionResult CreateLicense()
         {
-            var model = new DefaultLicense()
-            {
-            };
-            return View(model);
+            return View();
         }
 
-        [Authorize]
+        [Authorize(Roles = Roles.FinanceAdmin)]
         [HttpPost]
-        public JsonResult CreateLicense(string name, int price)
+        public ActionResult CreateLicense(CreateDefaultLicense model)
         {
-            var model = new DefaultLicense()
+            if (!ModelState.IsValid)
             {
-                Name = name,
-                Price = price
+                return View(model);
+            }
+            var defaultlicense = new DefaultLicense()
+            {
+                Name = model.Name,
+                Price = model.Price
             };
-            defaultLicenseRepository.Save(model);
-            return Json("success");
+            defaultLicenseRepository.Save(defaultlicense);
+            return RedirectToAction("Index", "Home");
         }
     }
 }
