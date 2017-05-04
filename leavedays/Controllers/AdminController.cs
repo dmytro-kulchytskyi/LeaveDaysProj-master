@@ -354,16 +354,6 @@ namespace leavedays.Controllers
             return Json(licenseService.EditCustomerModules(licenseId, modules, startDate));
         }
 
-        [Authorize]
-        [HttpGet]
-        public ActionResult CreateLicense()
-        {
-            var model = new CreateLicense()
-            {
-                Modules = defaultModuleRepository.GetAll()
-            };
-            return View(model);
-        }
 
         [Authorize(Roles = Roles.Customer)]
         [HttpGet]
@@ -376,9 +366,25 @@ namespace leavedays.Controllers
         }
 
         [Authorize]
-        [HttpPost]
-        public JsonResult CreateLicense(string modulesLine, int id, string name)
+        [HttpGet]
+        public ActionResult CreateLicense()
         {
+            var model = new DefaultLicense()
+            {
+            };
+            return View(model);
+        }
+
+        [Authorize]
+        [HttpPost]
+        public JsonResult CreateLicense(string name, int price)
+        {
+            var model = new DefaultLicense()
+            {
+                Name = name,
+                Price = price
+            };
+            defaultLicenseRepository.Save(model);
             return Json("success");
         }
     }
