@@ -20,7 +20,7 @@ namespace leavedays.Controllers
 
     public class AccountController : Controller
     {
-        private readonly string[] EmployeeRoles = new string[] 
+        private readonly string[] EmployeeRoles = new string[]
         {
             Roles.Worker,
             Roles.Manager
@@ -53,7 +53,8 @@ namespace leavedays.Controllers
             this.licenseRepository = licenseRepository;
         }
 
-        private IAuthenticationManager AuthenticationManager
+
+        private IAuthenticationManager authenticationManager
         {
             get
             {
@@ -61,7 +62,7 @@ namespace leavedays.Controllers
             }
         }
 
-      
+
         [HttpGet]
         [AllowAnonymous]
         public ActionResult Login()
@@ -69,6 +70,7 @@ namespace leavedays.Controllers
             if (User.Identity.IsAuthenticated) return RedirectToAction("Index", "Home");
             return View();
         }
+
 
         [HttpPost]
         [AllowAnonymous]
@@ -79,27 +81,34 @@ namespace leavedays.Controllers
             {
                 return View(model);
             }
-            var user = new AppUser { UserName = model.UserName, Password = model.Password };
-            var result = await signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, shouldLockout: false);
-            switch (result)
-            {
-                case SignInStatus.Success:
-                    {
-                        var companyId = userRepository.GetByUserName(model.UserName).CompanyId;
-                        if (companyId == 0) return RedirectToAction("Index", "Home");
-                        var company = companyRepository.GetById(companyId).UrlName;
-                        if (string.IsNullOrEmpty(company)) return RedirectToAction("Index", "Home");
-                        return RedirectToAction("Company", "Account", new { companyName = company });
-                    }
-                default:
-                    ModelState.AddModelError("", "Invalid login attempt.");
-                    return View(model);
-            }
-        }
+            var user = userRepository.GetByUserName(model.UserName);
 
-        public string Info()
-        {
-            return "ID: " + User.Identity.GetUserId<int>() + "<br/>Is Customer: " + User.IsInRole("customer") + "<br /> Is Auth: " + User.Identity.IsAuthenticated;
+            if (user != null)
+            {
+                var isPasswordCorrect = await userManager.CheckPasswordAsync(user, model.Password);
+
+                if (isPasswordCorrect)
+                {
+                    if (user != null)
+                    {
+                        var company = companyRepository.GetById(user.CompanyId);
+
+                        if (company != null)
+                        {
+                            var license = licenseRepository.GetById(company.LicenseId);
+                            if (license.IsLocked)
+                            {
+                                ModelState.AddModelError("", "Account is locked, please pay the invoice");
+                                return View(model);
+                            }
+                        }
+                        await signInManager.SignInAsync(user, isPersistent: false, rememberBrowser: model.RememberMe);
+                        return RedirectToAction("Index", "Home");
+                    }
+                }
+            }
+            ModelState.AddModelError("", "Invalid login attempt.");
+            return View(model);
         }
 
 
@@ -132,12 +141,12 @@ namespace leavedays.Controllers
                 return View(model);
             }
             var company = createCompanyResult.GetResult();
-            
+
             var userInfo = new CreateUser()
             {
                 UserName = model.UserName,
                 Role = Roles.Customer,
-                Comapany  = company,
+                Comapany = company,
                 FirstName = model.FirstName,
                 LastName = model.LastName,
                 Password = model.Password,
@@ -154,7 +163,6 @@ namespace leavedays.Controllers
                 return View(model);
             }
             var user = createUserResult.GetResult();
-
             await signInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
             return RedirectToAction("Index", "Home");
         }
@@ -277,7 +285,7 @@ namespace leavedays.Controllers
                 model.LicenseList = defaultLicenseRepository.GetAll();
                 return View(model);
             }
-           
+
             return RedirectToAction("Index", "Home");
         }
 
@@ -294,7 +302,7 @@ namespace leavedays.Controllers
         [Authorize]
         public ActionResult LogOff()
         {
-            AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+            authenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
             return RedirectToAction("Index", "Home");
         }
     }
