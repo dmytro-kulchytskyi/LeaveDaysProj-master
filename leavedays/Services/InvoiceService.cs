@@ -82,7 +82,7 @@ namespace leavedays.Services
                 LicenceCode = license.LicenseCode,
                 CompanyName = company.FullName,
                 ContactPerson = owner.LastName + " " + owner.FirstName,
-                TotalPrice = (modules.Where(m => !m.IsLocked).Sum(m => m.Price) * license.Seats),
+                TotalPrice = (modules.Where(m => !m.IsLocked).Sum(m => m.Price) * companyRepository.GetUsersCount(company.Id)),
                 SeatsNumber = license.Seats,
                 Modules = moduleRepository.GetForDownload(modules.Select(m => m.Id).ToArray(), false)
             };
@@ -156,7 +156,7 @@ namespace leavedays.Services
                 LicenceCode = license.LicenseCode,
                 CompanyName = company.FullName,
                 ContactPerson = owner.LastName + " " + owner.FirstName,
-                TotalPrice = (modulesForDownload.Sum(m => m.Price) * license.Seats),
+                TotalPrice = (modulesForDownload.Sum(m => m.Price) * companyRepository.GetUsersCount(companyId)),
                 SeatsNumber = license.Seats,
                 Modules = modulesForDownload
             };
