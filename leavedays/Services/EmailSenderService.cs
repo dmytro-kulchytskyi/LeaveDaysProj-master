@@ -31,21 +31,25 @@ namespace leavedays.Services
             {
                 using (MailMessage message = new MailMessage(ConfigurationManager.AppSettings["CompanyEmail"], user.Email))
                 {
-                    message.Subject = "Payment reminders";
-                    string messageBody = "Dear " + user.FirstName + " " + user.LastName + Environment.NewLine;
-                    messageBody += "Let me remind you, that it's time to pay for our services." + Environment.NewLine;
-                    messageBody += "In the case of non-payment of accounts up to 5 numbers of current month, your license will be blocked" + Environment.NewLine;
-                    message.Body = messageBody;
-                    using (SmtpClient client = new SmtpClient
+                    try
                     {
-                        EnableSsl = true,
-                        Host = "smtp.yandex.ru",
-                        Port = 25,
-                        Credentials = new NetworkCredential(ConfigurationManager.AppSettings["CompanyEmail"], ConfigurationManager.AppSettings["CompanyEmailPassword"])
-                    })
-                    {
-                        client.Send(message);
+                        message.Subject = "Payment reminders";
+                        string messageBody = "Dear " + user.FirstName + " " + user.LastName + Environment.NewLine;
+                        messageBody += "Let me remind you, that it's time to pay for our services." + Environment.NewLine;
+                        messageBody += "In the case of non-payment of accounts up to 5 numbers of current month, your license will be blocked" + Environment.NewLine;
+                        message.Body = messageBody;
+                        using (SmtpClient client = new SmtpClient
+                        {
+                            EnableSsl = true,
+                            Host = "smtp.yandex.ru",
+                            Port = 25,
+                            Credentials = new NetworkCredential(ConfigurationManager.AppSettings["CompanyEmail"], ConfigurationManager.AppSettings["CompanyEmailPassword"])
+                        })
+                        {
+                            client.Send(message);
+                        }
                     }
+                    catch { }
                 }
             }
         }

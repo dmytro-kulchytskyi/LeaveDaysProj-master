@@ -118,6 +118,19 @@ namespace leavedays.Models.Repository
                 }
             }
         }
-        
+
+        public void Test()
+        {
+            var session = sessionFactory.OpenSession();
+
+            var all = session.QueryOver<AppUser>();
+
+            var query = from u in all
+                        where u.UserName == "25"
+                        orderby u.FirstName
+                        select u;
+
+            var list = all.Select(u => u.FirstName).Where(n => n.Roles.Any(r => r.Name == Roles.Customer)).List<AppUser>();
+        }
     }
 }

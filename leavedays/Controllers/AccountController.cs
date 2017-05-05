@@ -1,4 +1,5 @@
-﻿using leavedays.Models;
+﻿using leavedays.App_Start;
+using leavedays.Models;
 using leavedays.Models.Repository;
 using leavedays.Models.Repository.Interfaces;
 using leavedays.Models.ViewModels.Account;
@@ -96,7 +97,7 @@ namespace leavedays.Controllers
                         if (company != null)
                         {
                             var license = licenseRepository.GetById(company.LicenseId);
-                            if (license.IsLocked)
+                            if (license != null && license.IsLocked)
                             {
                                 ModelState.AddModelError("", "Account is locked, please pay the invoice");
                                 return View(model);

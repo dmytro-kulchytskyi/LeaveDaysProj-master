@@ -84,7 +84,9 @@ namespace leavedays.Services
             {
                 FullName = companyName,
                 UrlName = domain,
-                LicenseId = license.Id
+                LicenseId = license.Id,
+                IsPaid = false
+                
             };
             var companyId = companyRepository.Save(company);
             if (companyId == 0)
