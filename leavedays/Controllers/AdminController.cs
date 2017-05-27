@@ -248,7 +248,7 @@ namespace leavedays.Controllers
 
         [Authorize(Roles = "financeadmin")]
         [HttpGet]
-        public JsonResult GetAdvansedSearchInvoice(Models.ViewModel.SearchOption option)
+        public JsonResult GetAdwenchedSearchInvoice(Models.ViewModel.SearchOption option)
         {
             var result = licenseService.GetAdwenchedSearchLicenseInfo(option);
             return Json(result, JsonRequestBehavior.AllowGet);

@@ -119,7 +119,7 @@
                         $("#loadingImage").fadeOut(0, function () {
                             $(data).each(function (index, element) {
                                 var str = "<tr>";
-                                str += "<td>" + element.LicenceCode.slice(0, 15) + "..." + "</td>";
+                                str += "<td>" + "<input type='hidden' value='" + element.UserId + "' />" + element.LicenceCode.slice(0, 15) + "..." + "</td>";
                                 str += "<td>" + element.CompanyName + "</td>";
                                 str += "<td>" + element.ContactPerson + "</td>";
                                 str += "<td>" + element.Email.slice(0, 15) +"...</td>";
@@ -174,7 +174,7 @@
                         $("#loadingImage").fadeOut(0, function () {
                             $(data).each(function (index, element) {
                                 var str = "<tr>";
-                                str += "<td>" + element.LicenceCode.slice(0, 15) + "..." + "</td>";
+                                str += "<td>"+"<input type='hidden' value='" + element.UserId + "' />" + element.LicenceCode.slice(0, 15) + "..." + "</td>";
                                 str += "<td>" + element.CompanyName + "</td>";
                                 str += "<td>" + element.ContactPerson + "</td>";
                                 str += "<td>" + element.Email + "</td>";

@@ -40,8 +40,8 @@ namespace leavedays.Models.Repository
         {
             using (var session = sessionFactory.OpenSession())
             {
-                string sqlQuery = string.Format(@"SELECT (u.FirstName+u.LastName)AS ContactPerson, u.UserId, u.Email AS Email, u.PhoneNumber, c.IsPaid, c.FullName AS CompanyName, l.LicenseId, l.LicenseCode AS LicenceCode INNER JOIN Role AS r ON ur.RoleId = r.RoleId ");
-                sqlQuery = string.Concat(sqlQuery, "FROM AppUser as u INNER JOIN Company AS c ON u.CompanyId = c.CompanyId INNER JOIN License AS l ON c.LicenseId = l.LicenseId INNER JOIN User_Role AS ur ON u.UserId = ur.UserId ");
+                string sqlQuery = string.Format(@"SELECT (u.FirstName+u.LastName)AS ContactPerson, u.UserId, u.Email AS Email, u.PhoneNumber, c.IsPaid, c.FullName AS CompanyName, l.LicenseId, l.LicenseCode AS LicenceCode ");
+                sqlQuery = string.Concat(sqlQuery, "FROM AppUser as u INNER JOIN Company AS c ON u.CompanyId = c.CompanyId INNER JOIN License AS l ON c.LicenseId = l.LicenseId INNER JOIN User_Role AS ur ON u.UserId = ur.UserId INNER JOIN Role AS r ON ur.RoleId = r.RoleId ");
                 sqlQuery = string.Concat(sqlQuery, "WHERE r.Name = 'customer'");
                 var licenses = session.CreateSQLQuery(sqlQuery).
                     SetResultTransformer(Transformers.AliasToBean<LicenseInfo>()).
